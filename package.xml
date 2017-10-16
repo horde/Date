@@ -16,7 +16,7 @@
   <email>chuck@horde.org</email>
   <active>yes</active>
  </lead>
- <date>2017-08-28</date>
+ <date>2017-10-17</date>
  <version>
   <release>2.4.2</release>
   <api>2.4.0</api>
@@ -34,7 +34,6 @@
    <dir name="doc">
     <dir name="Horde">
      <dir name="Date">
-      <file name="COPYING" role="doc" />
       <file name="UPGRADING" role="doc" />
      </dir> <!-- /doc/Horde/Date -->
     </dir> <!-- /doc/Horde -->
@@ -344,6 +343,7 @@
      </dir> <!-- /test/Horde/Date -->
     </dir> <!-- /test/Horde -->
    </dir> <!-- /test -->
+   <file name="LICENSE" role="doc" />
   </dir> <!-- / -->
  </contents>
  <dependencies>
@@ -400,15 +400,11 @@
  </dependencies>
  <phprelease>
   <filelist>
-   <install as="COPYING" name="doc/Horde/Date/COPYING" />
    <install as="UPGRADING" name="doc/Horde/Date/UPGRADING" />
    <install as="Horde/Date.php" name="lib/Horde/Date.php" />
    <install as="Horde/Date/Exception.php" name="lib/Horde/Date/Exception.php" />
    <install as="Horde/Date/Recurrence.php" name="lib/Horde/Date/Recurrence.php" />
    <install as="Horde/Date/Repeater.php" name="lib/Horde/Date/Repeater.php" />
-   <install as="Horde/Date/Span.php" name="lib/Horde/Date/Span.php" />
-   <install as="Horde/Date/Translation.php" name="lib/Horde/Date/Translation.php" />
-   <install as="Horde/Date/Utils.php" name="lib/Horde/Date/Utils.php" />
    <install as="Horde/Date/Repeater/Day.php" name="lib/Horde/Date/Repeater/Day.php" />
    <install as="Horde/Date/Repeater/DayName.php" name="lib/Horde/Date/Repeater/DayName.php" />
    <install as="Horde/Date/Repeater/DayPortion.php" name="lib/Horde/Date/Repeater/DayPortion.php" />
@@ -425,7 +421,10 @@
    <install as="Horde/Date/Repeater/Week.php" name="lib/Horde/Date/Repeater/Week.php" />
    <install as="Horde/Date/Repeater/Weekend.php" name="lib/Horde/Date/Repeater/Weekend.php" />
    <install as="Horde/Date/Repeater/Year.php" name="lib/Horde/Date/Repeater/Year.php" />
-   <install as="locale/Horde_Date.pot" name="locale/Horde_Date.pot" />
+   <install as="Horde/Date/Span.php" name="lib/Horde/Date/Span.php" />
+   <install as="Horde/Date/Translation.php" name="lib/Horde/Date/Translation.php" />
+   <install as="Horde/Date/Utils.php" name="lib/Horde/Date/Utils.php" />
+   <install as="LICENSE" name="LICENSE" />
    <install as="locale/ar/LC_MESSAGES/Horde_Date.po" name="locale/ar/LC_MESSAGES/Horde_Date.po" />
    <install as="locale/bg/LC_MESSAGES/Horde_Date.po" name="locale/bg/LC_MESSAGES/Horde_Date.po" />
    <install as="locale/bs/LC_MESSAGES/Horde_Date.po" name="locale/bs/LC_MESSAGES/Horde_Date.po" />
@@ -453,6 +452,7 @@
    <install as="locale/gl/LC_MESSAGES/Horde_Date.po" name="locale/gl/LC_MESSAGES/Horde_Date.po" />
    <install as="locale/he/LC_MESSAGES/Horde_Date.mo" name="locale/he/LC_MESSAGES/Horde_Date.mo" />
    <install as="locale/he/LC_MESSAGES/Horde_Date.po" name="locale/he/LC_MESSAGES/Horde_Date.po" />
+   <install as="locale/Horde_Date.pot" name="locale/Horde_Date.pot" />
    <install as="locale/hr/LC_MESSAGES/Horde_Date.mo" name="locale/hr/LC_MESSAGES/Horde_Date.mo" />
    <install as="locale/hr/LC_MESSAGES/Horde_Date.po" name="locale/hr/LC_MESSAGES/Horde_Date.po" />
    <install as="locale/hu/LC_MESSAGES/Horde_Date.mo" name="locale/hu/LC_MESSAGES/Horde_Date.mo" />
@@ -502,12 +502,10 @@
    <install as="Horde/Date/AllTests.php" name="test/Horde/Date/AllTests.php" />
    <install as="Horde/Date/bootstrap.php" name="test/Horde/Date/bootstrap.php" />
    <install as="Horde/Date/DateTest.php" name="test/Horde/Date/DateTest.php" />
-   <install as="Horde/Date/phpunit.xml" name="test/Horde/Date/phpunit.xml" />
-   <install as="Horde/Date/RecurrenceTest.php" name="test/Horde/Date/RecurrenceTest.php" />
-   <install as="Horde/Date/SpanTest.php" name="test/Horde/Date/SpanTest.php" />
-   <install as="Horde/Date/UtilsTest.php" name="test/Horde/Date/UtilsTest.php" />
    <install as="Horde/Date/fixtures/bug2813.ics" name="test/Horde/Date/fixtures/bug2813.ics" />
    <install as="Horde/Date/fixtures/bug12869.ics" name="test/Horde/Date/fixtures/bug12869.ics" />
+   <install as="Horde/Date/phpunit.xml" name="test/Horde/Date/phpunit.xml" />
+   <install as="Horde/Date/RecurrenceTest.php" name="test/Horde/Date/RecurrenceTest.php" />
    <install as="Horde/Date/Repeater/DayNameTest.php" name="test/Horde/Date/Repeater/DayNameTest.php" />
    <install as="Horde/Date/Repeater/DayTest.php" name="test/Horde/Date/Repeater/DayTest.php" />
    <install as="Horde/Date/Repeater/HourTest.php" name="test/Horde/Date/Repeater/HourTest.php" />
@@ -517,6 +515,8 @@
    <install as="Horde/Date/Repeater/WeekendTest.php" name="test/Horde/Date/Repeater/WeekendTest.php" />
    <install as="Horde/Date/Repeater/WeekTest.php" name="test/Horde/Date/Repeater/WeekTest.php" />
    <install as="Horde/Date/Repeater/YearTest.php" name="test/Horde/Date/Repeater/YearTest.php" />
+   <install as="Horde/Date/SpanTest.php" name="test/Horde/Date/SpanTest.php" />
+   <install as="Horde/Date/UtilsTest.php" name="test/Horde/Date/UtilsTest.php" />
   </filelist>
  </phprelease>
  <changelog>
@@ -1137,7 +1137,7 @@
    <stability>
     <release>stable</release>
     <api>stable</api></stability>
-   <date>2017-08-28</date>
+   <date>2017-10-17</date>
    <license uri="http://www.horde.org/licenses/lgpl21">LGPL-2.1</license>
    <notes>
 * 
