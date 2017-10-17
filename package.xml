@@ -34,7 +34,7 @@
    <dir name="doc">
     <dir name="Horde">
      <dir name="Date">
-      <file name="UPGRADING" role="doc" />
+      <file name="UPGRADING.rst" role="doc" />
      </dir> <!-- /doc/Horde/Date -->
     </dir> <!-- /doc/Horde -->
    </dir> <!-- /doc -->
@@ -400,7 +400,7 @@
  </dependencies>
  <phprelease>
   <filelist>
-   <install as="UPGRADING" name="doc/Horde/Date/UPGRADING" />
+   <install as="UPGRADING.rst" name="doc/Horde/Date/UPGRADING.rst" />
    <install as="Horde/Date.php" name="lib/Horde/Date.php" />
    <install as="Horde/Date/Exception.php" name="lib/Horde/Date/Exception.php" />
    <install as="Horde/Date/Recurrence.php" name="lib/Horde/Date/Recurrence.php" />
