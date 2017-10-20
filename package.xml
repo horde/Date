@@ -16,7 +16,7 @@
   <email>chuck@horde.org</email>
   <active>yes</active>
  </lead>
- <date>2017-10-17</date>
+ <date>2017-10-20</date>
  <version>
   <release>2.4.2</release>
   <api>2.4.0</api>
@@ -336,7 +336,6 @@
       <file name="AllTests.php" role="test" />
       <file name="bootstrap.php" role="test" />
       <file name="DateTest.php" role="test" />
-      <file name="phpunit.xml" role="test" />
       <file name="RecurrenceTest.php" role="test" />
       <file name="SpanTest.php" role="test" />
       <file name="UtilsTest.php" role="test" />
@@ -504,7 +503,6 @@
    <install as="Horde/Date/DateTest.php" name="test/Horde/Date/DateTest.php" />
    <install as="Horde/Date/fixtures/bug2813.ics" name="test/Horde/Date/fixtures/bug2813.ics" />
    <install as="Horde/Date/fixtures/bug12869.ics" name="test/Horde/Date/fixtures/bug12869.ics" />
-   <install as="Horde/Date/phpunit.xml" name="test/Horde/Date/phpunit.xml" />
    <install as="Horde/Date/RecurrenceTest.php" name="test/Horde/Date/RecurrenceTest.php" />
    <install as="Horde/Date/Repeater/DayNameTest.php" name="test/Horde/Date/Repeater/DayNameTest.php" />
    <install as="Horde/Date/Repeater/DayTest.php" name="test/Horde/Date/Repeater/DayTest.php" />
@@ -1137,7 +1135,7 @@
    <stability>
     <release>stable</release>
     <api>stable</api></stability>
-   <date>2017-10-17</date>
+   <date>2017-10-20</date>
    <license uri="http://www.horde.org/licenses/lgpl21">LGPL-2.1</license>
    <notes>
 * 
