@@ -1,0 +1,353 @@
+----------
+v2.4.2-git
+----------
+
+
+------
+v2.4.1
+------
+
+[jan] Fix translating the string representation of a recurrence rule.
+
+
+------
+v2.4.0
+------
+
+[jan] Add Horde_Date_Recurrence::fromHash() and toHash().
+
+
+------
+v2.3.2
+------
+
+[jan] Update German translation.
+
+
+------
+v2.3.1
+------
+
+[jan] Add old Olson timezone names as aliases.
+
+
+------
+v2.3.0
+------
+
+[jan] Add Horde_Date::getTimezoneAlias().
+[jan] Update Greek translation (Limperis Antonis <limperis@cti.gr>).
+
+
+------
+v2.2.0
+------
+
+[mjr] Add Horde_Date_Recurrence::isEqual().
+[jan] Mark PHP 7 as supported.
+
+
+------
+v2.1.1
+------
+
+[jan] Updated UK translation.
+
+
+------
+v2.1.0
+------
+
+[jan] Support monthly recurrence by last weekday (Request #1922).
+[jan] Support negative occurrences in Horde_Date#setNthWeekday().
+[jan] Add Galician translation.
+
+
+-------
+v2.0.13
+-------
+
+[jan] Support loading translations from Composer-installed package.
+
+
+-------
+v2.0.12
+-------
+
+[jan] Fix calculating recurrence end if UNTIL property of iCalendar data is
+      DATE value (Bug #13401).
+
+
+-------
+v2.0.11
+-------
+
+[jan] Update Hungarian translation (Andras Galos <galosa@netinform.hu>).
+[jan] Update Spanish translation (Manuel P. Ayala <mayala@unex.es>).
+
+
+-------
+v2.0.10
+-------
+
+[jan] Update Brazilian Portuguese translation (Luis Felipe Marzagao
+      <duli@easylifeproject.org>).
+[jan] Update Japanese translation (Hiromi Kimura <hiromi@tac.tsukuba.ac.jp>).
+[jan] Update Hungarian translation (Andras Galos <galosa@netinform.hu>).
+
+
+------
+v2.0.9
+------
+
+[mjr] Fix setting timezone parameter when parsing certain string
+      representations.
+
+
+------
+v2.0.8
+------
+
+[jan] Fix date calculation if providing both a timestamp and a timezone (Bug
+      #12843).
+[mjr] Add ability to return human readable description of recurrence rules.
+[mjr] Fix issue that could cause incorrect month values when populating an
+      empty date object.
+[mjr] Fix handling of RRULE with full datetime UNTIL values (Bug #12869).
+[rla] Add aliases for Windows and Lotus timezone identifiers (Bug #11688).
+
+
+------
+v2.0.7
+------
+
+[jan] Correct dates with very large days-of-month more efficiently (Bug
+      #12615).
+[jan] Don't limit the argument to Horde_Date_Utils::isLeapYear() to 4 digits.
+
+
+------
+v2.0.6
+------
+
+[jan] Don't use /e modifier with preg_replace() calls (Remi Collet
+      <fedora@famillecollet.com>).
+
+
+------
+v2.0.5
+------
+
+[jan] Fix parsing yearly recurrences on the same day from Kolab data (Bug
+      #12227).
+
+
+------
+v2.0.4
+------
+
+[jan] Fix recurring dates on the 5th weekday of a month (Bug #11181).
+
+
+------
+v2.0.3
+------
+
+[jan] Update French translation (Paul De Vlieger
+      <paul.de_vlieger@moniut.univ-bpclermont.fr>).
+[jan] Fix error: DateTime::__construct(): Failed to parse time string
+      (-001-11-01).
+[jan] Catch DateTime exception in Horde_Date_Utils:daysInMonth() (Bug #11916).
+
+
+------
+v2.0.2
+------
+
+[jan] Add Basque translation (Ibon Igartua <ibon.igartua@ehu.es>).
+[jan] Fix more strftime() formatting of certain locale-specific format
+      specifiers (Bug #11831).
+
+
+------
+v2.0.1
+------
+
+[jan] Update Dutch translation (Arjen de Korte <build+horde@de-korte.org>).
+[jan] Fix strftime() formatting of certain locale-specific format specifiers.
+
+
+------
+v2.0.0
+------
+
+First stable release for Horde 5.
+
+
+---------
+v2.0.0RC1
+---------
+
+[jan] Support non-padding operators in strftime() formatting (Bug #10435).
+
+
+-----------
+v2.0.0beta3
+-----------
+
+[mjr] Fix adding completed recurrence exceptions.
+
+
+-----------
+v2.0.0beta2
+-----------
+
+[jan] Include time when parsing recurrence end date from vCalendar/iCalendar.
+
+
+-----------
+v2.0.0beta1
+-----------
+
+First beta release for Horde 5.
+
+
+------------
+v2.0.0alpha1
+------------
+
+First alpha release for Horde 5.
+[jan] Rename fromHash()/toHash() to fromKolab()/toKolab().
+
+
+-------
+v1.0.12
+-------
+
+[jan] Include time when parsing recurrence end date from vCalendar/iCalendar.
+
+
+-------
+v1.0.11
+-------
+
+[jan] Avoid infinite loop when requesting invalid date property.
+[bak] Avoid printing empty BYDAY field on RRULE.
+
+
+-------
+v1.0.10
+-------
+
+[jan] Update Spanish translation.
+
+
+------
+v1.0.9
+------
+
+[mjr] Fix creating recurrence objects with a timezone other than the current
+      default.
+
+
+------
+v1.0.8
+------
+
+[mjr] Fix issue with creating Horde_Date from DateTime object with explicit
+      timezone set.
+
+
+------
+v1.0.7
+------
+
+[gwr] Fix the parsing of recurrence hash data.
+
+
+------
+v1.0.6
+------
+
+[jan] Update Croatian translation.
+[jan] Update Estonian translation.
+[jan] Make unit tests Windows compatible.
+[mjr] Fix timezone bug that could cause an incorrect timezone from being set
+      when creating Horde_Date objects from other Horde_Date or DateTime
+      objects.
+[mjr] Fix timezone bug that caused some date strings to be parsed as an
+      incorrect timezone.
+
+
+------
+v1.0.5
+------
+
+[jan] Fix exporting recurrence end date to iCalendar.
+
+
+------
+v1.0.4
+------
+
+[jan] Update Latvian translation.
+
+
+------
+v1.0.3
+------
+
+[jan] Update Lithuanian translation.
+[jan] Update Brazilian Portuguese translation.
+
+
+------
+v1.0.2
+------
+
+[jan] Updated Slovak translation.
+
+
+------
+v1.0.1
+------
+
+[jan] Updated Spanish translation.
+
+
+------
+v1.0.0
+------
+
+First stable release for Horde 4.
+
+
+---------
+v1.0.0RC2
+---------
+
+Second release candidate for Horde 4.
+[jan] Fix correcting dates when substracting a day.
+
+
+---------
+v1.0.0RC1
+---------
+
+First release candidate for Horde 4.
+
+
+-----------
+v1.0.0beta1
+-----------
+
+First beta release for Horde 4.
+
+
+------------
+v1.0.0alpha1
+------------
+
+First alpha release for Horde 4.
+Add Horde_Date_Repeater.
+Add Horde_Date_Span.
