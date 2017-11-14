@@ -338,7 +338,6 @@
       <file name="AllTests.php" role="test" />
       <file name="bootstrap.php" role="test" />
       <file name="DateTest.php" role="test" />
-      <file name="phpunit.xml" role="test" />
       <file name="RecurrenceTest.php" role="test" />
       <file name="SpanTest.php" role="test" />
       <file name="UtilsTest.php" role="test" />
@@ -504,7 +503,6 @@
    <install as="Horde/Date/AllTests.php" name="test/Horde/Date/AllTests.php" />
    <install as="Horde/Date/bootstrap.php" name="test/Horde/Date/bootstrap.php" />
    <install as="Horde/Date/DateTest.php" name="test/Horde/Date/DateTest.php" />
-   <install as="Horde/Date/phpunit.xml" name="test/Horde/Date/phpunit.xml" />
    <install as="Horde/Date/RecurrenceTest.php" name="test/Horde/Date/RecurrenceTest.php" />
    <install as="Horde/Date/SpanTest.php" name="test/Horde/Date/SpanTest.php" />
    <install as="Horde/Date/UtilsTest.php" name="test/Horde/Date/UtilsTest.php" />
