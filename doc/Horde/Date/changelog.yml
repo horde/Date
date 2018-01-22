@@ -8,7 +8,9 @@
   license:
     identifier: LGPL-2.1
     uri: http://www.horde.org/licenses/lgpl21
-  notes:
+  notes: |+
+    [jan] Allow passing a time format to Horde_Date_Recurrence#toString() (Bug #14768).
+    
 2.4.1:
   api: 2.4.0
   state:

@@ -1825,7 +1825,7 @@ class Horde_Date_Recurrence
      * @return string
      * @since 2.1.0
      */
-    public function toString($date_format)
+    public function toString($date_format, $time_format = '%X')
     {
         $string = '';
         if ($this->hasRecurType(self::RECUR_DAILY)) {
@@ -1854,7 +1854,15 @@ class Horde_Date_Recurrence
             $string = Horde_Date_Translation::t("Yearly: Recurs every") . ' ' . $this->getRecurInterval() . ' ' . Horde_Date_Translation::t("year(s) on the same weekday and month of the year");
         }
 
-        $string .= "\n" . Horde_Date_Translation::t("Ends after") . ': ' . ($this->hasRecurEnd() ? $this->recurEnd->strftime($date_format) . ($this->recurEnd->hour == 23 && $this->recurEnd->min == 59 ? '' : ' ' . $this->recurEnd->format($date_format)) : ($this->getRecurCount() ? sprintf(Horde_Date_Translation::t("%d times"), $this->getRecurCount()) : Horde_Date_Translation::t("No end date")));;
+        $string .= "\n" . Horde_Date_Translation::t("Ends after") . ': '
+            . ($this->hasRecurEnd()
+               ? $this->recurEnd->strftime($date_format)
+                   . ($this->recurEnd->hour == 23 && $this->recurEnd->min == 59
+                      ? ''
+                      : ' ' . $this->recurEnd->strftime($time_format))
+               : ($this->getRecurCount()
+                  ? sprintf(Horde_Date_Translation::t("%d times"), $this->getRecurCount())
+                  : Horde_Date_Translation::t("No end date")));
         if ($this->getExceptions()) {
             $string .= "\n" . Horde_Date_Translation::t("Exceptions on") . ': ';
             foreach ($this->getExceptions() as $exception_date) {
