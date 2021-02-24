@@ -1,6 +1,6 @@
-------
-v2.4.2
-------
+------------
+v3.0.0alpha1
+------------
 
 [jan] Allow passing a time format to Horde_Date_Recurrence#toString() (Bug
       #14768).
