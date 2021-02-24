@@ -26,14 +26,14 @@
     ],
     "require": {
         "horde/horde-installer-plugin": "*",
-        "php": "^5.3 || ^7",
-        "horde/exception": "^2",
-        "horde/nls": "^2",
-        "horde/translation": "^2.2"
+        "php": "^7",
+        "horde/exception": "^3",
+        "horde/nls": "^3",
+        "horde/translation": "^3"
     },
     "suggest": {
-        "horde/icalendar": "^2",
-        "horde/test": "^2.1",
+        "horde/icalendar": "^3",
+        "horde/test": "^3",
         "ext-calendar": "*"
     },
     "autoload": {
