@@ -39,9 +39,6 @@
     "autoload": {
         "psr-0": {
             "Horde_Date": "lib/"
-        },
-        "psr-4": {
-            "Horde\\Date\\": "src/"
         }
     }
 }
