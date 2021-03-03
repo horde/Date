@@ -1234,8 +1234,15 @@ class Horde_Date_Recurrence
             switch (Horde_String::upper($rdata['FREQ'])) {
             case 'DAILY':
                 $this->setRecurType(self::RECUR_DAILY);
-                break;
-
+                /**
+                 * [#15054] Thunderbird "all workday" events become "daily" events
+                 * Thunderbird-generated "every weekday" events are represented as
+                 * RRULE:FREQ=DAILY;UNTIL=yyyymmddT041500Z;BYDAY=MO,TU,WE,TH,FR
+                 * Fall through to weekly in this case.
+                 */
+                if (!isset($rdata['BYDAY'])) {
+                    break;
+                }
             case 'WEEKLY':
                 $this->setRecurType(self::RECUR_WEEKLY);
                 if (isset($rdata['BYDAY'])) {
