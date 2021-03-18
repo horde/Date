@@ -4,13 +4,17 @@
  * @package    Date
  * @subpackage UnitTests
  */
+namespace Horde\Date\Repeater;
+use \PHPUnit\Framework\TestCase;
+use \Horde_Date;
+use \Horde_Date_Repeater_Day;
 
 /**
  * @category   Horde
  * @package    Date
  * @subpackage UnitTests
  */
-class Horde_Date_Repeater_DayTest extends PHPUnit_Framework_TestCase
+class DayTest extends TestCase
 {
     public function testNextFuture()
     {

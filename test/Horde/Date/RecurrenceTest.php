@@ -4,22 +4,30 @@
  * @package    Date
  * @subpackage UnitTests
  */
+namespace Horde\Date;
+use \Horde_Test_Case as TestCase;
+use \Horde_Date;
+use \Horde_Date_Recurrence;
+use \Horde_Icalendar;
+use \Horde_Icalendar_Vevent;
+use \date_default_timezone_get;
+use \date_default_timezone_set;
 
 /**
  * @category   Horde
  * @package    Date
  * @subpackage UnitTests
  */
-class Horde_Date_RecurrenceTest extends Horde_Test_Case
+class RecurrenceTest extends TestCase
 {
-    protected function setUp()
+    protected function setUp(): void
     {
         $this->ical = new Horde_Icalendar();
         $this->_oldTimezone = date_default_timezone_get();
         date_default_timezone_set('Europe/Berlin');
     }
 
-    public function tearDown()
+    public function tearDown(): void
     {
         date_default_timezone_set($this->_oldTimezone);
     }

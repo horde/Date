@@ -4,13 +4,16 @@
  * @package    Date
  * @subpackage UnitTests
  */
+namespace Horde\Date;
+use \PHPUnit\Framework\TestCase;
+use \Horde_Date_Utils;
 
 /**
  * @category   Horde
  * @package    Date
  * @subpackage UnitTests
  */
-class Horde_Date_UtilsTest extends PHPUnit_Framework_TestCase
+class UtilsTest extends TestCase
 {
     public function testFirstDayOfWeek()
     {
