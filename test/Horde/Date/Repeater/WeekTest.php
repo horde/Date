@@ -4,15 +4,20 @@
  * @package    Date
  * @subpackage UnitTests
  */
+namespace Horde\Date\Repeater;
+use \PHPUnit\Framework\TestCase;
+use \Horde_Date;
+use \Horde_Date_Repeater_Week;
+use \Horde_Date_Span;
 
 /**
  * @category   Horde
  * @package    Date
  * @subpackage UnitTests
  */
-class Horde_Date_Repeater_WeekTest extends PHPUnit_Framework_TestCase
+class WeekTest extends TestCase
 {
-    public function setUp()
+    public function setUp(): void
     {
         $this->now = new Horde_Date('2006-08-16 14:00:00');
     }

@@ -4,21 +4,30 @@
  * @package    Date
  * @subpackage UnitTests
  */
+namespace Horde\Date;
+use \PHPUnit\Framework\TestCase;
+use \date_default_timezone_get;
+use \date_default_timezone_set;
+use \stdClass;
+use \Horde_Date;
+use \Horde_Date_Span;
+use \DateTime;
+use \DateTimeZone;
 
 /**
  * @category   Horde
  * @package    Date
  * @subpackage UnitTests
  */
-class Horde_Date_DateTest extends PHPUnit_Framework_TestCase
+class DateTest extends TestCase
 {
-    public function setUp()
+    public function setUp(): void
     {
         $this->_oldTimezone = date_default_timezone_get();
         date_default_timezone_set('Europe/Berlin');
     }
 
-    public function tearDown()
+    public function tearDown(): void
     {
         date_default_timezone_set($this->_oldTimezone);
     }

@@ -4,13 +4,17 @@
  * @package    Date
  * @subpackage UnitTests
  */
+namespace Horde\Date;
+use \PHPUnit\Framework\TestCase;
+use \Horde_Date;
+use \Horde_Date_Span;
 
 /**
  * @category   Horde
  * @package    Date
  * @subpackage UnitTests
  */
-class Horde_Date_SpanTest extends PHPUnit_Framework_TestCase
+class SpanTest extends TestCase
 {
     public function testWidth()
     {
