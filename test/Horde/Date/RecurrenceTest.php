@@ -1094,4 +1094,47 @@ class Horde_Date_RecurrenceTest extends Horde_Test_Case
         date_default_timezone_set('Europe/Berlin');
     }
 
+    public function testBug15054ThunderbirdWorkday()
+    {
+        date_default_timezone_set('Europe/Berlin');
+        $iCal = new Horde_Icalendar();
+        $iCal->parsevCalendar(file_get_contents(__DIR__ . '/fixtures/bug15054.ics'));
+        $components = $iCal->getComponents();
+        foreach ($components as $content) {
+            if ($content instanceof Horde_Icalendar_Vevent) {
+                $start = new Horde_Date($content->getAttribute('DTSTART'));
+                $end = new Horde_Date($content->getAttribute('DTEND'));
+                $rrule = $content->getAttribute('RRULE');        
+                $recurrence = new Horde_Date_Recurrence($start, $end);
+                $recurrence->fromRRule20($rrule);
+                break;
+            }
+        }
+
+        // Recurrence must not include weekend
+        // Thursday, checking for thursday
+        $dtInput = new \Horde_Date('20210318T080000', 'Europe/Berlin');
+        $dtExpected = new \Horde_Date('20210318T090000', 'Europe/Berlin');
+        $this->assertEquals($dtExpected->timestamp(), $recurrence->nextRecurrence($dtInput)->timestamp());
+        // Friday, checking for friday
+        $dtInput = new \Horde_Date('20210319T080000', 'Europe/Berlin');
+        $dtExpected = new \Horde_Date('20210319T090000', 'Europe/Berlin');
+        $this->assertEquals($dtExpected->timestamp(), $recurrence->nextRecurrence($dtInput)->timestamp());
+        // Saturday, checking for monday
+        $dtInput = new \Horde_Date('20210320T080000', 'Europe/Berlin');
+        $dtExpected = new \Horde_Date('20210322T090000', 'Europe/Berlin');
+        $this->assertEquals($dtExpected->toJSON(), $recurrence->nextRecurrence($dtInput)->toJSON());
+        // Sunday, checking for monday
+        $dtInput = new \Horde_Date('20210321T080000', 'Europe/Berlin');
+        $dtExpected = new \Horde_Date('20210322T090000', 'Europe/Berlin');
+        $this->assertEquals($dtExpected->timestamp(), $recurrence->nextRecurrence($dtInput)->timestamp());
+        // monday, checking for monday
+        $dtInput = new \Horde_Date('20210322T080000', 'Europe/Berlin');
+        $dtExpected = new \Horde_Date('20210322T090000', 'Europe/Berlin');
+        $this->assertEquals($dtExpected->timestamp(), $recurrence->nextRecurrence($dtInput)->timestamp());
+        // tuesday, checking for tuesday
+        $dtInput = new \Horde_Date('20210323T080000', 'Europe/Berlin');
+        $dtExpected = new \Horde_Date('20210323T090000', 'Europe/Berlin');
+        $this->assertEquals($dtExpected->timestamp(), $recurrence->nextRecurrence($dtInput)->timestamp());
+    }
 }
