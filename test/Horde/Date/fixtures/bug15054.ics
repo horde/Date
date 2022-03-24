@@ -1,0 +1,27 @@
+BEGIN:VCALENDAR
+VERSION:2.0
+X-WR-CALNAME:Bug Reproducer
+PRODID:-//The Horde Project//Horde iCalendar Library//EN
+BEGIN:VEVENT
+DTSTART;TZID=Europe/Berlin:20210318T090000
+DTEND;TZID=Europe/Berlin:20210318T100000
+DTSTAMP:20210318T072609Z
+UID:1bae8052-9389-4059-b693-52f6138d5107
+CREATED:20210318T072313Z
+LAST-MODIFIED:20210318T072313Z
+SUMMARY:Bug 15054
+DESCRIPTION:Thunderbird creates a new event as "Jeden Werktag" (recurring
+  all work days). \nThis is expressed as a DAILY clause with an BYDAY
+  attribute listing the five workdays.\nHorde before this patch would only
+  parse BYDAY from weeks. The server accepts the meeting but drops the
+  restriction. The Event will be saved as "all days" and on next sync\,
+  the TB user has an "all days" event rather than an "all work days"
+  event.
+LOCATION:https://bugs.horde.org/ticket/15054
+CLASS:PUBLIC
+STATUS:CONFIRMED
+TRANSP:OPAQUE
+RRULE:FREQ=DAILY;INTERVAL=1;UNTIL=20210331T215959Z;BYDAY=MO,TU,WE,TH,FR
+END:VEVENT
+END:VCALENDAR
+
