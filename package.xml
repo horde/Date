@@ -16,7 +16,7 @@
   <email>chuck@horde.org</email>
   <active>no</active>
  </lead>
- <date>2021-03-13</date>
+ <date>2022-10-08</date>
  <version>
   <release>3.0.0alpha4</release>
   <api>3.0.0alpha1</api>
@@ -25,12 +25,20 @@
   <release>alpha</release>
   <api>alpha</api>
  </stability>
- <license uri="http://www.horde.org/licenses/lgpl21">LGPL-2.1</license>
+ <license uri="http://www.horde.org/licenses/lgpl21">LGPL-2.1-only</license>
  <notes>
-* 
+* [rla] Fix some PHP 8.1 issues.
+* |+
  </notes>
  <contents>
   <dir baseinstalldir="/" name="/">
+   <dir name=".github">
+    <dir name="workflows">
+     <file name="ci.yml" role="php" />
+     <file name="phpdoc.yml" role="php" />
+     <file name="update-satis.yml" role="php" />
+    </dir> <!-- /.github/workflows -->
+   </dir> <!-- /.github -->
    <dir name="doc">
     <dir name="Horde">
      <dir name="Date">
@@ -322,6 +330,7 @@
       <dir name="fixtures">
        <file name="bug2813.ics" role="test" />
        <file name="bug12869.ics" role="test" />
+       <file name="bug15054.ics" role="test" />
       </dir> <!-- /test/Horde/Date/fixtures -->
       <dir name="Repeater">
        <file name="DayNameTest.php" role="test" />
@@ -349,9 +358,9 @@
  <dependencies>
   <required>
    <php>
-    <min>7.0.0</min>
-    <max>8.0.0alpha1</max>
-    <exclude>8.0.0alpha1</exclude>
+    <min>7.4.0</min>
+    <max>9.0.0alpha1</max>
+    <exclude>9.0.0alpha1</exclude>
    </php>
    <pearinstaller>
     <min>1.7.0</min>
@@ -365,6 +374,9 @@
  </dependencies>
  <phprelease>
   <filelist>
+   <install as="workflows/ci.yml" name=".github/workflows/ci.yml" />
+   <install as="workflows/phpdoc.yml" name=".github/workflows/phpdoc.yml" />
+   <install as="workflows/update-satis.yml" name=".github/workflows/update-satis.yml" />
    <install as="CHANGES" name="doc/Horde/Date/CHANGES" />
    <install as="UPGRADING.rst" name="doc/Horde/Date/UPGRADING.rst" />
    <install as="Horde/Date.php" name="lib/Horde/Date.php" />
@@ -470,6 +482,7 @@
    <install as="Horde/Date/DateTest.php" name="test/Horde/Date/DateTest.php" />
    <install as="Horde/Date/fixtures/bug2813.ics" name="test/Horde/Date/fixtures/bug2813.ics" />
    <install as="Horde/Date/fixtures/bug12869.ics" name="test/Horde/Date/fixtures/bug12869.ics" />
+   <install as="Horde/Date/fixtures/bug15054.ics" name="test/Horde/Date/fixtures/bug15054.ics" />
    <install as="Horde/Date/RecurrenceTest.php" name="test/Horde/Date/RecurrenceTest.php" />
    <install as="Horde/Date/Repeater/DayNameTest.php" name="test/Horde/Date/Repeater/DayNameTest.php" />
    <install as="Horde/Date/Repeater/DayTest.php" name="test/Horde/Date/Repeater/DayTest.php" />
@@ -485,53 +498,6 @@
   </filelist>
  </phprelease>
  <changelog>
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
- 
   <release>
    <version>
     <release>1.0.0alpha1</release>
@@ -1220,6 +1186,21 @@
   </release>
   <release>
    <version>
+    <release>2.4.2</release>
+    <api>2.4.0</api>
+   </version>
+   <stability>
+    <release>stable</release>
+    <api>stable</api>
+   </stability>
+   <date>2017-10-20</date>
+   <license uri="http://www.horde.org/licenses/lgpl21">LGPL-2.1</license>
+   <notes>
+* [jan] Allow passing a time format to Horde_Date_Recurrence#toString() (Bug #14768).
+   </notes>
+  </release>
+  <release>
+   <version>
     <release>3.0.0alpha1</release>
     <api>3.0.0alpha1</api>
    </version>
@@ -1230,7 +1211,7 @@
    <date>2021-02-24</date>
    <license uri="http://www.horde.org/licenses/lgpl21">LGPL-2.1</license>
    <notes>
-* [jan] Allow passing a time format to Horde_Date_Recurrence#toString() (Bug #14768).
+* [rla] Begin conversion for composer usage.
    </notes>
   </release>
   <release>
@@ -1273,9 +1254,10 @@
     <api>alpha</api>
    </stability>
    <date>2021-03-13</date>
-   <license uri="http://www.horde.org/licenses/lgpl21">LGPL-2.1</license>
+   <license uri="http://www.horde.org/licenses/lgpl21">LGPL-2.1-only</license>
    <notes>
-* 
+* [rla] Fix some PHP 8.1 issues.
+* |+
    </notes>
   </release>
  </changelog>

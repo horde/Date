@@ -1,5 +1,4 @@
 {
-    "minimum-stability": "dev",
     "name": "horde/date",
     "description": "Date library",
     "type": "library",
@@ -17,11 +16,11 @@
             "role": "lead"
         }
     ],
-    "time": "2021-03-13",
+    "time": "2022-10-08",
     "repositories": [
         {
             "type": "composer",
-            "url": "https://horde-satis.maintaina.com/"
+            "url": "https://horde-satis.maintaina.com"
         }
     ],
     "require": {
@@ -30,6 +29,7 @@
         "horde/nls": "^3 || dev-FRAMEWORK_6_0",
         "horde/translation": "^3 || dev-FRAMEWORK_6_0"
     },
+    "require-dev": {},
     "suggest": {
         "horde/icalendar": "^3 || dev-FRAMEWORK_6_0",
         "horde/test": "^3 || dev-FRAMEWORK_6_0",
@@ -38,6 +38,16 @@
     "autoload": {
         "psr-0": {
             "Horde_Date": "lib/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Horde\\Date\\Test\\": "test/"
+        }
+    },
+    "config": {
+        "allow-plugins": {
+            "horde/horde-installer-plugin": true
         }
     }
 }

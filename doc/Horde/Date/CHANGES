@@ -2,7 +2,8 @@
 v3.0.0alpha4
 ------------
 
-
+[rla] Fix some PHP 8.1 issues.
+|+
 
 
 ------------
@@ -21,9 +22,15 @@ v3.0.0alpha2
 v3.0.0alpha1
 ------------
 
+[rla] Begin conversion for composer usage.
+
+
+------
+v2.4.2
+------
+
 [jan] Allow passing a time format to Horde_Date_Recurrence#toString() (Bug
       #14768).
-
 
 
 ------
