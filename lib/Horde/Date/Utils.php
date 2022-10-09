@@ -135,7 +135,7 @@ class Horde_Date_Utils
      */
     public static function strftime2date($format)
     {
-        $replace = array(
+        $replace = [
             '/%a/'  => 'D',
             '/%A/'  => 'l',
             '/%d/'  => 'd',
@@ -151,7 +151,7 @@ class Horde_Date_Utils
             '/%h/'  => 'M',
             '/%m/'  => 'm',
             '/%C/'  => '',
-            '/%g/'  => '',
+            '/%g/'  => 'y',
             '/%G/'  => 'o',
             '/%y/'  => 'y',
             '/%Y/'  => 'Y',
@@ -165,20 +165,52 @@ class Horde_Date_Utils
             '/%R/'  => 'H:i',
             '/%S/'  => 's',
             '/%T/'  => 'H:i:s',
-            '/%X/e' => 'Horde_Date_Utils::strftime2date(Horde_Nls::getLangInfo(T_FMT))',
             '/%z/'  => 'O',
             '/%Z/'  => '',
             '/%c/'  => '',
             '/%D/'  => 'm/d/y',
             '/%F/'  => 'Y-m-d',
             '/%s/'  => 'U',
-            '/%x/e' => 'Horde_Date_Utils::strftime2date(Horde_Nls::getLangInfo(D_FMT))',
             '/%n/'  => "\n",
             '/%t/'  => "\t",
             '/%%/'  => '%'
-        );
+        ];
+    
+        $callbackPatterns = [
+            '/%X/' => function() { return Horde_Nls::getLangInfo(T_FMT); },
+            '/%x/' => function() { return Horde_Nls::getLangInfo(D_FMT); },
+        ];
 
-        return preg_replace(array_keys($replace), array_values($replace), $format);
+        $pass1 = preg_replace_callback_array($callbackPatterns, $format);
+        $pass2 = preg_replace(array_keys($replace), array_values($replace), $pass1);
+        return $pass2;
     }
 
+    /**
+     * Unify date formatters and then format the date.
+     * 
+     * Facilitates upgrades from strftime to date_format style placeholders by accepting both.
+     * Some formats are not supported and will be dropped
+     * Will produce undesirable results for date_format style format strings that contain % characters
+     *
+     * @param string $pattern A date/time format pattern either in strftime or date_format style
+     * @param string|Horde_Date|DateTimeInterface $date
+     * @return void
+     */
+    public static function legacyDateFormatter(
+        string $pattern = 'Y-m-d H:i:s',
+        Horde_Date|DateTimeInterface|int|string|null $date = 'now',
+        $timezone = null
+    )
+    {
+        if (is_null($date) || $date === 'now')  {
+            $date = new Horde_Date(time(), $timezone);
+        } elseif (is_object($date) && $date instanceof DateTimeInterface) {
+            $timezone = $timezone ?? $date->getTimezone()->getName();
+            $date = new Horde_Date($date, $timezone);
+        } elseif (is_int($date) || is_string($date)) {
+            $date = new Horde_Date($date, $timezone ?? 'UTC');
+        }
+        return $date->format(self::strftime2date($pattern));
+    }
 }
