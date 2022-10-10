@@ -4,7 +4,7 @@
  * @package    Date
  * @subpackage UnitTests
  */
-namespace Horde\Date;
+namespace Horde\Date\Test;
 use \Horde_Test_Case as TestCase;
 use \Horde_Date;
 use \Horde_Date_Recurrence;
@@ -999,7 +999,7 @@ class RecurrenceTest extends TestCase
     public function testBug2813RecurrenceEndFromIcalendar()
     {
         $iCal = new Horde_Icalendar();
-        $iCal->parsevCalendar(file_get_contents(__DIR__ . '/fixtures/bug2813.ics'));
+        $iCal->parsevCalendar(file_get_contents(__DIR__ . '/../fixtures/bug2813.ics'));
         $components = $iCal->getComponents();
 
         date_default_timezone_set('US/Eastern');
@@ -1076,7 +1076,7 @@ class RecurrenceTest extends TestCase
     {
         date_default_timezone_set('Europe/Amsterdam');
         $iCal = new Horde_Icalendar();
-        $iCal->parsevCalendar(file_get_contents(__DIR__ . '/fixtures/bug12869.ics'));
+        $iCal->parsevCalendar(file_get_contents(__DIR__ . '/../fixtures/bug12869.ics'));
         $components = $iCal->getComponents();
         foreach ($components as $content) {
             if ($content instanceof Horde_Icalendar_Vevent) {
@@ -1106,7 +1106,7 @@ class RecurrenceTest extends TestCase
     {
         date_default_timezone_set('Europe/Berlin');
         $iCal = new Horde_Icalendar();
-        $iCal->parsevCalendar(file_get_contents(__DIR__ . '/fixtures/bug15054.ics'));
+        $iCal->parsevCalendar(file_get_contents(__DIR__ . '/../fixtures/bug15054.ics'));
         $components = $iCal->getComponents();
         foreach ($components as $content) {
             if ($content instanceof Horde_Icalendar_Vevent) {

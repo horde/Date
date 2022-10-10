@@ -4,7 +4,7 @@
  * @package    Date
  * @subpackage UnitTests
  */
-namespace Horde\Date\Repeater;
+namespace Horde\Date\Test\Repeater;
 use \PHPUnit\Framework\TestCase;
 use \Horde_Date;
 use \Horde_Date_Repeater_Weekend;

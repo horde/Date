@@ -4,7 +4,7 @@
  * @package    Date
  * @subpackage UnitTests
  */
-namespace Horde\Date;
+namespace Horde\Date\Test;
 use \PHPUnit\Framework\TestCase;
 use \date_default_timezone_get;
 use \date_default_timezone_set;

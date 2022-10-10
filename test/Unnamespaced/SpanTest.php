@@ -4,7 +4,7 @@
  * @package    Date
  * @subpackage UnitTests
  */
-namespace Horde\Date;
+namespace Horde\Date\Test;
 use \PHPUnit\Framework\TestCase;
 use \Horde_Date;
 use \Horde_Date_Span;
