@@ -38,6 +38,11 @@ dependencies:
   optional:
     composer:
       horde/icalendar: ^3
+    ext:
+      calendar: '*'
+  dev:
+    composer:
+      horde/icalendar: ^3
       horde/test: ^3
     ext:
       calendar: '*'
