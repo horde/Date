@@ -10,7 +10,7 @@
  * @package    Date
  * @subpackage UnitTests
  */
-class Horde_Date_UtilsTest extends PHPUnit_Framework_TestCase
+class Horde_Date_UtilsTest extends Horde_Test_Case
 {
     public function testFirstDayOfWeek()
     {

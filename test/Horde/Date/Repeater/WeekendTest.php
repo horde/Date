@@ -10,9 +10,9 @@
  * @package    Date
  * @subpackage UnitTests
  */
-class Horde_Date_Repeater_WeekendTest extends PHPUnit_Framework_TestCase
+class Horde_Date_Repeater_WeekendTest extends Horde_Test_Case
 {
-    public function setUp()
+    public function setUp(): void
     {
         $this->now = new Horde_Date('2006-08-16 14:00:00');
     }

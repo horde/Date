@@ -12,14 +12,14 @@
  */
 class Horde_Date_RecurrenceTest extends Horde_Test_Case
 {
-    protected function setUp()
+    protected function setUp(): void
     {
         $this->ical = new Horde_Icalendar();
         $this->_oldTimezone = date_default_timezone_get();
         date_default_timezone_set('Europe/Berlin');
     }
 
-    public function tearDown()
+    public function tearDown(): void
     {
         date_default_timezone_set($this->_oldTimezone);
     }

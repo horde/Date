@@ -10,7 +10,7 @@
  * @package    Date
  * @subpackage UnitTests
  */
-class Horde_Date_SpanTest extends PHPUnit_Framework_TestCase
+class Horde_Date_SpanTest extends Horde_Test_Case
 {
     public function testWidth()
     {
