@@ -60,6 +60,15 @@
  * @copyright 2004-2017 Horde LLC
  * @license   http://www.horde.org/licenses/lgpl21 LGPL
  * @package   Date
+ *
+ * @property int $year       The year (4 digits)
+ * @property int $month      The month (1-12)
+ * @property int $mday       The day of the month (1-31)
+ * @property int $day        Alias for mday - the day of the month (1-31)
+ * @property int $hour       The hour (0-23)
+ * @property int $min        The minute (0-59)
+ * @property int $sec        The second (0-59)
+ * @property string $timezone The timezone identifier (e.g., 'America/New_York')
  */
 class Horde_Date
 {
