@@ -136,7 +136,7 @@ class Format
      * Format a date using strftime format (auto-converts to ICU)
      *
      * @param int|string|DateTime|DateTimeInterface $timestamp  Timestamp or date object
-     * @param string $format  strftime format string
+     * @param string $format  strftime or ICU format string
      * @param string $locale  ICU locale (default: 'en_US')
      * @return string  Formatted date
      */
@@ -152,8 +152,13 @@ class Format
             $timestamp = strtotime($timestamp);
         }
 
-        // Convert format
-        $icuFormat = self::strftimeToIcu($format);
+        // Only convert if format is strftime
+        if (self::isStrftimeFormat($format)) {
+            $icuFormat = self::strftimeToIcu($format);
+        } else {
+            // Already ICU format, use as-is
+            $icuFormat = $format;
+        }
 
         // Handle locale-specific formats
         if (is_array($icuFormat) && $icuFormat['type'] === 'locale') {

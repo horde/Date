@@ -50,6 +50,9 @@
  *   timestamp. I usually go with the former - using database datetime type.
  */
 
+use Horde\Date\DateInterface;
+use Horde\Date\Formatter\DateTimeFormatter;
+use Horde\Date\FormatterInterface;
 use Horde\Util\HordeString;
 
 /**
@@ -72,7 +75,7 @@ use Horde\Util\HordeString;
  * @property int $sec        The second (0-59)
  * @property string $timezone The timezone identifier (e.g., 'America/New_York')
  */
-class Horde_Date
+class Horde_Date implements DateInterface
 {
     const DATE_SUNDAY = 0;
     const DATE_MONDAY = 1;
@@ -152,6 +155,13 @@ class Horde_Date
      * @var string
      */
     protected $_timezone;
+
+    /**
+     * Locale for formatting operations.
+     *
+     * @var string|null
+     */
+    protected $_locale;
 
     /**
      * These aliases map Windows, Lotus, and other Timezone IDs to those
@@ -455,7 +465,32 @@ class Horde_Date
      *
      * @throws Horde_Date_Exception
      */
-    public function __construct($date = null, $timezone = null)
+    /**
+     * Constructor.
+     *
+     * Accepts various date input formats and converts them to a Horde_Date object.
+     *
+     * @param mixed $date  Date representation:
+     *   - null: current date/time
+     *   - string: ISO 8601 format, DateTime-parseable string, or timestamp
+     *   - int: Unix timestamp
+     *   - array: Date components array
+     *   - object: DateTime, Horde_Date, or stdClass with date properties
+     *   - int,int,int... (3+ args): Year, month, day, [hour, [min, [sec, [timezone, [locale]]]]]
+     *     DEPRECATED: Use array form instead for clarity
+     * @param string|DateTimeZone|null $timezone  Timezone identifier or DateTimeZone object
+     * @param string|null $locale  Locale for formatting (does not affect parsing).
+     *
+     * Note: The locale parameter only affects OUTPUT formatting via format().
+     * Input parsing uses PHP's DateTime and does not support ICU format strings.
+     * For locale-aware formatting, use format() with IcuFormatter.
+     *
+     * Examples:
+     *   new Horde_Date('2026-03-18', 'UTC', 'de_DE')  // String with timezone and locale
+     *   new Horde_Date(['year' => 2026, 'month' => 3, 'mday' => 18], 'UTC', 'de_DE')  // Array (recommended)
+     *   new Horde_Date(2026, 3, 18, 10, 30, 0, 'UTC', 'de_DE')  // DEPRECATED: Variadic form
+     */
+    public function __construct($date = null, $timezone = null, $locale = null)
     {
         if (!self::$_supportedSpecs) {
             self::$_supportedSpecs = self::$_defaultSpecs;
@@ -464,13 +499,14 @@ class Horde_Date
             }
         }
 
-        if (func_num_args() > 2) {
-            // Handle args in order: year month day hour min sec tz
+        if (func_num_args() >= 3 && !is_string($date) && !is_array($date) && !is_object($date)) {
+            // Handle args in order: year month day hour min sec tz locale
             $this->_initializeFromArgs(func_get_args());
             return;
         }
 
         $this->_initializeTimezone($timezone);
+        $this->_locale = $locale;
 
         if (is_null($date)) {
             return;
@@ -1200,21 +1236,69 @@ class Horde_Date
     }
 
     /**
-     * Formats time using the specifiers available in date() or in the DateTime
-     * class' format() method.
+     * Format date using specified formatter
      *
-     * To format in languages other than English, use strftime() instead.
+     * Provides pluggable formatter support for flexible date formatting with
+     * locale and timezone support.
      *
-     * @param string $format
+     * Backward compatible: When called with a single string argument, uses the
+     * default DateTimeFormatter (PHP date() syntax).
      *
-     * @return string  Formatted time.
+     * New usage: Pass a formatter (class name or instance) for locale-aware
+     * formatting with IcuFormatter or custom formatters.
+     *
+     * @param string|\Stringable $pattern  Format pattern
+     * @param string|\Horde\Date\FormatterInterface|null $formatter  Formatter class name or instance:
+     *   - null: DateTimeFormatter (default, backward compatible)
+     *   - string: Formatter class name (e.g., \Horde\Date\Formatter\IcuFormatter::class)
+     *   - FormatterInterface: Formatter instance
+     * @param string|\Stringable|null $locale  Locale for formatting (null = use instance locale or setlocale())
+     *
+     * @return string  Formatted date string
      */
-    public function format($format)
+    public function format($pattern, $formatter = null, $locale = null)
     {
-        if (!isset($this->_formatCache[$format])) {
-            $this->_formatCache[$format] = $this->toDateTime()->format($format);
+        // Backward compatibility: single argument uses old behavior
+        if ($formatter === null && $locale === null && func_num_args() === 1) {
+            // Old code path: use DateTime::format() with caching
+            $pattern = (string)$pattern;
+            if (!isset($this->_formatCache[$pattern])) {
+                $this->_formatCache[$pattern] = $this->toDateTime()->format($pattern);
+            }
+            return $this->_formatCache[$pattern];
         }
-        return $this->_formatCache[$format];
+
+        // New code path: use pluggable formatters
+        // Convert Stringable to string
+        $pattern = (string)$pattern;
+
+        // Default to DateTimeFormatter (backward compatible)
+        if ($formatter === null) {
+            $formatter = new DateTimeFormatter();
+        }
+        // String class name → instantiate
+        elseif (is_string($formatter)) {
+            if (!class_exists($formatter)) {
+                throw new \InvalidArgumentException("Formatter class not found: $formatter");
+            }
+            $formatter = new $formatter();
+        }
+
+        // Validate formatter
+        if (!$formatter instanceof FormatterInterface) {
+            throw new \InvalidArgumentException("Formatter must implement FormatterInterface");
+        }
+
+        // Convert Stringable locale to string
+        if ($locale !== null) {
+            $locale = (string)$locale;
+        }
+
+        // Use stored timezone and locale
+        $timezone = $this->_timezone ?? date_default_timezone_get();
+        $locale = $locale ?? $this->_locale ?? setlocale(LC_ALL, 0) ?: 'en_US';
+
+        return $formatter->format($this->timestamp(), $pattern, $locale, $timezone);
     }
 
     /**
@@ -1395,9 +1479,16 @@ class Horde_Date
      */
     protected function _initializeFromArgs($args)
     {
+        // Pop locale (8th arg) if present
+        if (isset($args[7])) {
+            $this->_locale = array_pop($args);
+        }
+
+        // Pop timezone (7th arg) if present
         $tz = (isset($args[6])) ? array_pop($args) : null;
         $this->_initializeTimezone($tz);
 
+        // First 6 args are date components: year, month, day, hour, min, sec
         $args = array_slice($args, 0, 6);
         $keys = array('year' => 1, 'month' => 1, 'mday' => 1, 'hour' => 0, 'min' => 0, 'sec' => 0);
         $date = array_combine(array_slice(array_keys($keys), 0, count($args)), $args);

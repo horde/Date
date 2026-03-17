@@ -515,6 +515,12 @@ class FormatTest extends TestCase
     {
         $timestamp = strtotime('2026-03-17 14:30:00');
 
+        // Try to set Arabic locale - skip if not available
+        $oldLocale = setlocale(LC_ALL, 0);
+        if (!setlocale(LC_ALL, 'ar_SA.UTF-8')) {
+            $this->markTestSkipped('ar_SA.UTF-8 locale not available.');
+        }
+
         // Full month name should be in Arabic (RTL)
         $result = Format::formatDate($timestamp, '%B', 'ar_SA');
         $this->assertEquals('مارس', $result);
@@ -524,8 +530,18 @@ class FormatTest extends TestCase
         $this->assertEquals('الثلاثاء', $result);
 
         // Numeric formats should still work correctly
+        // Note: ar_SA may use Arabic-Indic numerals or ASCII digits depending on locale implementation
         $result = Format::formatDate($timestamp, '%Y-%m-%d', 'ar_SA');
-        $this->assertEquals('2026-03-17', $result);
+        // Accept either Arabic-Indic or ASCII digits
+        $this->assertTrue(
+            in_array($result, ['2026-03-17', '٢٠٢٦-٠٣-١٧']),
+            "Expected '2026-03-17' or '٢٠٢٦-٠٣-١٧', got: $result"
+        );
+
+        // Restore locale
+        if (strlen($oldLocale) <= 255) {
+            setlocale(LC_ALL, $oldLocale);
+        }
     }
 
     /**
@@ -535,6 +551,12 @@ class FormatTest extends TestCase
     {
         $timestamp = strtotime('2026-03-17 14:30:00');
 
+        // Try to set Hebrew locale - skip if not available
+        $oldLocale = setlocale(LC_ALL, 0);
+        if (!setlocale(LC_ALL, 'he_IL.UTF-8')) {
+            $this->markTestSkipped('he_IL.UTF-8 locale not available.');
+        }
+
         // Full month name should be in Hebrew (RTL)
         $result = Format::formatDate($timestamp, '%B', 'he_IL');
         $this->assertEquals('מרץ', $result);
@@ -542,6 +564,11 @@ class FormatTest extends TestCase
         // Numeric formats should work
         $result = Format::formatDate($timestamp, '%Y-%m-%d', 'he_IL');
         $this->assertEquals('2026-03-17', $result);
+
+        // Restore locale
+        if (strlen($oldLocale) <= 255) {
+            setlocale(LC_ALL, $oldLocale);
+        }
     }
 
     /**
