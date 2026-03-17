@@ -16,15 +16,13 @@
             "role": "lead"
         }
     ],
-    "time": "2026-03-07",
+    "time": "2026-03-17",
     "repositories": [],
     "require": {
         "php": "^7.4 || ^8",
-        "ext-intl": "*",
         "horde/exception": "^3 || dev-FRAMEWORK_6_0",
         "horde/nls": "^3 || dev-FRAMEWORK_6_0",
-        "horde/translation": "^3 || dev-FRAMEWORK_6_0",
-        "horde/util": "^3 || dev-FRAMEWORK_6_0"
+        "horde/translation": "^3 || dev-FRAMEWORK_6_0"
     },
     "require-dev": {
         "horde/icalendar": "^3 || dev-FRAMEWORK_6_0",
@@ -52,7 +50,6 @@
     "config": {
         "allow-plugins": {}
     },
-    "minimum-stability": "dev",
     "extra": {
         "branch-alias": {
             "dev-FRAMEWORK_6_0": "3.x-dev"
