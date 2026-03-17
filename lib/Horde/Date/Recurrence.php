@@ -11,6 +11,8 @@
  * @package  Date
  */
 
+use Horde\Util\HordeString;
+
 /**
  * The Horde_Date_Recurrence class implements algorithms for calculating
  * recurrences of events, including several recurrence types, intervals,
@@ -1224,14 +1226,14 @@ class Horde_Date_Recurrence
         $parts = explode(';', $rrule);
         foreach ($parts as $part) {
             list($key, $value) = explode('=', $part, 2);
-            $rdata[Horde_String::upper($key)] = $value;
+            $rdata[HordeString::upper($key)] = $value;
         }
 
         if (isset($rdata['FREQ'])) {
             // Always default the recurInterval to 1.
             $this->setRecurInterval(isset($rdata['INTERVAL']) ? $rdata['INTERVAL'] : 1);
 
-            switch (Horde_String::upper($rdata['FREQ'])) {
+            switch (HordeString::upper($rdata['FREQ'])) {
             case 'DAILY':
                 $this->setRecurType(self::RECUR_DAILY);
                 /**

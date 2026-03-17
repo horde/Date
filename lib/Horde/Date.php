@@ -50,6 +50,8 @@
  *   timestamp. I usually go with the former - using database datetime type.
  */
 
+use Horde\Util\HordeString;
+
 /**
  * Horde Date wrapper/logic class, including some calculation functions.
  *
@@ -828,7 +830,7 @@ class Horde_Date
         if (empty(self::$_timezoneAbbreviations)) {
             self::$_timezoneAbbreviations = DateTimeZone::listAbbreviations();
         }
-        $lower = Horde_String::lower($timezone);
+        $lower = HordeString::lower($timezone);
         if (isset(self::$_timezoneAbbreviations[$lower])) {
             $timezone = reset(self::$_timezoneAbbreviations[$lower]);
             $timezone = $timezone['timezone_id'];
