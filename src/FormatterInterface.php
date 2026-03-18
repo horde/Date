@@ -16,6 +16,9 @@ declare(strict_types=1);
 
 namespace Horde\Date;
 
+use DateTimeInterface;
+use Horde_Date;
+
 /**
  * Date formatter interface
  *
@@ -34,7 +37,7 @@ interface FormatterInterface
     /**
      * Format a timestamp
      *
-     * @param int $timestamp  Unix timestamp
+     * @param int|DateTimeInterface|Horde_Date $datetime  Unix timestamp, DateTime/DateTimeImmutable, or Horde_Date
      * @param string $pattern  Format pattern in formatter's syntax
      * @param string|\Stringable $locale  Locale for formatting (default: 'en_US')
      * @param string|null $timezone  Timezone identifier (null = UTC)
@@ -42,7 +45,7 @@ interface FormatterInterface
      * @return string  Formatted date string (no return type for BC)
      */
     public function format(
-        int $timestamp,
+        int|DateTimeInterface|Horde_Date $datetime,
         string $pattern,
         string|\Stringable $locale = 'en_US',
         ?string $timezone = null

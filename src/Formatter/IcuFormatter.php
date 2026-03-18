@@ -17,6 +17,7 @@ declare(strict_types=1);
 namespace Horde\Date\Formatter;
 
 use DateTime;
+use DateTimeInterface;
 use DateTimeZone;
 use Horde\Date\DateInterface;
 use Horde\Date\FormatterInterface;
@@ -45,7 +46,7 @@ class IcuFormatter implements FormatterInterface
     /**
      * Format using ICU pattern syntax
      *
-     * @param int $timestamp  Unix timestamp
+     * @param int|DateTimeInterface|Horde_Date $datetime  Unix timestamp, DateTime, DateTimeImmutable, or Horde_Date
      * @param string $pattern  ICU pattern or shortcut ('short', 'medium', 'long', 'full')
      * @param string|\Stringable $locale  ICU locale (e.g., 'en_US', 'de_DE')
      * @param string|null $timezone  Timezone identifier (null = UTC)
@@ -56,13 +57,18 @@ class IcuFormatter implements FormatterInterface
      * @throws RuntimeException if formatting fails
      */
     public function format(
-        int $timestamp,
+        int|DateTimeInterface|Horde_Date $datetime,
         string $pattern,
         string|\Stringable $locale = 'en_US',
         ?string $timezone = null
     ) {
         // Convert Stringable to string
         $locale = (string)$locale;
+
+        // Convert Horde_Date to DateTimeInterface if needed
+        if ($datetime instanceof Horde_Date) {
+            $datetime = $datetime->toDateTime();
+        }
 
         // Create IntlTimeZone if timezone provided
         $intlTimezone = $timezone ? IntlTimeZone::createTimeZone($timezone) : null;
@@ -98,7 +104,7 @@ class IcuFormatter implements FormatterInterface
             throw new InvalidArgumentException("Failed to create IntlDateFormatter for pattern: $pattern");
         }
 
-        $result = $formatter->format($timestamp);
+        $result = $formatter->format($datetime);
 
         if ($result === false) {
             throw new RuntimeException("Failed to format timestamp with pattern: $pattern");

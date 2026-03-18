@@ -73,6 +73,9 @@ class Format
         '%R' => 'HH:mm',         // Time 24-hour (%H:%M)
         '%T' => 'HH:mm:ss',      // Time 24-hour (%H:%M:%S)
         '%r' => 'hh:mm:ss a',    // Time 12-hour (%I:%M:%S %p)
+        '%x' => 'dd.MM.yyyy',    // Locale date (default pattern for compound formats)
+        '%X' => 'HH:mm:ss',      // Locale time (default pattern for compound formats)
+        '%c' => 'EEE dd MMM yyyy HH:mm:ss',  // Locale date+time (default for compound)
         '%n' => "\n",            // Newline
         '%t' => "\t",            // Tab
         '%%' => '%',             // Literal %

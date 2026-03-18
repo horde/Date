@@ -17,6 +17,7 @@ declare(strict_types=1);
 namespace Horde\Date\Formatter;
 
 use DateTime;
+use DateTimeInterface;
 use DateTimeZone;
 use Horde\Date\DateInterface;
 use Horde\Date\FormatterInterface;
@@ -46,7 +47,7 @@ class DateTimeFormatter implements FormatterInterface
     /**
      * Format using DateTime::format() syntax
      *
-     * @param int $timestamp  Unix timestamp
+     * @param int|DateTimeInterface|Horde_Date $datetime  Unix timestamp, DateTime/DateTimeImmutable, or Horde_Date
      * @param string $pattern  PHP date() pattern (e.g., 'Y-m-d', 'l, F j, Y')
      * @param string|\Stringable $locale  Ignored (DateTime is not locale-aware)
      * @param string|null $timezone  Timezone identifier (null = UTC)
@@ -54,7 +55,7 @@ class DateTimeFormatter implements FormatterInterface
      * @return string  Formatted date string
      */
     public function format(
-        int $timestamp,
+        int|DateTimeInterface|Horde_Date $datetime,
         string $pattern,
         string|\Stringable $locale = 'en_US',
         ?string $timezone = null
@@ -62,8 +63,18 @@ class DateTimeFormatter implements FormatterInterface
         // Convert Stringable to string (locale is ignored but we accept it)
         $locale = (string)$locale;
 
-        // Create DateTime from timestamp
-        $dt = new DateTime('@' . $timestamp);
+        // Convert Horde_Date to DateTimeInterface if needed
+        if ($datetime instanceof Horde_Date) {
+            $datetime = $datetime->toDateTime();
+        }
+
+        // Convert int timestamp to DateTime
+        if (is_int($datetime)) {
+            $dt = new DateTime('@' . $datetime);
+        } else {
+            // Clone to avoid modifying original
+            $dt = clone $datetime;
+        }
 
         // Set timezone if provided
         if ($timezone !== null) {
