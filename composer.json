@@ -22,7 +22,8 @@
         "php": "^7.4 || ^8",
         "horde/exception": "^3 || dev-FRAMEWORK_6_0",
         "horde/nls": "^3 || dev-FRAMEWORK_6_0",
-        "horde/translation": "^3 || dev-FRAMEWORK_6_0"
+        "horde/translation": "^3 || dev-FRAMEWORK_6_0",
+        "php81_bc/strftime": "^0.7"
     },
     "require-dev": {
         "horde/icalendar": "^3 || dev-FRAMEWORK_6_0",
