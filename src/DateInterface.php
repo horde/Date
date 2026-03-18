@@ -68,5 +68,5 @@ interface DateInterface
      *
      * @return int  Unix timestamp
      */
-    public function timestamp(): int;
+    public function timestamp();
 }

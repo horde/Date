@@ -1,18 +1,23 @@
 <?php
+
+declare(strict_types=1);
 /**
  * @category   Horde
  * @package    Date
  * @subpackage UnitTests
  */
+
 namespace Horde\Date\Test;
-use \PHPUnit\Framework\TestCase;
-use \date_default_timezone_get;
-use \date_default_timezone_set;
-use \stdClass;
-use \Horde_Date;
-use \Horde_Date_Span;
-use \DateTime;
-use \DateTimeZone;
+
+use date_default_timezone_get;
+use date_default_timezone_set;
+use DateTime;
+use DateTimeZone;
+use Horde_Date;
+use Horde_Date_Span;
+use PHPUnit\Framework\TestCase;
+use stdClass;
+use function PHP81_BC\strftime;
 
 /**
  * @category   Horde
@@ -21,6 +26,8 @@ use \DateTimeZone;
  */
 class DateTest extends TestCase
 {
+    private string $_oldTimezone;
+
     public function setUp(): void
     {
         $this->_oldTimezone = date_default_timezone_get();
@@ -44,7 +51,7 @@ class DateTest extends TestCase
 
         $this->assertEquals('2001-02-03 04:05:06', (string)new Horde_Date($date));
         $this->assertEquals('2001-02-03 04:05:06', (string)new Horde_Date((array)$date));
-        $this->assertEquals('2001-02-03 04:05:06', (string)new Horde_Date(array('year' => 2001, 'month' => 2, 'day' => 3, 'hour' => 4, 'minute' => 5, 'sec' => 6)));
+        $this->assertEquals('2001-02-03 04:05:06', (string)new Horde_Date(['year' => 2001, 'month' => 2, 'day' => 3, 'hour' => 4, 'minute' => 5, 'sec' => 6]));
         $this->assertEquals('2001-02-03 04:05:06', (string)new Horde_Date('20010203040506'));
         $this->assertEquals('2001-02-03 04:05:06', (string)new Horde_Date('20010203T040506Z'));
         $this->assertEquals('2001-02-03 04:05:06', (string)new Horde_Date('2001-02-03 04:05:06'));
@@ -191,11 +198,11 @@ class DateTest extends TestCase
         $oldTimezone = date_default_timezone_get();
         date_default_timezone_set('America/New_York');
 
-        $date = new Horde_Date(array('mday' => 1, 'month' => 10, 'year' => 2004));
+        $date = new Horde_Date(['mday' => 1, 'month' => 10, 'year' => 2004]);
         $this->assertEquals('1096603200', $date->timestamp());
         $this->assertEquals('1096603200', mktime(0, 0, 0, $date->month, $date->mday, $date->year));
 
-        $date = new Horde_Date(array('mday' => 1, 'month' => 5, 'year' => 1948));
+        $date = new Horde_Date(['mday' => 1, 'month' => 5, 'year' => 1948]);
         $this->assertEquals('-683841600', $date->timestamp());
         $this->assertEquals('-683841600', mktime(0, 0, 0, $date->month, $date->mday, $date->year));
 
@@ -222,7 +229,7 @@ class DateTest extends TestCase
         $this->assertEquals(strftime($format, $date->timestamp()), $date->strftime($format));
 
         $date->year = 1899;
-        $expected = array(
+        $expected = [
             '03',
             '16',
             '04',
@@ -232,11 +239,11 @@ class DateTest extends TestCase
             '99',
             '1899',
             '%',
-        );
+        ];
         $format = '%d%n%H%n%I%n%m%n%M%n%S%n%y%n%Y%n%%';
         if (strpos(PHP_OS, 'WIN') === false) {
             $expected[] = '18';
-            $expected[] = '02/03/99';
+            $expected[] = '02/03/1899';
             $expected[] = ' 3';
             $expected[] = '16:05';
             $expected[] = "\t";
@@ -261,8 +268,10 @@ class DateTest extends TestCase
         } else {
             $format = "%b\n%B\n%p\n%x\n%X";
         }
-        $this->assertEquals(strftime($format, $date->timestamp()),
-                            $date->strftime($format));
+        $this->assertEquals(
+            strftime($format, $date->timestamp()),
+            $date->strftime($format)
+        );
     }
 
     public function testStrftimeCs()
@@ -276,8 +285,10 @@ class DateTest extends TestCase
 
         $date = new Horde_Date('2001-02-03 16:05:06');
         $format = nl_langinfo(D_FMT);
-        $this->assertEquals(strftime($format, $date->timestamp()),
-                            $date->strftime($format));
+        $this->assertEquals(
+            strftime($format, $date->timestamp()),
+            $date->strftime($format)
+        );
     }
 
     public function testStrftimeUnsupported()
@@ -286,8 +297,10 @@ class DateTest extends TestCase
 
         $date = new Horde_Date('2001-02-03 16:05:06');
 
-        $this->assertEquals(strftime('%a', $date->timestamp()),
-                            $date->strftime('%a'));
+        $this->assertEquals(
+            strftime('%a', $date->timestamp()),
+            $date->strftime('%a')
+        );
     }
 
     public function testGetTimezoneAlias()
@@ -345,8 +358,8 @@ class DateTest extends TestCase
     {
         $d = new Horde_Date('2008-01-01 00:00:00');
 
-        $this->assertEquals('2007-12-31 00:00:00', (string)$d->sub(array('day' => 1)));
-        $this->assertEquals('2009-01-01 00:00:00', (string)$d->add(array('year' => 1)));
+        $this->assertEquals('2007-12-31 00:00:00', (string)$d->sub(['day' => 1]));
+        $this->assertEquals('2009-01-01 00:00:00', (string)$d->add(['year' => 1]));
         $this->assertEquals('2008-01-01 04:00:00', (string)$d->add(14400));
 
         $span = new Horde_Date_Span('2006-01-01 00:00:00', '2006-08-16 00:00:00');

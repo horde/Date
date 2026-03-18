@@ -1,4 +1,6 @@
 <?php
+
+declare(strict_types=1);
 /**
  * Copyright 2009-2017 Horde LLC (http://www.horde.org/)
  *
@@ -23,7 +25,7 @@
 class Horde_Date_Repeater_Fortnight extends Horde_Date_Repeater
 {
     // (14 * 24 * 60 * 60)
-    const FORTNIGHT_SECONDS = 1209600;
+    public const FORTNIGHT_SECONDS = 1209600;
 
     public $currentFortnightStart;
 
@@ -33,22 +35,22 @@ class Horde_Date_Repeater_Fortnight extends Horde_Date_Repeater
 
         if (!$this->currentFortnightStart) {
             switch ($pointer) {
-            case 'future':
-                $sundayRepeater = new Horde_Date_Repeater_DayName('sunday');
-                $sundayRepeater->now = $this->now;
-                $nextSundaySpan = $sundayRepeater->next('future');
-                $this->currentFortnightStart = $nextSundaySpan->begin;
-                break;
+                case 'future':
+                    $sundayRepeater = new Horde_Date_Repeater_DayName('sunday');
+                    $sundayRepeater->now = $this->now;
+                    $nextSundaySpan = $sundayRepeater->next('future');
+                    $this->currentFortnightStart = $nextSundaySpan->begin;
+                    break;
 
-            case 'past':
-                $sundayRepeater = new Horde_Date_Repeater_DayName('sunday');
-                $sundayRepeater->now = clone $this->now;
-                $sundayRepeater->now->day++;
-                $sundayRepeater->next('past');
-                $sundayRepeater->next('past');
-                $lastSundaySpan = $sundayRepeater->next('past');
-                $this->currentFortnightStart = $lastSundaySpan->begin;
-                break;
+                case 'past':
+                    $sundayRepeater = new Horde_Date_Repeater_DayName('sunday');
+                    $sundayRepeater->now = clone $this->now;
+                    $sundayRepeater->now->day++;
+                    $sundayRepeater->next('past');
+                    $sundayRepeater->next('past');
+                    $lastSundaySpan = $sundayRepeater->next('past');
+                    $this->currentFortnightStart = $lastSundaySpan->begin;
+                    break;
             }
         } else {
             $direction = ($pointer == 'future') ? 1 : -1;
@@ -63,23 +65,23 @@ class Horde_Date_Repeater_Fortnight extends Horde_Date_Repeater
         parent::this($pointer);
 
         switch ($pointer) {
-        case 'future':
-        case 'none':
-            $thisFortnightStart = new Horde_Date(array('year' => $this->now->year, 'month' => $this->now->month, 'day' => $this->now->day, 'hour' => $this->now->hour + 1));
-            $sundayRepeater = new Horde_Date_Repeater_DayName('sunday');
-            $sundayRepeater->now = $this->now;
-            $sundayRepeater->this('future');
-            $thisSundaySpan = $sundayRepeater->this('future');
-            $thisFortnightEnd = $thisSundaySpan->begin;
-            return new Horde_Date_Span($thisFortnightStart, $thisFortnightEnd);
+            case 'future':
+            case 'none':
+                $thisFortnightStart = new Horde_Date(['year' => $this->now->year, 'month' => $this->now->month, 'day' => $this->now->day, 'hour' => $this->now->hour + 1]);
+                $sundayRepeater = new Horde_Date_Repeater_DayName('sunday');
+                $sundayRepeater->now = $this->now;
+                $sundayRepeater->this('future');
+                $thisSundaySpan = $sundayRepeater->this('future');
+                $thisFortnightEnd = $thisSundaySpan->begin;
+                return new Horde_Date_Span($thisFortnightStart, $thisFortnightEnd);
 
-        case 'past':
-            $thisFortnightEnd = new Horde_Date(array('year' => $this->now->year, 'month' => $this->now->month, 'day' => $this->now->day, 'hour' => $this->now->hour));
-            $sundayRepeater = new Horde_Date_Repeater_DayName('sunday');
-            $sundayRepeater->now = $this->now;
-            $lastSundaySpan = $sundayRepeater->next('past');
-            $thisFortnightStart = $lastSundaySpan->begin;
-            return new Horde_Date_Span($thisFortnightStart, $thisFortnightEnd);
+            case 'past':
+                $thisFortnightEnd = new Horde_Date(['year' => $this->now->year, 'month' => $this->now->month, 'day' => $this->now->day, 'hour' => $this->now->hour]);
+                $sundayRepeater = new Horde_Date_Repeater_DayName('sunday');
+                $sundayRepeater->now = $this->now;
+                $lastSundaySpan = $sundayRepeater->next('past');
+                $thisFortnightStart = $lastSundaySpan->begin;
+                return new Horde_Date_Span($thisFortnightStart, $thisFortnightEnd);
         }
     }
 

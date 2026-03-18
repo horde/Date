@@ -16,11 +16,11 @@ declare(strict_types=1);
 
 namespace Horde\Date\Formatter;
 
-use Horde\Date\FormatterInterface;
-use Horde\Date\DateInterface;
-use Horde_Date;
 use DateTime;
 use DateTimeZone;
+use Horde\Date\DateInterface;
+use Horde\Date\FormatterInterface;
+use Horde_Date;
 use RuntimeException;
 
 /**

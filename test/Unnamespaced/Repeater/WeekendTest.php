@@ -17,6 +17,8 @@ use \Horde_Date_Span;
  */
 class WeekendTest extends TestCase
 {
+    protected $now;
+
     public function setUp(): void
     {
         $this->now = new Horde_Date('2006-08-16 14:00:00');

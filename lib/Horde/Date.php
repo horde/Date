@@ -1,4 +1,6 @@
 <?php
+
+declare(strict_types=1);
 /**
  * Copyright 2004-2017 Horde LLC (http://www.horde.org/)
  *
@@ -54,6 +56,7 @@ use Horde\Date\DateInterface;
 use Horde\Date\Formatter\DateTimeFormatter;
 use Horde\Date\FormatterInterface;
 use Horde\Util\HordeString;
+use function PHP81_BC\strftime;
 
 /**
  * Horde Date wrapper/logic class, including some calculation functions.
@@ -77,35 +80,35 @@ use Horde\Util\HordeString;
  */
 class Horde_Date implements DateInterface
 {
-    const DATE_SUNDAY = 0;
-    const DATE_MONDAY = 1;
-    const DATE_TUESDAY = 2;
-    const DATE_WEDNESDAY = 3;
-    const DATE_THURSDAY = 4;
-    const DATE_FRIDAY = 5;
-    const DATE_SATURDAY = 6;
+    public const DATE_SUNDAY = 0;
+    public const DATE_MONDAY = 1;
+    public const DATE_TUESDAY = 2;
+    public const DATE_WEDNESDAY = 3;
+    public const DATE_THURSDAY = 4;
+    public const DATE_FRIDAY = 5;
+    public const DATE_SATURDAY = 6;
 
-    const MASK_SUNDAY = 1;
-    const MASK_MONDAY = 2;
-    const MASK_TUESDAY = 4;
-    const MASK_WEDNESDAY = 8;
-    const MASK_THURSDAY = 16;
-    const MASK_FRIDAY = 32;
-    const MASK_SATURDAY = 64;
-    const MASK_WEEKDAYS = 62;
-    const MASK_WEEKEND = 65;
-    const MASK_ALLDAYS = 127;
+    public const MASK_SUNDAY = 1;
+    public const MASK_MONDAY = 2;
+    public const MASK_TUESDAY = 4;
+    public const MASK_WEDNESDAY = 8;
+    public const MASK_THURSDAY = 16;
+    public const MASK_FRIDAY = 32;
+    public const MASK_SATURDAY = 64;
+    public const MASK_WEEKDAYS = 62;
+    public const MASK_WEEKEND = 65;
+    public const MASK_ALLDAYS = 127;
 
-    const MASK_SECOND = 1;
-    const MASK_MINUTE = 2;
-    const MASK_HOUR = 4;
-    const MASK_DAY = 8;
-    const MASK_MONTH = 16;
-    const MASK_YEAR = 32;
-    const MASK_ALLPARTS = 63;
+    public const MASK_SECOND = 1;
+    public const MASK_MINUTE = 2;
+    public const MASK_HOUR = 4;
+    public const MASK_DAY = 8;
+    public const MASK_MONTH = 16;
+    public const MASK_YEAR = 32;
+    public const MASK_ALLPARTS = 63;
 
-    const DATE_DEFAULT = 'Y-m-d H:i:s';
-    const DATE_JSON = 'Y-m-d\TH:i:s';
+    public const DATE_DEFAULT = 'Y-m-d H:i:s';
+    public const DATE_JSON = 'Y-m-d\TH:i:s';
 
     /**
      * Year
@@ -170,7 +173,7 @@ class Horde_Date implements DateInterface
      * @todo This list better moves somewhere else
      * @var array
      */
-    protected static $_timezoneAliases = array(
+    protected static $_timezoneAliases = [
         'Dateline Standard Time' => 'Etc/GMT+12',
         'UTC-11' => 'Etc/GMT+11',
         'Hawaiian Standard Time' => 'Pacific/Honolulu',
@@ -390,7 +393,7 @@ class Horde_Date implements DateInterface
         'Universal' => 'UTC',
         'W-SU' => 'Europe/Moscow',
         'Zulu' => 'UTC',
-    );
+    ];
 
     /**
      * These aliases map timezone abbreviations to those understood by PHP.
@@ -399,7 +402,7 @@ class Horde_Date implements DateInterface
      * @see getTimezoneAlias()
      * @var array
      */
-    protected static $_timezoneAbbreviations = array();
+    protected static $_timezoneAbbreviations = [];
 
     /**
      * A list of (Olson) timezone identifiers understood by PHP.
@@ -408,7 +411,7 @@ class Horde_Date implements DateInterface
      * @see getTimezoneAlias()
      * @var array
      */
-    protected static $_timezoneIdentifiers = array();
+    protected static $_timezoneIdentifiers = [];
 
     /**
      * Default format for __toString()
@@ -436,16 +439,16 @@ class Horde_Date implements DateInterface
      *
      * @var array
      */
-    protected static $_corrections = array(
+    protected static $_corrections = [
         'year'  => self::MASK_YEAR,
         'month' => self::MASK_MONTH,
         'mday'  => self::MASK_DAY,
         'hour'  => self::MASK_HOUR,
         'min'   => self::MASK_MINUTE,
         'sec'   => self::MASK_SECOND,
-    );
+    ];
 
-    protected $_formatCache = array();
+    protected $_formatCache = [];
 
     /**
      * Builds a new date object. If $date contains date parts, use them to
@@ -520,6 +523,24 @@ class Horde_Date implements DateInterface
             $this->_initializeFromObject($date);
         } elseif (is_array($date)) {
             $this->_initializeFromArray($date);
+        } elseif (is_int($date)) {
+            // Timestamp: handle immediately to avoid preg_match TypeError
+            if ($this->_timezone) {
+                $oldtimezone = date_default_timezone_get();
+                date_default_timezone_set($this->_timezone);
+            }
+            $parts = @getdate($date);
+            if ($parts) {
+                $this->_year  = $parts['year'];
+                $this->_month = $parts['mon'];
+                $this->_mday  = $parts['mday'];
+                $this->_hour  = $parts['hours'];
+                $this->_min   = $parts['minutes'];
+                $this->_sec   = $parts['seconds'];
+            }
+            if ($this->_timezone) {
+                date_default_timezone_set($oldtimezone);
+            }
         } elseif (preg_match('/^(\d{4})-?(\d{2})-?(\d{2})T? ?(\d{2}):?(\d{2}):?(\d{2})(?:\.\d+)?(Z?)$/', $date, $parts)) {
             $this->_year  = (int)$parts[1];
             $this->_month = (int)$parts[2];
@@ -537,24 +558,6 @@ class Horde_Date implements DateInterface
             $this->_month = (int)$parts[2];
             $this->_mday  = (int)$parts[3];
             $this->_hour = $this->_min = $this->_sec = 0;
-        } elseif ((string)(int)$date == $date) {
-            // Try as a timestamp.
-            if ($this->_timezone) {
-                $oldtimezone = date_default_timezone_get();
-                date_default_timezone_set($this->_timezone);
-            }
-            $parts = @getdate($date);
-            if ($parts) {
-                $this->_year  = $parts['year'];
-                $this->_month = $parts['mon'];
-                $this->_mday  = $parts['mday'];
-                $this->_hour  = $parts['hours'];
-                $this->_min   = $parts['minutes'];
-                $this->_sec   = $parts['seconds'];
-            }
-            if ($this->_timezone) {
-                date_default_timezone_set($oldtimezone);
-            }
         } else {
             if (!empty($timezone)) {
                 try {
@@ -603,8 +606,8 @@ class Horde_Date implements DateInterface
     {
         try {
             $date = new DateTime('now', new DateTimeZone($this->_timezone));
-            $date->setDate($this->_year, $this->_month, $this->_mday);
-            $date->setTime($this->_hour, $this->_min, $this->_sec);
+            $date->setDate((int)$this->_year, (int)$this->_month, (int)$this->_mday);
+            $date->setTime((int)$this->_hour, (int)$this->_min, (int)$this->_sec);
         } catch (Exception $e) {
             throw new Horde_Date_Exception($e);
         }
@@ -707,7 +710,7 @@ class Horde_Date implements DateInterface
     public static function fromDays($days)
     {
         if (function_exists('jdtogregorian')) {
-            list($month, $day, $year) = explode('/', jdtogregorian($days));
+            [$month, $day, $year] = explode('/', jdtogregorian($days));
         } else {
             $days = intval($days);
 
@@ -726,9 +729,9 @@ class Horde_Date implements DateInterface
 
             $year = $century * 100 + $year;
             if ($month < 10) {
-                $month +=3;
+                $month += 3;
             } else {
-                $month -=9;
+                $month -= 9;
                 ++$year;
             }
         }
@@ -782,7 +785,7 @@ class Horde_Date implements DateInterface
         $down = $value < $this->{'_' . $name};
         $this->{'_' . $name} = $value;
         $this->_correct(self::$_corrections[$name], $down);
-        $this->_formatCache = array();
+        $this->_formatCache = [];
     }
 
     /**
@@ -898,7 +901,7 @@ class Horde_Date implements DateInterface
         $this->_hour     = (int)$date->format('H');
         $this->_min      = (int)$date->format('i');
         $this->_sec      = (int)$date->format('s');
-        $this->_formatCache = array();
+        $this->_formatCache = [];
         return $this;
     }
 
@@ -1017,7 +1020,7 @@ class Horde_Date implements DateInterface
             $diff = -7 * $nth - 7;
             $this->_mday -= $diff;
             $this->_correct(self::MASK_DAY, true);
-            $this->_formatCache = array();
+            $this->_formatCache = [];
         }
     }
 
@@ -1177,8 +1180,14 @@ class Horde_Date implements DateInterface
     public function timestamp()
     {
         if ($this->_year >= 1970 && $this->_year < 2038) {
-            return mktime($this->_hour, $this->_min, $this->_sec,
-                          $this->_month, $this->_mday, $this->_year);
+            return mktime(
+                $this->_hour,
+                $this->_min,
+                $this->_sec,
+                $this->_month,
+                $this->_mday,
+                $this->_year
+            );
         }
         return $this->format('U');
     }
@@ -1329,15 +1338,15 @@ class Horde_Date implements DateInterface
             case '%B':  return $this->strftime(Horde_Nls::getLangInfo(constant('MON_' . (int)$this->_month)));
             case '%C':  return (int)($this->_year / 100);
             case '%-d':
-            case '%#d': return sprintf('%d',   $this->_mday);
+            case '%#d': return sprintf('%d', $this->_mday);
             case '%d':  return sprintf('%02d', $this->_mday);
-            case '%D':  return $this->strftime('%m/%d/%y');
+            case '%D':  return $this->strftime('%m/%d/%Y');
             case '%e':  return sprintf('%2d', $this->_mday);
             case '%-H':
-            case '%#H': return sprintf('%d',   $this->_hour);
+            case '%#H': return sprintf('%d', $this->_hour);
             case '%H':  return sprintf('%02d', $this->_hour);
             case '%-I':
-            case '%#I': return sprintf('%d',   $this->_hour == 0 ? 12 : ($this->_hour > 12 ? $this->_hour - 12 : $this->_hour));
+            case '%#I': return sprintf('%d', $this->_hour == 0 ? 12 : ($this->_hour > 12 ? $this->_hour - 12 : $this->_hour));
             case '%I':  return sprintf('%02d', $this->_hour == 0 ? 12 : ($this->_hour > 12 ? $this->_hour - 12 : $this->_hour));
             case '%-m':
             case '%#m': return sprintf('%d', $this->_month);
@@ -1369,7 +1378,7 @@ class Horde_Date implements DateInterface
      */
     protected function _strftime($format)
     {
-        return preg_replace_callback('/(%([-#]?)[%bBCdDeHImMnpRStTxXyY])/', array($this, '_regexCallback'), $format);
+        return preg_replace_callback('/(%([-#]?)[%bBCdDeHImMnpRStTxXyY])/', [$this, '_regexCallback'], $format);
     }
 
     /**
@@ -1490,7 +1499,7 @@ class Horde_Date implements DateInterface
 
         // First 6 args are date components: year, month, day, hour, min, sec
         $args = array_slice($args, 0, 6);
-        $keys = array('year' => 1, 'month' => 1, 'mday' => 1, 'hour' => 0, 'min' => 0, 'sec' => 0);
+        $keys = ['year' => 1, 'month' => 1, 'mday' => 1, 'hour' => 0, 'min' => 0, 'sec' => 0];
         $date = array_combine(array_slice(array_keys($keys), 0, count($args)), $args);
         $date = array_merge($keys, $date);
 
@@ -1508,7 +1517,7 @@ class Horde_Date implements DateInterface
         }
 
         foreach ($date as $key => $val) {
-            if (in_array($key, array('year', 'month', 'mday', 'hour', 'min', 'sec'))) {
+            if (in_array($key, ['year', 'month', 'mday', 'hour', 'min', 'sec'], true)) {
                 $this->{'_'. $key} = (int)$val;
             }
         }
@@ -1540,7 +1549,7 @@ class Horde_Date implements DateInterface
             $this->_initializeTimezone($date->getTimezone()->getName());
         } else {
             $is_horde_date = $date instanceof Horde_Date;
-            foreach (array('year', 'month', 'mday', 'hour', 'min', 'sec') as $key) {
+            foreach (['year', 'month', 'mday', 'hour', 'min', 'sec'] as $key) {
                 if ($is_horde_date || isset($date->$key)) {
                     $this->{'_' . $key} = (int)$date->$key;
                 }

@@ -16,9 +16,9 @@ declare(strict_types=1);
 
 namespace Horde\Date;
 
-use IntlDateFormatter;
 use DateTime;
 use DateTimeInterface;
+use IntlDateFormatter;
 
 /**
  * Date format conversion utilities
@@ -115,7 +115,7 @@ class Format
         // Convert pattern using string replacement
         // Sort by length descending to replace longer patterns first (%R before %r)
         $patterns = self::$strftimeToIcuMap;
-        uksort($patterns, fn($a, $b) => strlen($b) <=> strlen($a));
+        uksort($patterns, fn ($a, $b) => strlen($b) <=> strlen($a));
 
         $icuFormat = $strftimeFormat;
         foreach ($patterns as $strftime => $icu) {

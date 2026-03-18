@@ -1,4 +1,6 @@
 <?php
+
+declare(strict_types=1);
 /**
  * Copyright 2009-2017 Horde LLC (http://www.horde.org/)
  *
@@ -25,7 +27,7 @@ class Horde_Date_Repeater_Season extends Horde_Date_Repeater
     /**
      * 91 * 24 * 60 * 60
      */
-    const SEASON_SECONDS = 7862400;
+    public const SEASON_SECONDS = 7862400;
 
     public function next($pointer = 'future')
     {

@@ -1,4 +1,6 @@
 <?php
+
+declare(strict_types=1);
 /**
  * Copyright 2009-2017 Horde LLC (http://www.horde.org/)
  *
@@ -37,43 +39,43 @@ class Horde_Date_Repeater_MonthName extends Horde_Date_Repeater
         if (!$this->currentMonthStart) {
             $targetMonth = $this->_monthNumber($this->type);
             switch ($pointer) {
-            case 'future':
-                if ($this->now->month < $targetMonth) {
-                    $this->currentMonthStart = new Horde_Date(array('year' => $this->now->year, 'month' => $targetMonth, 'day' => 1));
-                } else {
-                    $this->currentMonthStart = new Horde_Date(array('year' => $this->now->year + 1, 'month' => $targetMonth, 'day' => 1));
-                }
-                break;
+                case 'future':
+                    if ($this->now->month < $targetMonth) {
+                        $this->currentMonthStart = new Horde_Date(['year' => $this->now->year, 'month' => $targetMonth, 'day' => 1]);
+                    } else {
+                        $this->currentMonthStart = new Horde_Date(['year' => $this->now->year + 1, 'month' => $targetMonth, 'day' => 1]);
+                    }
+                    break;
 
-            case 'none':
-                if ($this->now->month <= $targetMonth) {
-                    $this->currentMonthStart = new Horde_Date(array('year' => $this->now->year, 'month' => $targetMonth, 'day' => 1));
-                } else {
-                    $this->currentMonthStart = new Horde_Date(array('year' => $this->now->year + 1, 'month' => $targetMonth, 'day' => 1));
-                }
-                break;
+                case 'none':
+                    if ($this->now->month <= $targetMonth) {
+                        $this->currentMonthStart = new Horde_Date(['year' => $this->now->year, 'month' => $targetMonth, 'day' => 1]);
+                    } else {
+                        $this->currentMonthStart = new Horde_Date(['year' => $this->now->year + 1, 'month' => $targetMonth, 'day' => 1]);
+                    }
+                    break;
 
-            case 'past':
-                if ($this->now->month > $targetMonth) {
-                    $this->currentMonthStart = new Horde_Date(array('year' => $this->now->year, 'month' => $targetMonth, 'day' => 1));
-                } else {
-                    $this->currentMonthStart = new Horde_Date(array('year' => $this->now->year - 1, 'month' => $targetMonth, 'day' => 1));
-                }
-                break;
+                case 'past':
+                    if ($this->now->month > $targetMonth) {
+                        $this->currentMonthStart = new Horde_Date(['year' => $this->now->year, 'month' => $targetMonth, 'day' => 1]);
+                    } else {
+                        $this->currentMonthStart = new Horde_Date(['year' => $this->now->year - 1, 'month' => $targetMonth, 'day' => 1]);
+                    }
+                    break;
             }
         } else {
             switch ($pointer) {
-            case 'future':
-                $this->currentMonthStart->year++;
-                break;
+                case 'future':
+                    $this->currentMonthStart->year++;
+                    break;
 
-            case 'past':
-                $this->currentMonthStart->year--;
-                break;
+                case 'past':
+                    $this->currentMonthStart->year--;
+                    break;
             }
         }
 
-        return new Horde_Date_Span($this->currentMonthStart, $this->currentMonthStart->add(array('month' => 1)));
+        return new Horde_Date_Span($this->currentMonthStart, $this->currentMonthStart->add(['month' => 1]));
     }
 
     public function this($pointer = 'future')
@@ -81,12 +83,12 @@ class Horde_Date_Repeater_MonthName extends Horde_Date_Repeater
         parent::this($pointer);
 
         switch ($pointer) {
-        case 'past':
-            return $this->next($pointer);
+            case 'past':
+                return $this->next($pointer);
 
-        case 'future':
-        case 'none':
-            return $this->next('none');
+            case 'future':
+            case 'none':
+                return $this->next('none');
         }
     }
 
@@ -107,7 +109,7 @@ class Horde_Date_Repeater_MonthName extends Horde_Date_Repeater
 
     protected function _monthNumber($monthName)
     {
-        $months = array(
+        $months = [
             'january' => 1,
             'february' => 2,
             'march' => 3,
@@ -120,7 +122,7 @@ class Horde_Date_Repeater_MonthName extends Horde_Date_Repeater
             'october' => 10,
             'november' => 11,
             'december' => 12,
-        );
+        ];
         if (!isset($months[$monthName])) {
             throw new InvalidArgumentException('Invalid month name "' . $monthName . '"');
         }

@@ -1,4 +1,6 @@
 <?php
+
+declare(strict_types=1);
 /**
  * Copyright 2009-2017 Horde LLC (http://www.horde.org/)
  *
@@ -23,7 +25,7 @@
 class Horde_Date_Repeater_Day extends Horde_Date_Repeater
 {
     // (24 * 60 * 60)
-    const DAY_SECONDS = 86400;
+    public const DAY_SECONDS = 86400;
 
     public $currentDayStart;
 
@@ -32,7 +34,7 @@ class Horde_Date_Repeater_Day extends Horde_Date_Repeater
         parent::next($pointer);
 
         if (!$this->currentDayStart) {
-            $this->currentDayStart = new Horde_Date(array('year' => $this->now->year, 'month' => $this->now->month, 'day' => $this->now->day));
+            $this->currentDayStart = new Horde_Date(['year' => $this->now->year, 'month' => $this->now->month, 'day' => $this->now->day]);
         }
 
         $direction = ($pointer == 'future') ? 1 : -1;
@@ -49,20 +51,20 @@ class Horde_Date_Repeater_Day extends Horde_Date_Repeater
         parent::this($pointer);
 
         switch ($pointer) {
-        case 'future':
-            $dayBegin = new Horde_Date(array('year' => $this->now->year, 'month' => $this->now->month, 'day' => $this->now->day, 'hour' => $this->now->hour + 1));
-            $dayEnd = new Horde_Date(array('year' => $this->now->year, 'month' => $this->now->month, 'day' => $this->now->day + 1));
-            break;
+            case 'future':
+                $dayBegin = new Horde_Date(['year' => $this->now->year, 'month' => $this->now->month, 'day' => $this->now->day, 'hour' => $this->now->hour + 1]);
+                $dayEnd = new Horde_Date(['year' => $this->now->year, 'month' => $this->now->month, 'day' => $this->now->day + 1]);
+                break;
 
-        case 'past':
-            $dayBegin = new Horde_Date(array('year' => $this->now->year, 'month' => $this->now->month, 'day' => $this->now->day));
-            $dayEnd = new Horde_Date(array('year' => $this->now->year, 'month' => $this->now->month, 'day' => $this->now->day, 'hour' => $this->now->hour));
-            break;
+            case 'past':
+                $dayBegin = new Horde_Date(['year' => $this->now->year, 'month' => $this->now->month, 'day' => $this->now->day]);
+                $dayEnd = new Horde_Date(['year' => $this->now->year, 'month' => $this->now->month, 'day' => $this->now->day, 'hour' => $this->now->hour]);
+                break;
 
-        case 'none':
-            $dayBegin = new Horde_Date(array('year' => $this->now->year, 'month' => $this->now->month, 'day' => $this->now->day));
-            $dayEnd = new Horde_Date(array('year' => $this->now->year, 'month' => $this->now->month, 'day' => $this->now->day + 1));
-            break;
+            case 'none':
+                $dayBegin = new Horde_Date(['year' => $this->now->year, 'month' => $this->now->month, 'day' => $this->now->day]);
+                $dayEnd = new Horde_Date(['year' => $this->now->year, 'month' => $this->now->month, 'day' => $this->now->day + 1]);
+                break;
         }
 
         return new Horde_Date_Span($dayBegin, $dayEnd);
@@ -71,7 +73,7 @@ class Horde_Date_Repeater_Day extends Horde_Date_Repeater
     public function offset($span, $amount, $pointer)
     {
         $direction = ($pointer == 'future') ? 1 : -1;
-        return $span->add(array('day' => $direction * $amount));
+        return $span->add(['day' => $direction * $amount]);
     }
 
     public function width()

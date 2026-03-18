@@ -1,4 +1,6 @@
 <?php
+
+declare(strict_types=1);
 /**
  * Copyright 2026 The Horde Project (http://www.horde.org/)
  *
@@ -9,12 +11,13 @@
  * @package    Date
  * @subpackage UnitTests
  */
+
 namespace Horde\Date\Test;
 
-use PHPUnit\Framework\TestCase;
-use Horde_Date;
 use Horde\Date\Formatter\DateTimeFormatter;
 use Horde\Date\Formatter\IcuFormatter;
+use Horde_Date;
+use PHPUnit\Framework\TestCase;
 
 /**
  * Tests for Horde_Date::format() with pluggable formatters
@@ -236,8 +239,9 @@ class DatePluggableFormatterTest extends TestCase
         $date = new Horde_Date('2026-03-18 14:30:45');
 
         // Create a simple Stringable
-        $pattern = new class implements \Stringable {
-            public function __toString(): string {
+        $pattern = new class () implements \Stringable {
+            public function __toString(): string
+            {
                 return 'yyyy-MM-dd';
             }
         };

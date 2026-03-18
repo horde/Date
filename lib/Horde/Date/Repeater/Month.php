@@ -1,4 +1,6 @@
 <?php
+
+declare(strict_types=1);
 /**
  * Copyright 2009-2017 Horde LLC (http://www.horde.org/)
  *
@@ -25,7 +27,7 @@ class Horde_Date_Repeater_Month extends Horde_Date_Repeater
     /**
      * 30 * 24 * 60 * 60
      */
-    const MONTH_SECONDS = 2592000;
+    public const MONTH_SECONDS = 2592000;
 
     public $currentMonthStart;
 
@@ -34,7 +36,7 @@ class Horde_Date_Repeater_Month extends Horde_Date_Repeater
         parent::next($pointer);
 
         if (!$this->currentMonthStart) {
-            $this->currentMonthStart = new Horde_Date(array('year' => $this->now->year, 'month' => $this->now->month, 'day' => 1));
+            $this->currentMonthStart = new Horde_Date(['year' => $this->now->year, 'month' => $this->now->month, 'day' => 1]);
         }
         $direction = ($pointer == 'future') ? 1 : -1;
         $this->currentMonthStart->month += $direction;
@@ -49,20 +51,20 @@ class Horde_Date_Repeater_Month extends Horde_Date_Repeater
         parent::this($pointer);
 
         switch ($pointer) {
-        case 'future':
-            $monthStart = new Horde_Date(array('year' => $this->now->year, 'month' => $this->now->month, 'day' => $this->now->day + 1));
-            $monthEnd = new Horde_Date(array('year' => $this->now->year, 'month' => $this->now->month + 1, 'day' => 1));
-            break;
+            case 'future':
+                $monthStart = new Horde_Date(['year' => $this->now->year, 'month' => $this->now->month, 'day' => $this->now->day + 1]);
+                $monthEnd = new Horde_Date(['year' => $this->now->year, 'month' => $this->now->month + 1, 'day' => 1]);
+                break;
 
-        case 'past':
-            $monthStart = new Horde_Date(array('year' => $this->now->year, 'month' => $this->now->month, 'day' => 1));
-            $monthEnd = new Horde_Date(array('year' => $this->now->year, 'month' => $this->now->month, 'day' => $this->now->day));
-            break;
+            case 'past':
+                $monthStart = new Horde_Date(['year' => $this->now->year, 'month' => $this->now->month, 'day' => 1]);
+                $monthEnd = new Horde_Date(['year' => $this->now->year, 'month' => $this->now->month, 'day' => $this->now->day]);
+                break;
 
-        case 'none':
-            $monthStart = new Horde_Date(array('year' => $this->now->year, 'month' => $this->now->month, 'day' => 1));
-            $monthEnd = new Horde_Date(array('year' => $this->now->year, 'month' => $this->now->month + 1, 'day' => 1));
-            break;
+            case 'none':
+                $monthStart = new Horde_Date(['year' => $this->now->year, 'month' => $this->now->month, 'day' => 1]);
+                $monthEnd = new Horde_Date(['year' => $this->now->year, 'month' => $this->now->month + 1, 'day' => 1]);
+                break;
         }
 
         return new Horde_Date_Span($monthStart, $monthEnd);
@@ -71,7 +73,7 @@ class Horde_Date_Repeater_Month extends Horde_Date_Repeater
     public function offset($span, $amount, $pointer)
     {
         $direction = ($pointer == 'future') ? 1 : -1;
-        return $span->add(array('month' => $amount * $direction));
+        return $span->add(['month' => $amount * $direction]);
     }
 
     public function width()

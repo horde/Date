@@ -1,4 +1,6 @@
 <?php
+
+declare(strict_types=1);
 /**
  * Copyright 2026 The Horde Project (http://www.horde.org/)
  *
@@ -9,10 +11,11 @@
  * @package    Date
  * @subpackage UnitTests
  */
+
 namespace Horde\Date\Test;
 
-use PHPUnit\Framework\TestCase;
 use Horde_Date;
+use PHPUnit\Framework\TestCase;
 
 /**
  * Tests for Horde_Date::format() method
@@ -202,7 +205,7 @@ class DateFormatTest extends TestCase
 
         // Day of year (0-indexed, so Dec 31 = 364 for 2025)
         $dayOfYear = $date->format('z');
-        $this->assertTrue(in_array($dayOfYear, ['364', '365']), "Day of year should be 364 or 365, got: $dayOfYear");
+        $this->assertTrue(in_array($dayOfYear, ['364', '365'], true), "Day of year should be 364 or 365, got: $dayOfYear");
     }
 
     /**
@@ -283,11 +286,11 @@ class DateFormatTest extends TestCase
 
         // Test L separately (leap year: 0 or 1)
         $leapYear = $date->format('L');
-        $this->assertTrue(in_array($leapYear, ['0', '1']), "L should be 0 or 1, got: $leapYear");
+        $this->assertTrue(in_array($leapYear, ['0', '1'], true), "L should be 0 or 1, got: $leapYear");
 
         // Test I separately (DST indicator: 0 or 1)
         $dst = $date->format('I');
-        $this->assertTrue(in_array($dst, ['0', '1']), "I should be 0 or 1, got: $dst");
+        $this->assertTrue(in_array($dst, ['0', '1'], true), "I should be 0 or 1, got: $dst");
 
         // Test Z separately (timezone offset in seconds, can be 0 for UTC)
         $tzOffset = $date->format('Z');

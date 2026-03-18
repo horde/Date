@@ -35,6 +35,7 @@ dependencies:
       horde/exception: ^3
       horde/nls: ^3
       horde/translation: ^3
+      php81_bc/strftime: ^0.7
   optional:
     composer:
       horde/icalendar: ^3

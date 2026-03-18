@@ -1,4 +1,6 @@
 <?php
+
+declare(strict_types=1);
 /**
  * Copyright 2009-2017 Horde LLC (http://www.horde.org/)
  *
@@ -23,7 +25,7 @@
 class Horde_Date_Repeater_DayName extends Horde_Date_Repeater
 {
     // (24 * 60 * 60)
-    const DAY_SECONDS = 86400;
+    public const DAY_SECONDS = 86400;
 
     public $currentDayStart;
     public $type;
@@ -40,7 +42,7 @@ class Horde_Date_Repeater_DayName extends Horde_Date_Repeater
         $direction = ($pointer == 'future') ? 1 : -1;
 
         if (!$this->currentDayStart) {
-            $this->currentDayStart = new Horde_Date(array('year' => $this->now->year, 'month' => $this->now->month, 'day' => $this->now->day + $direction));
+            $this->currentDayStart = new Horde_Date(['year' => $this->now->year, 'month' => $this->now->month, 'day' => $this->now->day + $direction]);
 
             $dayNum = $this->_dayNumber($this->type);
             while ($this->currentDayStart->dayOfWeek() != $dayNum) {
@@ -77,7 +79,7 @@ class Horde_Date_Repeater_DayName extends Horde_Date_Repeater
 
     protected function _dayNumber($dayName)
     {
-        $days = array(
+        $days = [
             'monday' => Horde_Date::DATE_MONDAY,
             'tuesday' => Horde_Date::DATE_TUESDAY,
             'wednesday' => Horde_Date::DATE_WEDNESDAY,
@@ -85,7 +87,7 @@ class Horde_Date_Repeater_DayName extends Horde_Date_Repeater
             'friday' => Horde_Date::DATE_FRIDAY,
             'saturday' => Horde_Date::DATE_SATURDAY,
             'sunday' => Horde_Date::DATE_SUNDAY,
-        );
+        ];
         if (!isset($days[$dayName])) {
             throw new InvalidArgumentException('Invalid day name "' . $dayName . '"');
         }

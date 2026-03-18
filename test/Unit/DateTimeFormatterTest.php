@@ -17,8 +17,8 @@ declare(strict_types=1);
 namespace Horde\Date\Test\Unit;
 
 use Horde\Date\Formatter\DateTimeFormatter;
-use PHPUnit\Framework\TestCase;
 use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\TestCase;
 
 /**
  * Tests for DateTimeFormatter
@@ -409,4 +409,3 @@ class DateTimeFormatterTest extends TestCase
         $this->assertEquals(30, $parsed->min);
     }
 }
-

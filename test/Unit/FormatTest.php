@@ -17,8 +17,8 @@ declare(strict_types=1);
 namespace Horde\Date\Test\Unit;
 
 use Horde\Date\Format;
-use PHPUnit\Framework\TestCase;
 use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\TestCase;
 
 /**
  * Tests for Horde\Date\Format
@@ -534,7 +534,7 @@ class FormatTest extends TestCase
         $result = Format::formatDate($timestamp, '%Y-%m-%d', 'ar_SA');
         // Accept either Arabic-Indic or ASCII digits
         $this->assertTrue(
-            in_array($result, ['2026-03-17', '٢٠٢٦-٠٣-١٧']),
+            in_array($result, ['2026-03-17', '٢٠٢٦-٠٣-١٧'], true),
             "Expected '2026-03-17' or '٢٠٢٦-٠٣-١٧', got: $result"
         );
 

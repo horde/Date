@@ -1,4 +1,6 @@
 <?php
+
+declare(strict_types=1);
 /**
  * Copyright 2009-2017 Horde LLC (http://www.horde.org/)
  *
@@ -38,7 +40,7 @@ abstract class Horde_Date_Repeater
             throw new Horde_Date_Repeater_Exception('Start point must be set before calling next()');
         }
 
-        if (!in_array($pointer, array('future', 'none', 'past'))) {
+        if (!in_array($pointer, ['future', 'none', 'past'], true)) {
             throw new Horde_Date_Repeater_Exception("First argument 'pointer' must be one of 'past', 'future', 'none'");
         }
     }
@@ -49,7 +51,7 @@ abstract class Horde_Date_Repeater
             throw new Horde_Date_Repeater_Exception('Start point must be set before calling this()');
         }
 
-        if (!in_array($pointer, array('future', 'none', 'past'))) {
+        if (!in_array($pointer, ['future', 'none', 'past'], true)) {
             throw new Horde_Date_Repeater_Exception("First argument 'pointer' must be one of 'past', 'future', 'none'");
         }
     }

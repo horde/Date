@@ -17,9 +17,9 @@ declare(strict_types=1);
 namespace Horde\Date\Test\Unit;
 
 use Horde\Date\Formatter\IcuFormatter;
-use PHPUnit\Framework\TestCase;
-use PHPUnit\Framework\Attributes\CoversClass;
 use InvalidArgumentException;
+use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\TestCase;
 use RuntimeException;
 
 /**
@@ -202,13 +202,13 @@ class IcuFormatterTest extends TestCase
 
         // Abbreviated day names (may vary by ICU version with/without period)
         $enAbbr = $formatter->format($timestamp, 'EEE', 'en_US');
-        $this->assertTrue(in_array($enAbbr, ['Wed', 'Wed.']), "Expected 'Wed' or 'Wed.', got: $enAbbr");
+        $this->assertTrue(in_array($enAbbr, ['Wed', 'Wed.'], true), "Expected 'Wed' or 'Wed.', got: $enAbbr");
 
         $deAbbr = $formatter->format($timestamp, 'EEE', 'de_DE');
-        $this->assertTrue(in_array($deAbbr, ['Mi', 'Mi.']), "Expected 'Mi' or 'Mi.', got: $deAbbr");
+        $this->assertTrue(in_array($deAbbr, ['Mi', 'Mi.'], true), "Expected 'Mi' or 'Mi.', got: $deAbbr");
 
         $frAbbr = $formatter->format($timestamp, 'EEE', 'fr_FR');
-        $this->assertTrue(in_array($frAbbr, ['mer', 'mer.']), "Expected 'mer' or 'mer.', got: $frAbbr");
+        $this->assertTrue(in_array($frAbbr, ['mer', 'mer.'], true), "Expected 'mer' or 'mer.', got: $frAbbr");
     }
 
     /**
@@ -577,4 +577,3 @@ class IcuFormatterTest extends TestCase
         $this->assertEquals(18, $parsed->mday);
     }
 }
-

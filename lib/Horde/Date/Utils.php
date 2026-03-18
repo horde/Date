@@ -1,4 +1,6 @@
 <?php
+
+declare(strict_types=1);
 /**
  * Copyright 2004-2017 Horde LLC (http://www.horde.org/)
  *
@@ -59,7 +61,7 @@ class Horde_Date_Utils
      */
     public static function daysInMonth($month, $year)
     {
-        static $cache = array();
+        static $cache = [];
         if (!isset($cache[$year][$month])) {
             try {
                 $date = new DateTime(sprintf($year < 0 ? '%05d-%02d-01' : '%04d-%02d-01', $year, $month));
@@ -85,9 +87,11 @@ class Horde_Date_Utils
      *
      * @return string  The relative time (i.e. 2 minutes ago)
      */
-    public static function relativeDateTime($time, $date_format = '%x',
-                                            $time_format = '%X')
-    {
+    public static function relativeDateTime(
+        $time,
+        $date_format = '%x',
+        $time_format = '%X'
+    ) {
         $date = new Horde_Date($time);
 
         $delta = time() - $date->timestamp();
@@ -173,12 +177,16 @@ class Horde_Date_Utils
             '/%s/'  => 'U',
             '/%n/'  => "\n",
             '/%t/'  => "\t",
-            '/%%/'  => '%'
+            '/%%/'  => '%',
         ];
-    
+
         $callbackPatterns = [
-            '/%X/' => function() { return Horde_Nls::getLangInfo(T_FMT); },
-            '/%x/' => function() { return Horde_Nls::getLangInfo(D_FMT); },
+            '/%X/' => function () {
+                return Horde_Nls::getLangInfo(T_FMT);
+            },
+            '/%x/' => function () {
+                return Horde_Nls::getLangInfo(D_FMT);
+            },
         ];
 
         $pass1 = preg_replace_callback_array($callbackPatterns, $format);
@@ -188,7 +196,7 @@ class Horde_Date_Utils
 
     /**
      * Unify date formatters and then format the date.
-     * 
+     *
      * Facilitates upgrades from strftime to date_format style placeholders by accepting both.
      * Some formats are not supported and will be dropped
      * Will produce undesirable results for date_format style format strings that contain % characters
@@ -201,12 +209,11 @@ class Horde_Date_Utils
         string $pattern = 'Y-m-d H:i:s',
         Horde_Date|DateTimeInterface|int|string|null $date = 'now',
         $timezone = null
-    )
-    {
-        if (is_null($date) || $date === 'now')  {
+    ) {
+        if (is_null($date) || $date === 'now') {
             $date = new Horde_Date(time(), $timezone);
         } elseif (is_object($date) && $date instanceof DateTimeInterface) {
-            $timezone = $timezone ?? $date->getTimezone()->getName();
+            $timezone ??= $date->getTimezone()->getName();
             $date = new Horde_Date($date, $timezone);
         } elseif (is_int($date) || is_string($date)) {
             $date = new Horde_Date($date, $timezone ?? 'UTC');
