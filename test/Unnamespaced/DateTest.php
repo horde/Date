@@ -219,7 +219,9 @@ class DateTest extends TestCase
         } else {
             $format = "%d\n%H\n%I\n%m\n%M\n%S\n%y\n%Y\n%%";
         }
-        $this->assertEquals(strftime($format, $date->timestamp()), $date->strftime($format));
+        // Apply same polyfill bug workaround to both sides of comparison
+        $fixedFormat = str_replace('%D', '%m/%d/%y', $format);
+        $this->assertEquals(strftime($fixedFormat, $date->timestamp()), $date->strftime($format));
 
         if (strpos(PHP_OS, 'WIN') === false) {
             $format = '%b%n%B%n%p%n%r%n%x%n%X';
@@ -243,7 +245,7 @@ class DateTest extends TestCase
         $format = '%d%n%H%n%I%n%m%n%M%n%S%n%y%n%Y%n%%';
         if (strpos(PHP_OS, 'WIN') === false) {
             $expected[] = '18';
-            $expected[] = '02/03/1899';
+            $expected[] = '02/03/99';
             $expected[] = ' 3';
             $expected[] = '16:05';
             $expected[] = "\t";

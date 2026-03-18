@@ -1064,7 +1064,10 @@ class RecurrenceTest extends TestCase
         $iCal->parsevCalendar(file_get_contents(__DIR__ . '/../fixtures/bug2813.ics'));
         $components = $iCal->getComponents();
 
-        date_default_timezone_set('US/Eastern');
+        // Test backward compatibility: US/Eastern is deprecated but should work via alias mapping
+        // PHP 8.4 rejects US/Eastern, so we must map it ourselves
+        $timezone = Horde_Date::getTimezoneAlias('US/Eastern');
+        date_default_timezone_set($timezone);
 
         foreach ($components as $content) {
             if ($content instanceof Horde_Icalendar_Vevent) {

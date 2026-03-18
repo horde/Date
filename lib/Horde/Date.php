@@ -200,7 +200,7 @@ class Horde_Date implements DateInterface
         'E. South America Standard Time' => 'America/Sao_Paulo',
         'Argentina Standard Time' => 'America/Buenos_Aires',
         'SA Eastern Standard Time' => 'America/Cayenne',
-        'Greenland Standard Time' => 'America/Godthab',
+        'Greenland Standard Time' => 'America/Nuuk',
         'Montevideo Standard Time' => 'America/Montevideo',
         'Bahia Standard Time' => 'America/Bahia',
         'UTC-02' => 'Etc/GMT+2',
@@ -222,7 +222,7 @@ class Horde_Date implements DateInterface
         'Syria Standard Time' => 'Asia/Damascus',
         'E. Europe Standard Time' => 'Asia/Nicosia',
         'South Africa Standard Time' => 'Africa/Johannesburg',
-        'FLE Standard Time' => 'Europe/Kiev',
+        'FLE Standard Time' => 'Europe/Kyiv',
         'Turkey Standard Time' => 'Europe/Istanbul',
         'Israel Standard Time' => 'Asia/Jerusalem',
         'Arabic Standard Time' => 'Asia/Baghdad',
@@ -245,7 +245,7 @@ class Horde_Date implements DateInterface
         'Central Asia Standard Time' => 'Asia/Almaty',
         'Bangladesh Standard Time' => 'Asia/Dhaka',
         'Ekaterinburg Standard Time' => 'Asia/Yekaterinburg',
-        'Myanmar Standard Time' => 'Asia/Rangoon',
+        'Myanmar Standard Time' => 'Asia/Yangon',
         'SE Asia Standard Time' => 'Asia/Bangkok',
         'N. Central Asia Standard Time' => 'Asia/Novosibirsk',
         'China Standard Time' => 'Asia/Shanghai',
@@ -272,6 +272,24 @@ class Horde_Date implements DateInterface
         'Magadan Standard Time' => 'Asia/Magadan',
         'Tonga Standard Time' => 'Pacific/Tongatapu',
         'Samoa Standard Time' => 'Pacific/Apia',
+        // POSIX-style timezone abbreviations from IANA backward file
+        'CET' => 'Europe/Berlin',
+        'CST6CDT' => 'America/Chicago',
+        'EET' => 'Europe/Athens',
+        'EST' => 'America/Panama',
+        'EST5EDT' => 'America/New_York',
+        'MET' => 'Europe/Berlin',
+        'MST' => 'America/Phoenix',
+        'MST7MDT' => 'America/Denver',
+        'PST8PDT' => 'America/Los_Angeles',
+        'WET' => 'Europe/Lisbon',
+        // Additional historical zones from IANA backward file
+        'Antarctica/DumontDUrville' => 'Pacific/Port_Moresby',
+        'Antarctica/McMurdo' => 'Pacific/Auckland',
+        'Antarctica/Syowa' => 'Asia/Riyadh',
+        'Australia/Currie' => 'Australia/Hobart',
+        'Pacific/Johnston' => 'Pacific/Honolulu',
+        'Pacific/Midway' => 'Pacific/Pago_Pago',
         // Found from Lotus Notes
         'W. Europe' => 'Europe/Berlin',
         'E. Europe' => 'Asia/Nicosia',
@@ -286,6 +304,7 @@ class Horde_Date implements DateInterface
         'America/Cordoba' => 'America/Argentina/Cordoba',
         'America/Ensenada' => 'America/Tijuana',
         'America/Fort_Wayne' => 'America/Indiana/Indianapolis',
+        'America/Godthab' => 'America/Nuuk',
         'America/Indianapolis' => 'America/Indiana/Indianapolis',
         'America/Jujuy' => 'America/Argentina/Jujuy',
         'America/Knox_IN' => 'America/Indiana/Knox',
@@ -307,6 +326,7 @@ class Horde_Date implements DateInterface
         'Asia/Kashgar' => 'Asia/Urumqi',
         'Asia/Katmandu' => 'Asia/Kathmandu',
         'Asia/Macao' => 'Asia/Macau',
+        'Asia/Rangoon' => 'Asia/Yangon',
         'Asia/Saigon' => 'Asia/Ho_Chi_Minh',
         'Asia/Tel_Aviv' => 'Asia/Jerusalem',
         'Asia/Thimbu' => 'Asia/Thimphu',
@@ -344,6 +364,7 @@ class Horde_Date implements DateInterface
         'Egypt' => 'Africa/Cairo',
         'Eire' => 'Europe/Dublin',
         'Europe/Belfast' => 'Europe/London',
+        'Europe/Kiev' => 'Europe/Kyiv',
         'Europe/Tiraspol' => 'Europe/Chisinau',
         'GB' => 'Europe/London',
         'GB-Eire' => 'Europe/London',
@@ -1318,10 +1339,35 @@ class Horde_Date implements DateInterface
     public function strftime($format)
     {
         if (preg_match('/%[^' . self::$_supportedSpecs . ']/', $format)) {
+            // Need to use native/polyfill strftime for unsupported specs
+            // Preprocess format to fix known polyfill bugs
+            $format = $this->_fixPolyfillFormat($format);
             return strftime($format, $this->timestamp());
         } else {
             return $this->_strftime($format);
         }
+    }
+
+    /**
+     * Fix known bugs in php81_bc/strftime polyfill.
+     *
+     * The polyfill has incorrect implementations of some format specifiers:
+     * - %D should be m/d/y (2-digit year) but polyfill uses m/d/Y (4-digit year)
+     *
+     * This method rewrites problematic format specifiers to their expanded
+     * POSIX-compliant equivalents before passing to the polyfill.
+     *
+     * @param string $format  Original strftime format string
+     * @return string  Format string with polyfill bugs worked around
+     */
+    protected function _fixPolyfillFormat($format)
+    {
+        // Replace %D with its POSIX-compliant expansion
+        // POSIX: %D is equivalent to %m/%d/%y (2-digit year)
+        // Polyfill bug: uses m/d/Y (4-digit year)
+        $format = str_replace('%D', '%m/%d/%y', $format);
+
+        return $format;
     }
 
     /**
@@ -1340,7 +1386,7 @@ class Horde_Date implements DateInterface
             case '%-d':
             case '%#d': return sprintf('%d', $this->_mday);
             case '%d':  return sprintf('%02d', $this->_mday);
-            case '%D':  return $this->strftime('%m/%d/%Y');
+            case '%D':  return $this->strftime('%m/%d/%y');
             case '%e':  return sprintf('%2d', $this->_mday);
             case '%-H':
             case '%#H': return sprintf('%d', $this->_hour);
@@ -1566,7 +1612,10 @@ class Horde_Date implements DateInterface
     {
         if (empty($timezone)) {
             $timezone = date_default_timezone_get();
-        } elseif (array_key_exists($timezone, self::$_timezoneAliases)) {
+        }
+
+        // Apply timezone alias mapping for both explicit and retrieved timezones
+        if (array_key_exists($timezone, self::$_timezoneAliases)) {
             /* Workaround for standard cases of bug #11688 */
             $timezone = self::$_timezoneAliases[$timezone];
         }
