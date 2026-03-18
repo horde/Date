@@ -113,14 +113,20 @@ class Format
         }
 
         // Convert pattern using string replacement
-        // Sort by length descending to replace longer patterns first (%R before %r)
+        // Use placeholders to track boundaries for separator insertion
         $patterns = self::$strftimeToIcuMap;
         uksort($patterns, fn ($a, $b) => strlen($b) <=> strlen($a));
 
         $icuFormat = $strftimeFormat;
         foreach ($patterns as $strftime => $icu) {
-            $icuFormat = str_replace($strftime, $icu, $icuFormat);
+            // Wrap each ICU pattern with boundary markers
+            $placeholder = "\x00" . $icu . "\x00";
+            $icuFormat = str_replace($strftime, $placeholder, $icuFormat);
         }
+
+        // Now insert \x01 separators where adjacent patterns use same letter
+        // Example: "\x00yyyy\x00\x00yy\x00" → "yyyy\x01yy"
+        $icuFormat = self::insertAdjacentSeparators($icuFormat);
 
         // Check for unconverted patterns (edge cases)
         if (preg_match('/%[a-zA-Z]/', $icuFormat)) {
@@ -130,6 +136,57 @@ class Format
 
         self::$conversionCache[$strftimeFormat] = $icuFormat;
         return $icuFormat;
+    }
+
+    /**
+     * Insert non-printable separators between adjacent same-letter ICU patterns
+     *
+     * Processes a string with \x00 boundary markers around ICU patterns.
+     * When two patterns are adjacent (\x00pattern1\x00\x00pattern2\x00) and
+     * start with the same letter, inserts \x01 separator between them.
+     *
+     * Example: "\x00yyyy\x00\x00yy\x00" → "yyyy\x01yy"
+     * Example: "\x00yyyy\x00\x00MM\x00" → "yyyyMM" (different letters, no separator)
+     *
+     * @param string $format  Format string with \x00 boundary markers
+     * @return string  Format string with \x01 separators and \x00 markers removed
+     */
+    protected static function insertAdjacentSeparators(string $format): string
+    {
+        // Split by \x00 to get patterns and literals
+        $parts = explode("\x00", $format);
+
+        $result = '';
+        $prevPattern = null;
+
+        for ($i = 0; $i < count($parts); $i++) {
+            $part = $parts[$i];
+
+            if ($part === '') {
+                // Empty part from adjacent \x00 markers, skip
+                continue;
+            }
+
+            // Check if this part is a pattern (starts with pattern letter)
+            if (preg_match('/^[yMdHhmsSDEwWazZ]/', $part)) {
+                // This is a pattern
+                $patternLetter = $part[0];
+
+                // If previous was also a pattern with same letter, insert separator
+                if ($prevPattern !== null && $prevPattern[0] === $patternLetter) {
+                    $result .= "\x01";
+                }
+
+                $result .= $part;
+                $prevPattern = $part;
+            } else {
+                // This is a literal
+                $result .= $part;
+                $prevPattern = null; // Reset tracking
+            }
+        }
+
+        return $result;
     }
 
     /**

@@ -679,4 +679,99 @@ class FormatTest extends TestCase
         $result = Format::strftimeToIcu('%Z');
         $this->assertEquals('z', $result);
     }
+
+    /**
+     * Test that adjacent same-letter patterns get non-printable separators
+     *
+     * When strftime codes convert to the same ICU pattern letter and are adjacent,
+     * they must be separated with \x01 to prevent ICU from treating them as a
+     * single pattern token.
+     */
+    public function testAdjacentSameLetterPatternsSeparated(): void
+    {
+        // %Y%y → yyyy + yy (both use 'y') → needs separator
+        $result = Format::strftimeToIcu('%Y%y');
+        $this->assertEquals("yyyy\x01yy", $result);
+
+        // %Y%Y → yyyy + yyyy (same letter) → needs separator
+        $result = Format::strftimeToIcu('%Y%Y');
+        $this->assertEquals("yyyy\x01yyyy", $result);
+
+        // %m%m → MM + MM (same letter) → needs separator
+        $result = Format::strftimeToIcu('%m%m');
+        $this->assertEquals("MM\x01MM", $result);
+
+        // %d%d%d → dd + dd + dd (same letter) → needs separators
+        $result = Format::strftimeToIcu('%d%d%d');
+        $this->assertEquals("dd\x01dd\x01dd", $result);
+
+        // Complex case: %Y%y%y%Y → yyyy + yy + yy + yyyy
+        $result = Format::strftimeToIcu('%Y%y%y%Y');
+        $this->assertEquals("yyyy\x01yy\x01yy\x01yyyy", $result);
+    }
+
+    /**
+     * Test that different pattern letters do NOT get separators
+     *
+     * ICU's "abutting fields" feature allows different pattern types to be
+     * adjacent without separators (e.g., yyyyMMdd works correctly).
+     */
+    public function testDifferentLetterPatternsNotSeparated(): void
+    {
+        // %Y%m%d → yyyyMMdd (different letters: y, M, d) → NO separator
+        $result = Format::strftimeToIcu('%Y%m%d');
+        $this->assertStringNotContainsString("\x01", $result);
+        $this->assertEquals('yyyyMMdd', $result);
+
+        // %H%M%S → HHmmss (different letters: H, m, s) → NO separator
+        $result = Format::strftimeToIcu('%H%M%S');
+        $this->assertStringNotContainsString("\x01", $result);
+        $this->assertEquals('HHmmss', $result);
+
+        // %d%m%Y → ddMMyyyy (different letters) → NO separator
+        $result = Format::strftimeToIcu('%d%m%Y');
+        $this->assertStringNotContainsString("\x01", $result);
+        $this->assertEquals('ddMMyyyy', $result);
+    }
+
+    /**
+     * Test that literal characters prevent separator insertion
+     */
+    public function testLiteralCharactersPreventSeparators(): void
+    {
+        // %Y-%m-%d → yyyy-MM-dd (dash separates) → NO \x01
+        $result = Format::strftimeToIcu('%Y-%m-%d');
+        $this->assertStringNotContainsString("\x01", $result);
+        $this->assertEquals('yyyy-MM-dd', $result);
+
+        // %Y %m → yyyy MM (space separates) → NO \x01
+        $result = Format::strftimeToIcu('%Y %m');
+        $this->assertStringNotContainsString("\x01", $result);
+        $this->assertEquals('yyyy MM', $result);
+
+        // %Y/%Y → yyyy/yyyy (slash separates same letters) → NO \x01
+        $result = Format::strftimeToIcu('%Y/%Y');
+        $this->assertStringNotContainsString("\x01", $result);
+        $this->assertEquals('yyyy/yyyy', $result);
+    }
+
+    /**
+     * Test actual formatting with adjacent patterns
+     */
+    public function testFormatWithAdjacentPatterns(): void
+    {
+        $date = new \DateTime('2015-03-18');
+
+        // Test %Y%y formats correctly with separator
+        $result = Format::formatDate($date, '%Y%y', 'en_US');
+        // Should produce "201515" with \x01 between (visually looks like "201515")
+        $cleaned = str_replace("\x01", '', $result);
+        $this->assertEquals('201515', $cleaned);
+
+        // Test that %Y%m%d works without separator
+        $result = Format::formatDate($date, '%Y%m%d', 'en_US');
+        $this->assertStringNotContainsString("\x01", $result);
+        $this->assertEquals('20150318', $result);
+    }
 }
+
