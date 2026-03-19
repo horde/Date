@@ -663,7 +663,11 @@ class Horde_Date implements DateInterface
     public function toDays()
     {
         if (function_exists('GregorianToJD')) {
-            return gregoriantojd($this->_month, $this->_mday, $this->_year);
+            return gregoriantojd(
+                (int)$this->_month,
+                (int)$this->_mday,
+                (int)$this->_year
+            );
         }
 
         $day = $this->_mday;
@@ -804,7 +808,7 @@ class Horde_Date implements DateInterface
         }
 
         $down = $value < $this->{'_' . $name};
-        $this->{'_' . $name} = $value;
+        $this->{'_' . $name} = (int)$value;
         $this->_correct(self::$_corrections[$name], $down);
         $this->_formatCache = [];
     }
@@ -1328,7 +1332,7 @@ class Horde_Date implements DateInterface
         $timezone = $this->_timezone ?? date_default_timezone_get();
         $locale = $locale ?? $this->_locale ?? setlocale(LC_ALL, 0) ?: 'en_US';
 
-        return $formatter->format($this->timestamp(), $pattern, $locale, $timezone);
+        return $formatter->format($this, $pattern, $locale, $timezone);
     }
 
     /**
