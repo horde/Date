@@ -15,9 +15,11 @@ use DateTime;
 use DateTimeZone;
 use Horde_Date;
 use Horde_Date_Span;
+
+use function PHP81_BC\strftime;
+
 use PHPUnit\Framework\TestCase;
 use stdClass;
-use function PHP81_BC\strftime;
 
 /**
  * @category   Horde
@@ -402,5 +404,275 @@ class DateTest extends TestCase
         date_default_timezone_set('America/New_York');
         $date = new Horde_Date(1384880400, 'Europe/Berlin');
         $this->assertEquals(18, $date->hour);
+    }
+
+    /**
+     * Verifies float values passed in constructor arrays are converted to int.
+     *
+     * Why: On PHP 8.3+, gregoriantojd() requires strict int arguments. If input data
+     * carries floats (for example 19.5 or 2026.0), toDays() can raise TypeError.
+     *
+     * How this can happen in production:
+     * - JSON deserialization where numeric type intent is lost
+     * - Database columns typed as FLOAT/DOUBLE
+     * - Arithmetic done earlier in the flow
+     * - Recurrence calculations that pass float values
+     *
+     * Expected behavior:
+     * - Values are truncated toward zero, not rounded (19.5 to 19, -19.5 to -19)
+     * - Day/month/year components remain integer-only by definition
+     * - Time precision belongs in hour/min/sec, not fractional date components
+     *
+     * Test data meaning:
+     * - 2026.0: whole-number float common from JSON/DB
+     * - 3.0: month as float to cover all date components
+     * - 19.5: fractional day from the reported Kronolith case
+     * - 10.0/30.0/45.0: time components as floats
+     *
+     * @see https://github.com/horde/Date/issues/5 gregoriantojd() TypeError
+     */
+    public function testFloatValuesInConstructorArrayAreConvertedToInt()
+    {
+        // Constructor should accept float input and normalize it.
+        $date = new Horde_Date([
+            'year' => 2026.0,
+            'month' => 3.0,
+            'mday' => 19.5,  // Float that will be truncated to 19
+            'hour' => 10.0,
+            'min' => 30.0,
+            'sec' => 45.0,
+        ]);
+
+        // Values should be truncated to integers, not rounded.
+        $this->assertSame(2026, $date->year);
+        $this->assertSame(3, $date->month);
+        $this->assertSame(19, $date->mday);  // 19.5 to 19 (truncated, not 20)
+        $this->assertSame(10, $date->hour);
+        $this->assertSame(30, $date->min);
+        $this->assertSame(45, $date->sec);
+
+        // toDays() is where the original TypeError surfaced.
+        $days = $date->toDays();
+        $this->assertIsInt($days, 'toDays() must return int for gregoriantojd() compat');
+
+        // March 19, 2026 maps to Julian Day Number 2461119.
+        $this->assertSame(2461119, $days);
+    }
+
+    /**
+     * Verifies float values assigned through property setters are converted to int.
+     *
+     * Why: __set() (Horde/Date.php line 807) previously did not cast to int, while
+     * _initializeFromArray() already did. That inconsistency made array construction
+     * safe but property assignment unsafe.
+     *
+     * How this can happen in production:
+     * - $date->mday += $some_calculation where calculation returns float
+     * - $date->year = $json['year'] where JSON values are numeric
+     * - Legacy code relying on loose typing
+     *
+     * Expected behavior: property assignment should enforce the same int handling as
+     * array construction.
+     *
+     * Test data meaning:
+     * - 2027.0: whole-number float should still be handled
+     * - 6.0: month as float
+     * - 15.7: fractional day truncated to 15
+     *
+     * @see https://github.com/horde/Date/issues/5 Horde_Date.php line 807 (__set())
+     */
+    public function testFloatValuesInPropertySetterAreConvertedToInt()
+    {
+        $date = new Horde_Date('2026-03-19 10:30:45');
+
+        // Assigning floats should normalize cleanly.
+        $date->year = 2027.0;
+        $date->month = 6.0;
+        $date->mday = 15.7;  // Should truncate to 15, not round to 16
+
+        $this->assertSame(2027, $date->year);
+        $this->assertSame(6, $date->month);
+        $this->assertSame(15, $date->mday);  // Truncated: 15.7 to 15
+
+        // toDays() should continue to work with normalized values.
+        $days = $date->toDays();
+        $this->assertIsInt($days);
+
+        // June 15, 2027 maps to Julian Day Number 2461572.
+        $this->assertSame(2461572, $days);
+    }
+
+    /**
+     * Reproduces the Kronolith usage pattern that triggered the original bug.
+     *
+     * Why: In Kronolith_Driver_Sql->listAlarms() (kronolith/lib/Driver/Sql.php,
+     * lines 109-118), code computes:
+     *   $diff = $event->start->diff($event->end);
+     *   $end = new Horde_Date(['mday' => $next->mday + $diff, ...]);
+     *
+     * Scenario covered here:
+     * - Original event: March 19 10:00 to March 21 15:00 (2 days)
+     * - Recurrence start: April 5
+     * - Expected end date: April 7
+     *
+     * Expected behavior:
+     * - diff() returns int days as documented (@return int)
+     * - int + int stays int (no float contamination)
+     * - Time fields (hour/min/sec) stay independent from day arithmetic
+     */
+    public function testKronolithPatternWithDiffAddedToMday()
+    {
+        // Original event: March 19 10:00 to March 21 15:00.
+        $start = new Horde_Date('2026-03-19 10:00:00');
+        $end = new Horde_Date('2026-03-21 15:00:00');
+
+        // diff() should return 2 days for this span.
+        $diff = $start->diff($end);
+        $this->assertIsInt($diff, 'diff() must return int per @return annotation');
+        $this->assertSame(2, $diff, 'March 19 to March 21 = 2 days');
+
+        // Apply the same duration to the recurrence start date.
+        $next = new Horde_Date('2026-04-05 00:00:00');  // Recurrence start
+        $endDate = new Horde_Date([
+            'year' => $next->year,    // 2026
+            'month' => $next->month,  // 4 (April)
+            'mday' => $next->mday + $diff,  // 5 + 2 = 7
+            'hour' => $end->hour,     // 15 (preserve original end time)
+            'min' => $end->min,       // 0
+            'sec' => $end->sec,        // 0
+        ]);
+
+        // Expected end date is two days after recurrence start.
+        $this->assertSame(2026, $endDate->year);
+        $this->assertSame(4, $endDate->month);
+        $this->assertSame(7, $endDate->mday);  // April 5 + 2 days = April 7
+        $this->assertSame(15, $endDate->hour); // Original end time preserved
+
+        // toDays() is where this failed in production.
+        $days = $endDate->toDays();
+        $this->assertIsInt($days);
+
+        // April 7, 2026 maps to Julian Day Number 2461138.
+        $this->assertSame(2461138, $days);
+    }
+
+    /**
+     * Verifies month rollover still works when mday arrives as a float.
+     *
+     * Why: Horde_Date::_correct() normalizes out-of-range values. We need to
+     * ensure float inputs do not break rollover logic when day exceeds month bounds.
+     *
+     * Scenario: an event near month end where duration pushes mday past March.
+     * Example: 29 + 5 = 34 (or 34.8 with float contamination), which should roll
+     * from March (31 days) to April 3.
+     *
+     * Expected behavior:
+     * - 34.8 is truncated and normalized correctly
+     * - boundary logic remains correct after float-to-int conversion
+     *
+     * Test data meaning:
+     * - March 29: near boundary
+     * - 34.8: simulated fractional result from arithmetic
+     * - 2026: non-leap year, so February behavior is deterministic
+     *
+     * @see Horde_Date::_correct() line 1486-1513 day normalization logic
+     */
+    public function testFloatMdayWithMonthRollover()
+    {
+        // March has 31 days; 34.8 should roll to April 3 after normalization.
+        $date = new Horde_Date([
+            'year' => 2026,
+            'month' => 3,      // March
+            'mday' => 34.8,    // Invalid: truncates to 34, rolls to April 3
+            'hour' => 12,
+            'min' => 0,
+            'sec' => 0,
+        ]);
+
+        // _correct() should normalize this to April 3.
+        $this->assertSame(2026, $date->year);
+        $this->assertSame(4, $date->month);    // April (month rolled over)
+        $this->assertSame(3, $date->mday);     // Day 3 (34 - 31 = 3)
+
+        // Normalization and toDays() should both remain type-safe.
+        $days = $date->toDays();
+        $this->assertIsInt($days);
+
+        // April 3, 2026 maps to Julian Day Number 2461134.
+        $this->assertSame(2461134, $days);
+    }
+
+    /**
+     * Verifies diff() returns integer day counts as documented.
+     *
+     * Why: The contract says "@return integer The absolute number of days between
+     * the two dates." If internal state drifts to float, callers could receive
+     * non-integer values and break date arithmetic.
+     *
+     * This matters for Kronolith patterns such as:
+     *   $diff = $event->start->diff($event->end);
+     *   'mday' => $next->mday + $diff
+     *
+     * Expected behavior:
+     * - diff() returns int
+     * - time-of-day does not affect day count
+     * - diff(a, b) is symmetric with diff(b, a)
+     *
+     * Note: fractional-day precision belongs in another method
+     * (for example diffSeconds() / 86400), not diff().
+     */
+    public function testDiffReturnsInteger()
+    {
+        $date1 = new Horde_Date('2026-03-19 10:30:00');
+        $date2 = new Horde_Date('2026-03-21 15:45:00');
+
+        $diff = $date1->diff($date2);
+
+        // Contract requires integer return type.
+        $this->assertIsInt($diff, 'diff() must return integer per @return annotation');
+
+        // Only date components count here; hours/minutes are ignored.
+        $this->assertSame(2, $diff, 'diff() returns whole days only, ignoring time components');
+
+        // Verify symmetry: diff(a, b) == diff(b, a).
+        $this->assertSame($date1->diff($date2), $date2->diff($date1));
+    }
+
+    /**
+     * Covers negative-float truncation and normalization.
+     *
+     * Why: subtraction paths can produce negative floats before correction
+     * (for example $date->min -= $alarm_minutes). We need to confirm truncation
+     * and rollover are consistent for negative values.
+     *
+     * Expected behavior:
+     * - negative floats truncate toward zero (-5.7 to -5, not -6)
+     * - resulting out-of-range day values are normalized by _correct()
+     *
+     * Test data meaning:
+     * - March 1 forces a month rollback case
+     * - mday = -0.7 truncates to 0, then normalizes to previous month end
+     * - 2026 is non-leap year, so previous month end is Feb 28
+     */
+    public function testNegativeFloatTruncation()
+    {
+        // Day -0.7 truncates to 0, then normalizes to Feb 28.
+        $date = new Horde_Date([
+            'year' => 2026,
+            'month' => 3,      // March
+            'mday' => -0.7,    // Truncates to 0, corrects to Feb 28
+            'hour' => 0,
+            'min' => 0,
+            'sec' => 0,
+        ]);
+
+        // Expected normalized date: February 28, 2026.
+        $this->assertSame(2026, $date->year);
+        $this->assertSame(2, $date->month);    // February
+        $this->assertSame(28, $date->mday);    // Feb 28 (2026 not leap year)
+
+        // toDays() should still be type-safe.
+        $days = $date->toDays();
+        $this->assertIsInt($days);
     }
 }

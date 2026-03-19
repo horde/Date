@@ -1,13 +1,17 @@
 <?php
+
+declare(strict_types=1);
 /**
  * @category   Horde
  * @package    Date
  * @subpackage UnitTests
  */
+
 namespace Horde\Date\Test\Repeater;
-use \PHPUnit\Framework\TestCase;
-use \Horde_Date;
-use \Horde_Date_Repeater_DayName;
+
+use Horde_Date;
+use Horde_Date_Repeater_DayName;
+use PHPUnit\Framework\TestCase;
 
 /**
  * @category   Horde

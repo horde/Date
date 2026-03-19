@@ -774,4 +774,3 @@ class FormatTest extends TestCase
         $this->assertEquals('20150318', $result);
     }
 }
-
