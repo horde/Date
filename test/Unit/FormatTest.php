@@ -16,7 +16,11 @@ declare(strict_types=1);
 
 namespace Horde\Date\Test\Unit;
 
+use DateTime;
+use DateTimeImmutable;
 use Horde\Date\Format;
+use InvalidArgumentException;
+use RuntimeException;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\TestCase;
 
@@ -208,7 +212,7 @@ class FormatTest extends TestCase
      */
     public function testDateTimeInput(): void
     {
-        $date = new \DateTime('2026-03-17 14:30:00');
+        $date = new DateTime('2026-03-17 14:30:00');
         $result = Format::formatDate($date, '%Y-%m-%d', 'en_US');
         $this->assertEquals('2026-03-17', $result);
     }
@@ -339,7 +343,7 @@ class FormatTest extends TestCase
      */
     public function testDateTimeImmutableInput(): void
     {
-        $date = new \DateTimeImmutable('2026-03-17 14:30:00');
+        $date = new DateTimeImmutable('2026-03-17 14:30:00');
         $result = Format::formatDate($date, '%Y-%m-%d', 'en_US');
         $this->assertEquals('2026-03-17', $result);
     }
@@ -367,11 +371,11 @@ class FormatTest extends TestCase
      */
     public function testInvalidStringInputThrowsException(): void
     {
-        $this->expectException(\RuntimeException::class);
-        $this->expectExceptionMessage('Failed to format timestamp');
+        $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessage('Invalid timestamp value');
 
         // This will create an invalid timestamp (false from strtotime)
-        // which will fail in IntlDateFormatter
+        // Now caught early with InvalidArgumentException
         Format::formatDate('not-a-valid-date-string-xyz', '%Y-%m-%d', 'en_US');
     }
 
@@ -381,7 +385,7 @@ class FormatTest extends TestCase
     public function testInvalidLocaleFormatType(): void
     {
         // This should not happen in normal usage, but test the guard
-        $this->expectException(\InvalidArgumentException::class);
+        $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage('Unknown locale format');
 
         // Manually trigger by modifying internal state (would need reflection)
@@ -760,7 +764,7 @@ class FormatTest extends TestCase
      */
     public function testFormatWithAdjacentPatterns(): void
     {
-        $date = new \DateTime('2015-03-18');
+        $date = new DateTime('2015-03-18');
 
         // Test %Y%y formats correctly with separator
         $result = Format::formatDate($date, '%Y%y', 'en_US');
@@ -772,5 +776,98 @@ class FormatTest extends TestCase
         $result = Format::formatDate($date, '%Y%m%d', 'en_US');
         $this->assertStringNotContainsString("\x01", $result);
         $this->assertEquals('20150318', $result);
+    }
+
+    /**
+     * Test numeric string timestamps (GitHub issue #6)
+     *
+     * Horde_Date::timestamp() returns string for dates outside 1970-2038 range.
+     * This was causing "Failed to format timestamp" errors in Turba when
+     * viewing contacts with old birthdays (pre-1970).
+     *
+     * @link https://github.com/horde/Date/issues/6
+     */
+    public function testNumericStringTimestampForOldDates(): void
+    {
+        // Test pre-1970 date as numeric string (like from Horde_Date::format('U'))
+        $timestamp = '-631152000'; // 1950-01-01
+        $result = Format::formatDate($timestamp, 'yyyy-MM-dd', 'en_US');
+        $this->assertEquals('1950-01-01', $result);
+
+        // Test 1959 birthday (reported in issue)
+        $timestamp = '-315619200'; // 1960-01-01 (approx)
+        $result = Format::formatDate($timestamp, 'yyyy-MM-dd', 'en_US');
+        $this->assertEquals('1960-01-01', $result);
+    }
+
+    /**
+     * Test numeric string timestamps for post-2038 dates (GitHub issue #6)
+     *
+     * @link https://github.com/horde/Date/issues/6
+     */
+    public function testNumericStringTimestampForFutureDates(): void
+    {
+        // Test post-2038 date as numeric string
+        $timestamp = '2147483648'; // 2038-01-19 03:14:08
+        $result = Format::formatDate($timestamp, 'yyyy-MM-dd', 'en_US');
+        $this->assertEquals('2038-01-19', $result);
+
+        // Test far future date
+        $timestamp = '4102444800'; // 2100-01-01
+        $result = Format::formatDate($timestamp, 'yyyy-MM-dd', 'en_US');
+        $this->assertEquals('2100-01-01', $result);
+    }
+
+    /**
+     * Ensure the fix doesn't break integer timestamp handling.
+     *
+     * @link https://github.com/horde/Date/issues/6
+     */
+    public function testIntegerTimestampStillWorks(): void
+    {
+        // Pre-1970 integer timestamp
+        $timestamp = -631152000; // 1950-01-01
+        $result = Format::formatDate($timestamp, 'yyyy-MM-dd', 'en_US');
+        $this->assertEquals('1950-01-01', $result);
+
+        // Post-2038 integer timestamp (on 64-bit systems)
+        if (PHP_INT_SIZE >= 8) {
+            $timestamp = 2147483648; // 2038-01-19
+            $result = Format::formatDate($timestamp, 'yyyy-MM-dd', 'en_US');
+            $this->assertEquals('2038-01-19', $result);
+        }
+    }
+
+    /**
+     * Test Turba "birthday older than 1970 crash"
+     *
+     * @link https://github.com/horde/Date/issues/6
+     */
+    public function testTurbaBirthdayScenario(): void
+    {
+        // Simulate Horde_Date::timestamp() returning string for old date
+        $birthdayTimestamp = '-631152000'; // 1950-01-01
+
+        // Turba uses 'yyyy-MM-dd' format (ICU format, not strftime)
+        $result = Format::formatDate($birthdayTimestamp, 'yyyy-MM-dd', 'en_US');
+        $this->assertEquals('1950-01-01', $result);
+
+        // Test with strftime format as well
+        $result = Format::formatDate($birthdayTimestamp, '%Y-%m-%d', 'en_US');
+        $this->assertEquals('1950-01-01', $result);
+    }
+
+    /**
+     * Invalid date strings still throw exceptions
+     *
+     * @link https://github.com/horde/Date/issues/6
+     */
+    public function testInvalidDateStringStillThrows(): void
+    {
+        $this->expectException(InvalidArgumentException::class);
+        $this->expectExceptionMessage('Invalid timestamp value');
+
+        // Non-numeric, invalid date string should fail
+        Format::formatDate('not-a-valid-date', 'yyyy-MM-dd', 'en_US');
     }
 }

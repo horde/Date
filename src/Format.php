@@ -209,7 +209,17 @@ class Format
         if ($timestamp instanceof DateTime || $timestamp instanceof DateTimeInterface) {
             $timestamp = $timestamp->getTimestamp();
         } elseif (is_string($timestamp)) {
-            $timestamp = strtotime($timestamp);
+            // Handle numeric string timestamps (e.g., from Horde_Date::format('U'))
+            if (is_numeric($timestamp)) {
+                $timestamp = (int) $timestamp;
+            } else {
+                $timestamp = strtotime($timestamp);
+            }
+        }
+
+        // Validate timestamp conversion
+        if ($timestamp === false || !is_int($timestamp)) {
+            throw new \InvalidArgumentException("Invalid timestamp value");
         }
 
         // Only convert if format is strftime
