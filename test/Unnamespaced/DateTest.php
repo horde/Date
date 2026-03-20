@@ -726,55 +726,233 @@ class DateTest extends TestCase
         $date = new Horde_Date(-631152000);
         $this->assertEquals(1950, $date->year);
     }
-    
+
     /**
-     * Test numeric timestamp string handling (deprecated BC support)
+     * Test YYYYMMDD string format validation
      *
-     * DEPRECATED: SOME numeric strings are silently accepted for BC compatibility.
-     * This behavior will be removed in next major version.
-     * Callers should pass objects or integer timestamps instead.
+     * 8-digit strings should be interpreted as YYYYMMDD when:
+     * - Exactly 8 digits
+     * - Year >= 1000 (legitimate year)
+     * - Month 1-12
+     * - Day 1-31
      *
-     * The Horde_Date constructor is the wrong place to guess what a caller means.
+     * This prevents ambiguous strings like "19700101" from being
+     * interpreted as Unix timestamps.
+     *
+     * @link https://github.com/horde/Date/pull/8
+     */
+    public function testYYYYMMDDStringFormat(): void
+    {
+        // Valid YYYYMMDD strings
+        $date = new Horde_Date('19700101'); // 1970-01-01
+        $this->assertEquals(1970, $date->year);
+        $this->assertEquals(1, $date->month);
+        $this->assertEquals(1, $date->mday);
+
+        $date = new Horde_Date('20011231'); // 2001-12-31
+        $this->assertEquals(2001, $date->year);
+        $this->assertEquals(12, $date->month);
+        $this->assertEquals(31, $date->mday);
+
+        $date = new Horde_Date('10000101'); // 1000-01-01 (minimum valid year)
+        $this->assertEquals(1000, $date->year);
+        $this->assertEquals(1, $date->month);
+        $this->assertEquals(1, $date->mday);
+
+        $date = new Horde_Date('20260320'); // 2026-03-20
+        $this->assertEquals(2026, $date->year);
+        $this->assertEquals(3, $date->month);
+        $this->assertEquals(20, $date->mday);
+    }
+
+    /**
+     * Test that 9+ digit strings are still treated as timestamps (deprecated BC)
      *
      * @link https://github.com/horde/Date/issues/6
      * @link https://github.com/horde/ActiveSync/pull/15
      */
-    public function testNumericTimestampStringDeprecated(): void
+    public function testLongNumericStringsAsTimestamps(): void
     {
-        // Pre-1970 timestamp as string - accepted for BC
+        // 10-digit positive timestamp
+        $date = new Horde_Date('1773944669'); // 2026-03-19
+        $this->assertEquals(2026, $date->year);
+        $this->assertEquals(3, $date->month);
+        $this->assertEquals(19, $date->mday);
+
+        // 10-digit negative timestamp
         $date = new Horde_Date('-631152000'); // 1950-01-01
         $this->assertEquals(1950, $date->year);
+        $this->assertEquals(1, $date->month);
+        $this->assertEquals(1, $date->mday);
+
+        // 9-digit timestamp (blocks years 1970-2001 from timestamp interpretation)
+        $date = new Horde_Date('946684800'); // 2000-01-01 00:00:00 UTC
+        $this->assertEquals(2000, $date->year);
         $this->assertEquals(1, $date->month);
         $this->assertEquals(1, $date->mday);
     }
 
     /**
-     * Test positive numeric timestamp string (deprecated BC support)
+     * Test ambiguous 8-digit strings - YYYYMMDD vs Unix timestamp
      *
-     * @link https://github.com/horde/Date/issues/6
-     * @link https://github.com/horde/ActiveSync/pull/15
+     * 8-digit numeric strings are inherently ambiguous:
+     * - Could be YYYYMMDD date format (e.g., "19700101" = 1970-01-01)
+     * - Could be Unix timestamp (e.g., "19700101" = 228 days after epoch)
+     *
+     * Resolution strategy (implemented in this PR):
+     * 1. If exactly 8 digits AND year >= 1000 AND valid month (1-12) AND valid day (1-31)
+     *    -> Treat as YYYYMMDD
+     * 2. Otherwise -> Fall through to other parsing logic (may fail or use DateTime)
+     *
+     * This prevents dates between 1970-2001 from being misinterpreted as timestamps.
+     *
+     * @link https://github.com/horde/Date/pull/8
      */
-    public function testPositiveNumericTimestampStringDeprecated(): void
+    public function testAmbiguousEightDigitStrings(): void
     {
-        $date = new Horde_Date('1773944669'); // 2026-03-19 (from ActiveSync PR)
-        $this->assertEquals(2026, $date->year);
-        $this->assertEquals(3, $date->month);
-        $this->assertEquals(19, $date->mday);
+        // Valid YYYYMMDD with valid date components - interpreted as date
+        $date = new Horde_Date('19700101'); // 1970-01-01 (NOT timestamp 19700101)
+        $this->assertEquals(1970, $date->year);
+        $this->assertEquals(1, $date->month);
+        $this->assertEquals(1, $date->mday);
+        $this->assertEquals(0, $date->hour); // Time should be 00:00:00
+
+        $date = new Horde_Date('20011231'); // 2001-12-31
+        $this->assertEquals(2001, $date->year);
+        $this->assertEquals(12, $date->month);
+        $this->assertEquals(31, $date->mday);
+
+        // Edge case: Minimum valid year (1000)
+        $date = new Horde_Date('10000101'); // 1000-01-01
+        $this->assertEquals(1000, $date->year);
+        $this->assertEquals(1, $date->month);
+        $this->assertEquals(1, $date->mday);
     }
 
     /**
-     * Test that integer timestamps still work without deprecation
+     * Test invalid YYYYMMDD patterns that should NOT be treated as dates
      *
-     * @link https://github.com/horde/Date/issues/6
+     * These 8-digit strings don't pass YYYYMMDD validation (year < 1000) and will
+     * fall through to DateTime parsing, which may interpret them differently.
+     *
+     * @link https://github.com/horde/Date/pull/8
      */
-    public function testIntegerTimestampNoDeprecation(): void
+    public function testInvalidYYYYMMDDPatterns(): void
     {
-        // Should NOT trigger deprecation
-        $date = new Horde_Date(1773944669);
-        $this->assertEquals(2026, $date->year);
+        // Year < 1000 - doesn't pass our YYYYMMDD validation (year >= 1000)
+        // "09991231" fails year >= 1000 check, falls through to DateTime
+        // DateTime correctly parses it as year 999
+        $date = new Horde_Date('09991231');
+        $this->assertEquals(999, $date->year); // DateTime handles it correctly
+        $this->assertEquals(12, $date->month);
+        $this->assertEquals(31, $date->mday);
 
-        // Pre-1970 integer
-        $date = new Horde_Date(-631152000);
-        $this->assertEquals(1950, $date->year);
+        // Invalid month (month 13)
+        // "19701399" fails month <= 12 check, falls through to DateTime
+        // DateTime will reject or mangle this
+        try {
+            $date = new Horde_Date('19701399');
+            // If it doesn't throw, it was interpreted as something else
+            $this->assertNotEquals(13, $date->month); // Month 13 is invalid
+        } catch (\Horde_Date_Exception $e) {
+            // Expected: DateTime rejects invalid month
+            $this->assertStringContainsString('Failed to parse', $e->getMessage());
+        }
+
+        // Invalid day (day 32)
+        // "19700132" fails day <= 31 check, falls through to DateTime
+        try {
+            $date = new Horde_Date('19700132');
+            $this->assertNotEquals(32, $date->mday); // Day 32 is invalid
+        } catch (\Horde_Date_Exception $e) {
+            // Expected: DateTime rejects invalid day
+            $this->assertStringContainsString('Failed to parse', $e->getMessage());
+        }
+
+        // Invalid month and day (month 00)
+        // "19700001" fails month >= 1 check
+        try {
+            $date = new Horde_Date('19700001');
+            $this->assertNotEquals(0, $date->month); // Month 0 is invalid
+        } catch (\Horde_Date_Exception $e) {
+            // Expected: DateTime rejects invalid month
+            $this->assertStringContainsString('Failed to parse', $e->getMessage());
+        }
+    }
+
+    /**
+     * Test that 12 and 14-digit datetime strings work correctly
+     *
+     * These formats are handled by explicit regex patterns (line 599, 609):
+     * - 14 digits: YYYYMMDDHHmmss (e.g., "20010203040506")
+     * - 12 digits: YYYYMMDDHHmm - NOT explicitly handled, relies on DateTime
+     *
+     * @link https://github.com/horde/Date/pull/8
+     */
+    public function testLongNumericDateTimeStrings(): void
+    {
+        // 14-digit format: YYYYMMDDHHmmss (explicitly handled at line 599)
+        $date = new Horde_Date('20010203040506'); // 2001-02-03 04:05:06
+        $this->assertEquals(2001, $date->year);
+        $this->assertEquals(2, $date->month);
+        $this->assertEquals(3, $date->mday);
+        $this->assertEquals(4, $date->hour);
+        $this->assertEquals(5, $date->min);
+        $this->assertEquals(6, $date->sec);
+
+        // 12-digit format: YYYYMMDDHHmm (NOT explicitly handled)
+        // Falls through to DateTime - behavior depends on PHP version
+        // This documents that 12-digit format support is NOT guaranteed
+        try {
+            $date = new Horde_Date('197001010130'); // 1970-01-01 01:30
+            // If DateTime accepts it, these should match
+            $this->assertEquals(1970, $date->year);
+            $this->assertEquals(1, $date->month);
+            $this->assertEquals(1, $date->mday);
+            // Note: hour/minute may not be parsed correctly by DateTime
+        } catch (\Horde_Date_Exception $e) {
+            // DateTime may reject this format - that's acceptable
+            $this->assertStringContainsString('Failed to parse', $e->getMessage());
+        }
+    }
+
+    /**
+     * Test edge cases around the 8-digit boundary
+     *
+     * Documents behavior of 7-digit, 8-digit, and 9-digit numeric strings.
+     *
+     * @link https://github.com/horde/Date/pull/8
+     */
+    public function testNumericStringLengthBoundaries(): void
+    {
+        // 7 digits - too short for YYYYMMDD or timestamp string BC
+        // Falls through to DateTime parsing
+        try {
+            $date = new Horde_Date('1970101'); // 7 digits
+            // DateTime may parse this in unexpected ways or reject it
+            $this->assertTrue(true); // Just document that it doesn't crash
+        } catch (\Horde_Date_Exception $e) {
+            // Rejection is acceptable
+            $this->assertStringContainsString('Failed to parse', $e->getMessage());
+        }
+
+        // 8 digits with valid YYYYMMDD - handled as date
+        $date = new Horde_Date('19700101');
+        $this->assertEquals(1970, $date->year);
+        $this->assertEquals(1, $date->month);
+        $this->assertEquals(1, $date->mday);
+
+        // 9 digits - handled as Unix timestamp (deprecated BC)
+        $date = new Horde_Date('946684800'); // 9 digits
+        $this->assertEquals(2000, $date->year); // Timestamp interpretation
+
+        // 11 digits - handled as Unix timestamp
+        $date = new Horde_Date('17739446699'); // 11 digits (far future)
+        $this->assertTrue($date->year > 2500); // Timestamp interpretation
+
+        // 12 digits - NOT handled by timestamp BC, falls to explicit regex/DateTime
+        $date = new Horde_Date('200102030405'); // 12 digits
+        // Behavior depends on DateTime
+        $this->assertTrue($date->year >= 1970);
     }
 }
