@@ -52,6 +52,17 @@
     uri: http://www.horde.org/licenses/lgpl21
   notes: |
     [rla] Begin conversion for composer usage.
+3.0.0-beta7:
+  api: 3.0.0-beta7
+  state:
+    release: beta
+    api: beta
+  date: 2026-03-20
+  license:
+    identifier: LGPL-2.1-only
+    uri: https://spdx.org/licenses/LGPL-2.1-only.html
+  notes: |-
+    fix: Address horde/activesync#15 - allow some timestamp-ish strings as unix timestamps, otherwise delegate to DateTime.
 3.0.0-beta6:
   api: 3.0.0-beta6
   state:
