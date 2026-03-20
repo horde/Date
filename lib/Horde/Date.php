@@ -540,16 +540,36 @@ class Horde_Date implements DateInterface
         if (is_string($date)) {
             $date = trim($date, '"');
 
-            // DEPRECATED: Handle Unix timestamp strings for backwards compatibility.
-            // This behavior is deprecated and will be removed in the next major version.
-            // Callers should pass timestamps as integers, not strings.
-            // Only match strings that look like Unix timestamps (8-11 digits).
-            // Positive: 8-10 digits (e.g., "946684800" = 2000-01-01, "1773944669" = 2026)
-            // Negative: 9-11 digits with minus (e.g., "-631152000" = 1950-01-01)
-            // Excludes short numbers (< 8 digits) and ISO date strings (12+ digits).
-            // Related: https://github.com/horde/Date/issues/6
-            // Related: https://github.com/horde/ActiveSync/pull/15
-            if (preg_match('/^(-\d{9,11}|\d{8,10})$/', $date)) {
+            // Check for YYYYMMDD format first (exactly 8 digits with valid date components).
+            // This must be checked before the deprecated timestamp string BC logic below,
+            // because 8-digit strings are ambiguous (could be YYYYMMDD or a Unix timestamp).
+            // YYYYMMDD requirements:
+            // - Exactly 8 digits
+            // - Year >= 1000 (looks like a legitimate year)
+            // - Month 1-12
+            // - Day 1-31
+            // This prevents dates like "19700101" from being interpreted as a Unix timestamp.
+            if (preg_match('/^(\d{4})(\d{2})(\d{2})$/', $date, $m)
+                && $m[1] >= 1000
+                && $m[2] >= 1 && $m[2] <= 12
+                && $m[3] >= 1 && $m[3] <= 31) {
+                // Valid YYYYMMDD format - let it fall through to the date parsing logic below
+            } elseif (preg_match('/^-?\d{9,11}$/', $date)) {
+                // DEPRECATED: Handle Unix timestamp strings for backwards compatibility.
+                // This behavior is deprecated and will be removed in the next major version.
+                // Callers should pass timestamps as integers, not strings.
+                // Matches strings with 9-11 digits (positive or negative).
+                // This effectively blocks years 1970-2001 from timestamp interpretation,
+                // forcing them through proper date parsing instead.
+                // Excludes longer strings (12+ digits) which are likely ISO datetime strings.
+                // Examples:
+                // - "946684800" (9 digits) = 2000-01-01 timestamp
+                // - "1773944669" (10 digits) = 2026 timestamp
+                // - "-631152000" (10 digits) = 1950-01-01 timestamp
+                // - "19700101" (8 digits) = NOT matched, handled as YYYYMMDD above
+                // - "20010203040506" (14 digits) = NOT matched, falls through to DateTime
+                // Related: https://github.com/horde/Date/issues/6
+                // Related: https://github.com/horde/ActiveSync/pull/15
                 $date = (int)$date;
             }
         }
