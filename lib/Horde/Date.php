@@ -497,7 +497,7 @@ class Horde_Date implements DateInterface
      *
      * @param mixed $date  Date representation:
      *   - null: current date/time
-     *   - string: ISO 8601 format, DateTime-parseable string, or timestamp
+     *   - string: ISO 8601 format, DateTime-parseable string, or timestamp (avoid!)
      *   - int: Unix timestamp
      *   - array: Date components array
      *   - object: DateTime, Horde_Date, or stdClass with date properties
@@ -539,6 +539,19 @@ class Horde_Date implements DateInterface
 
         if (is_string($date)) {
             $date = trim($date, '"');
+
+            // DEPRECATED: Handle Unix timestamp strings for backwards compatibility.
+            // This behavior is deprecated and will be removed in the next major version.
+            // Callers should pass timestamps as integers, not strings.
+            // Only match strings that look like Unix timestamps (8-11 digits).
+            // Positive: 8-10 digits (e.g., "946684800" = 2000-01-01, "1773944669" = 2026)
+            // Negative: 9-11 digits with minus (e.g., "-631152000" = 1950-01-01)
+            // Excludes short numbers (< 8 digits) and ISO date strings (12+ digits).
+            // Related: https://github.com/horde/Date/issues/6
+            // Related: https://github.com/horde/ActiveSync/pull/15
+            if (preg_match('/^(-\d{9,11}|\d{8,10})$/', $date)) {
+                $date = (int)$date;
+            }
         }
 
         if (is_object($date)) {

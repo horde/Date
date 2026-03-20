@@ -675,4 +675,55 @@ class DateTest extends TestCase
         $days = $date->toDays();
         $this->assertIsInt($days);
     }
+
+    /**
+     * Test numeric timestamp string handling (deprecated BC support)
+     *
+     * DEPRECATED: SOME numeric strings are silently accepted for BC compatibility.
+     * This behavior will be removed in next major version.
+     * Callers should pass objects or integer timestamps instead.
+     *
+     * The Horde_Date constructor is the wrong place to guess what a caller means.
+     *
+     * @link https://github.com/horde/Date/issues/6
+     * @link https://github.com/horde/ActiveSync/pull/15
+     */
+    public function testNumericTimestampStringDeprecated(): void
+    {
+        // Pre-1970 timestamp as string - accepted for BC
+        $date = new Horde_Date('-631152000'); // 1950-01-01
+        $this->assertEquals(1950, $date->year);
+        $this->assertEquals(1, $date->month);
+        $this->assertEquals(1, $date->mday);
+    }
+
+    /**
+     * Test positive numeric timestamp string (deprecated BC support)
+     *
+     * @link https://github.com/horde/Date/issues/6
+     * @link https://github.com/horde/ActiveSync/pull/15
+     */
+    public function testPositiveNumericTimestampStringDeprecated(): void
+    {
+        $date = new Horde_Date('1773944669'); // 2026-03-19 (from ActiveSync PR)
+        $this->assertEquals(2026, $date->year);
+        $this->assertEquals(3, $date->month);
+        $this->assertEquals(19, $date->mday);
+    }
+
+    /**
+     * Test that integer timestamps still work without deprecation
+     *
+     * @link https://github.com/horde/Date/issues/6
+     */
+    public function testIntegerTimestampNoDeprecation(): void
+    {
+        // Should NOT trigger deprecation
+        $date = new Horde_Date(1773944669);
+        $this->assertEquals(2026, $date->year);
+
+        // Pre-1970 integer
+        $date = new Horde_Date(-631152000);
+        $this->assertEquals(1950, $date->year);
+    }
 }
