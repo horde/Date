@@ -35,7 +35,7 @@ class DateFormatTest extends TestCase
         date_default_timezone_set('UTC');
 
         // Save current locale
-        $this->oldLocale = setlocale(LC_ALL, 0);
+        $this->oldLocale = setlocale(LC_ALL, '0');
 
         // Set a known locale for consistent test results
         setlocale(LC_ALL, 'en_US.UTF-8');
