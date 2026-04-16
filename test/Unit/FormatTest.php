@@ -520,7 +520,7 @@ class FormatTest extends TestCase
         $timestamp = strtotime('2026-03-17 14:30:00');
 
         // Try to set Arabic locale - skip if not available
-        $oldLocale = setlocale(LC_ALL, 0);
+        $oldLocale = setlocale(LC_ALL, '0');
         if (!setlocale(LC_ALL, 'ar_SA.UTF-8')) {
             $this->markTestSkipped('ar_SA.UTF-8 locale not available.');
         }
@@ -556,7 +556,7 @@ class FormatTest extends TestCase
         $timestamp = strtotime('2026-03-17 14:30:00');
 
         // Try to set Hebrew locale - skip if not available
-        $oldLocale = setlocale(LC_ALL, 0);
+        $oldLocale = setlocale(LC_ALL, '0');
         if (!setlocale(LC_ALL, 'he_IL.UTF-8')) {
             $this->markTestSkipped('he_IL.UTF-8 locale not available.');
         }

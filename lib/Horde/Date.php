@@ -1364,7 +1364,7 @@ class Horde_Date implements DateInterface
 
         // Use stored timezone and locale
         $timezone = $this->_timezone ?? date_default_timezone_get();
-        $locale = $locale ?? $this->_locale ?? setlocale(LC_ALL, 0) ?: 'en_US';
+        $locale = $locale ?? $this->_locale ?? setlocale(LC_ALL, '0') ?: 'en_US';
 
         return $formatter->format($this, $pattern, $locale, $timezone);
     }
