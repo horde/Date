@@ -269,9 +269,9 @@ class DateTimeFormatterTest extends TestCase
 
         $date = $formatter->parse('2026-03-18', 'Y-m-d', 'en_US');
 
-        $this->assertEquals(2026, $date->year);
-        $this->assertEquals(3, $date->month);
-        $this->assertEquals(18, $date->mday);
+        $this->assertSame('2026', $date->format('Y'));
+        $this->assertSame('03', $date->format('m'));
+        $this->assertSame('18', $date->format('d'));
     }
 
     /**
@@ -283,12 +283,12 @@ class DateTimeFormatterTest extends TestCase
 
         $date = $formatter->parse('2026-03-18 14:30:45', 'Y-m-d H:i:s', 'en_US');
 
-        $this->assertEquals(2026, $date->year);
-        $this->assertEquals(3, $date->month);
-        $this->assertEquals(18, $date->mday);
-        $this->assertEquals(14, $date->hour);
-        $this->assertEquals(30, $date->min);
-        $this->assertEquals(45, $date->sec);
+        $this->assertSame('2026', $date->format('Y'));
+        $this->assertSame('03', $date->format('m'));
+        $this->assertSame('18', $date->format('d'));
+        $this->assertSame('14', $date->format('H'));
+        $this->assertSame('30', $date->format('i'));
+        $this->assertSame('45', $date->format('s'));
     }
 
     /**
@@ -301,9 +301,9 @@ class DateTimeFormatterTest extends TestCase
         // US format: m/d/Y
         $date = $formatter->parse('03/18/2026', 'm/d/Y', 'en_US');
 
-        $this->assertEquals(2026, $date->year);
-        $this->assertEquals(3, $date->month);
-        $this->assertEquals(18, $date->mday);
+        $this->assertSame('2026', $date->format('Y'));
+        $this->assertSame('03', $date->format('m'));
+        $this->assertSame('18', $date->format('d'));
     }
 
     /**
@@ -315,11 +315,11 @@ class DateTimeFormatterTest extends TestCase
 
         $date = $formatter->parse('2026-03-18 14:30', 'Y-m-d H:i', 'en_US', 'America/New_York');
 
-        $this->assertEquals(2026, $date->year);
-        $this->assertEquals(3, $date->month);
-        $this->assertEquals(18, $date->mday);
-        $this->assertEquals(14, $date->hour);
-        $this->assertEquals(30, $date->min);
+        $this->assertSame('2026', $date->format('Y'));
+        $this->assertSame('03', $date->format('m'));
+        $this->assertSame('18', $date->format('d'));
+        $this->assertSame('14', $date->format('H'));
+        $this->assertSame('30', $date->format('i'));
     }
 
     /**
@@ -338,12 +338,7 @@ class DateTimeFormatterTest extends TestCase
         $parsed = $formatter->parse($formatted, 'Y-m-d H:i:s');
 
         // Verify round-trip
-        $this->assertEquals(2026, $parsed->year);
-        $this->assertEquals(3, $parsed->month);
-        $this->assertEquals(18, $parsed->mday);
-        $this->assertEquals(14, $parsed->hour);
-        $this->assertEquals(30, $parsed->min);
-        $this->assertEquals(0, $parsed->sec);
+        $this->assertSame('2026-03-18 14:30:00', $parsed->format('Y-m-d H:i:s'));
     }
 
     /**
@@ -355,11 +350,11 @@ class DateTimeFormatterTest extends TestCase
 
         $date = $formatter->parse('2026-03-18 2:30 PM', 'Y-m-d g:i A', 'en_US');
 
-        $this->assertEquals(2026, $date->year);
-        $this->assertEquals(3, $date->month);
-        $this->assertEquals(18, $date->mday);
-        $this->assertEquals(14, $date->hour);  // 2 PM = 14:00
-        $this->assertEquals(30, $date->min);
+        $this->assertSame('2026', $date->format('Y'));
+        $this->assertSame('03', $date->format('m'));
+        $this->assertSame('18', $date->format('d'));
+        $this->assertSame('14', $date->format('H'));  // 2 PM = 14:00
+        $this->assertSame('30', $date->format('i'));
     }
 
     /**
@@ -402,10 +397,10 @@ class DateTimeFormatterTest extends TestCase
         // Parse back
         $parsed = $formatter->parse($formatted, 'l, F j, Y g:i A');
 
-        $this->assertEquals(2026, $parsed->year);
-        $this->assertEquals(3, $parsed->month);
-        $this->assertEquals(18, $parsed->mday);
-        $this->assertEquals(14, $parsed->hour);
-        $this->assertEquals(30, $parsed->min);
+        $this->assertSame('2026', $parsed->format('Y'));
+        $this->assertSame('03', $parsed->format('m'));
+        $this->assertSame('18', $parsed->format('d'));
+        $this->assertSame('14', $parsed->format('H'));
+        $this->assertSame('30', $parsed->format('i'));
     }
 }

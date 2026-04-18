@@ -6,6 +6,8 @@ namespace Horde\Date\Test;
 
 use Horde_Date;
 use Horde_Date_Utils;
+use Horde\Date\Date;
+use Horde\Date\Utils;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
@@ -238,5 +240,82 @@ class UtilsFullTest extends TestCase
     {
         $result = Horde_Date_Utils::legacyDateFormatter('%Y', null);
         $this->assertSame(date('Y'), $result);
+    }
+
+    // =========================================================================
+    // Cross-validation: legacy wrapper vs modern Utils
+    // =========================================================================
+
+    #[DataProvider('leapYearProvider')]
+    public function testIsLeapYearMatchesModern(int $year, bool $expected): void
+    {
+        $this->assertSame(
+            Utils::isLeapYear($year),
+            Horde_Date_Utils::isLeapYear($year),
+            "isLeapYear($year): legacy and modern must agree"
+        );
+    }
+
+    #[DataProvider('daysInMonthProvider')]
+    public function testDaysInMonthMatchesModern(int $month, int $year, int $expected): void
+    {
+        $this->assertSame(
+            Utils::daysInMonth($month, $year),
+            (int) Horde_Date_Utils::daysInMonth($month, $year),
+            "daysInMonth($month, $year): legacy and modern must agree"
+        );
+    }
+
+    #[DataProvider('firstDayOfWeekProvider')]
+    public function testFirstDayOfWeekMatchesModern(int $week, int $year, string $expectedDate): void
+    {
+        $legacy = Horde_Date_Utils::firstDayOfWeek($week, $year);
+        $modern = Utils::firstDayOfWeek($week, $year);
+
+        $this->assertSame(
+            $modern->format('Y-m-d'),
+            $legacy->format('Y-m-d'),
+            "firstDayOfWeek($week, $year): legacy and modern must agree"
+        );
+    }
+
+    public function testFirstDayOfWeekLegacyReturnsHordeDate(): void
+    {
+        $legacy = Horde_Date_Utils::firstDayOfWeek(1, 2026);
+        $this->assertInstanceOf(Horde_Date::class, $legacy);
+
+        $modern = Utils::firstDayOfWeek(1, 2026);
+        $this->assertInstanceOf(Date::class, $modern);
+    }
+
+    #[DataProvider('strftime2dateSimpleProvider')]
+    public function testStrftime2dateMatchesModernForSimpleFormats(string $strftimeFormat, string $expected): void
+    {
+        $this->assertSame(
+            Utils::strftime2date($strftimeFormat),
+            Horde_Date_Utils::strftime2date($strftimeFormat),
+            "strftime2date('$strftimeFormat'): legacy and modern must agree"
+        );
+    }
+
+    public static function strftime2dateSimpleProvider(): array
+    {
+        return [
+            '%Y → Y'      => ['%Y', 'Y'],
+            '%m → m'      => ['%m', 'm'],
+            '%d → d'      => ['%d', 'd'],
+            '%H → H'      => ['%H', 'H'],
+            '%M → i'      => ['%M', 'i'],
+            '%S → s'      => ['%S', 's'],
+            '%A → l'      => ['%A', 'l'],
+            '%a → D'      => ['%a', 'D'],
+            '%B → F'      => ['%B', 'F'],
+            '%b → M'      => ['%b', 'M'],
+            '%F → Y-m-d'  => ['%F', 'Y-m-d'],
+            '%T → H:i:s'  => ['%T', 'H:i:s'],
+            '%R → H:i'    => ['%R', 'H:i'],
+            '%% → %'      => ['%%', '%'],
+            'composite'   => ['%Y-%m-%d %H:%M:%S', 'Y-m-d H:i:s'],
+        ];
     }
 }

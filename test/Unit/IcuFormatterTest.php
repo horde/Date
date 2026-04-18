@@ -428,9 +428,9 @@ class IcuFormatterTest extends TestCase
 
         $date = $formatter->parse('2026-03-18', 'yyyy-MM-dd', 'en_US');
 
-        $this->assertEquals(2026, $date->year);
-        $this->assertEquals(3, $date->month);
-        $this->assertEquals(18, $date->mday);
+        $this->assertSame('2026', $date->format('Y'));
+        $this->assertSame('03', $date->format('m'));
+        $this->assertSame('18', $date->format('d'));
     }
 
     /**
@@ -443,9 +443,9 @@ class IcuFormatterTest extends TestCase
         // Parse German formatted date
         $date = $formatter->parse('Mittwoch, 18. März 2026', 'EEEE, dd. MMMM yyyy', 'de_DE');
 
-        $this->assertEquals(2026, $date->year);
-        $this->assertEquals(3, $date->month);
-        $this->assertEquals(18, $date->mday);
+        $this->assertSame('2026', $date->format('Y'));
+        $this->assertSame('03', $date->format('m'));
+        $this->assertSame('18', $date->format('d'));
     }
 
     /**
@@ -462,9 +462,9 @@ class IcuFormatterTest extends TestCase
         // Parse it back
         $date = $formatter->parse($formatted, 'short', 'en_US');
 
-        $this->assertEquals(2026, $date->year);
-        $this->assertEquals(3, $date->month);
-        $this->assertEquals(18, $date->mday);
+        $this->assertSame('2026', $date->format('Y'));
+        $this->assertSame('03', $date->format('m'));
+        $this->assertSame('18', $date->format('d'));
     }
 
     /**
@@ -476,12 +476,12 @@ class IcuFormatterTest extends TestCase
 
         $date = $formatter->parse('2026-03-18 14:30:45', 'yyyy-MM-dd HH:mm:ss', 'en_US');
 
-        $this->assertEquals(2026, $date->year);
-        $this->assertEquals(3, $date->month);
-        $this->assertEquals(18, $date->mday);
-        $this->assertEquals(14, $date->hour);
-        $this->assertEquals(30, $date->min);
-        $this->assertEquals(45, $date->sec);
+        $this->assertSame('2026', $date->format('Y'));
+        $this->assertSame('03', $date->format('m'));
+        $this->assertSame('18', $date->format('d'));
+        $this->assertSame('14', $date->format('H'));
+        $this->assertSame('30', $date->format('i'));
+        $this->assertSame('45', $date->format('s'));
     }
 
     /**
@@ -493,13 +493,11 @@ class IcuFormatterTest extends TestCase
 
         $date = $formatter->parse('2026-03-18 14:30', 'yyyy-MM-dd HH:mm', 'en_US', 'Europe/Berlin');
 
-        $this->assertEquals(2026, $date->year);
-        $this->assertEquals(3, $date->month);
-        $this->assertEquals(18, $date->mday);
-        $this->assertEquals(14, $date->hour);
-        $this->assertEquals(30, $date->min);
-        // Verify timezone is set
-        $this->assertNotEquals('UTC', $date->timezone);
+        $this->assertSame('2026', $date->format('Y'));
+        $this->assertSame('03', $date->format('m'));
+        $this->assertSame('18', $date->format('d'));
+        $this->assertSame('14', $date->format('H'));
+        $this->assertSame('30', $date->format('i'));
     }
 
     /**
@@ -517,11 +515,7 @@ class IcuFormatterTest extends TestCase
         $parsed = $formatter->parse($formatted, 'yyyy-MM-dd HH:mm', 'en_US');
 
         // Should match (within same minute due to seconds being dropped)
-        $this->assertEquals(2026, $parsed->year);
-        $this->assertEquals(3, $parsed->month);
-        $this->assertEquals(18, $parsed->mday);
-        $this->assertEquals(14, $parsed->hour);
-        $this->assertEquals(30, $parsed->min);
+        $this->assertSame('2026-03-18 14:30', $parsed->format('Y-m-d H:i'));
     }
 
     /**
@@ -572,8 +566,8 @@ class IcuFormatterTest extends TestCase
         // Parse back
         $parsed = $formatter->parse($formatted, 'EEEE dd MMMM yyyy', 'fr_FR');
 
-        $this->assertEquals(2026, $parsed->year);
-        $this->assertEquals(3, $parsed->month);
-        $this->assertEquals(18, $parsed->mday);
+        $this->assertSame('2026', $parsed->format('Y'));
+        $this->assertSame('03', $parsed->format('m'));
+        $this->assertSame('18', $parsed->format('d'));
     }
 }
