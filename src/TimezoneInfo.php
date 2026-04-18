@@ -25,8 +25,7 @@ final class TimezoneInfo implements Stringable
     public function __construct(
         private readonly string $ianaName,
         private readonly string $originalAlias = '',
-    ) {
-    }
+    ) {}
 
     public function getIanaName(): string
     {

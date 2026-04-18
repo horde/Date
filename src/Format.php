@@ -20,6 +20,8 @@ namespace Horde\Date;
 use DateTime;
 use DateTimeInterface;
 use IntlDateFormatter;
+use InvalidArgumentException;
+use RuntimeException;
 
 /**
  * Date format conversion utilities
@@ -119,7 +121,7 @@ class Format
         // Convert pattern using string replacement
         // Use placeholders to track boundaries for separator insertion
         $patterns = self::$strftimeToIcuMap;
-        uksort($patterns, fn ($a, $b) => strlen($b) <=> strlen($a));
+        uksort($patterns, fn($a, $b) => strlen($b) <=> strlen($a));
 
         $icuFormat = $strftimeFormat;
         foreach ($patterns as $strftime => $icu) {
@@ -220,7 +222,7 @@ class Format
 
         // Validate timestamp conversion
         if ($timestamp === false || !is_int($timestamp)) {
-            throw new \InvalidArgumentException("Invalid timestamp value");
+            throw new InvalidArgumentException("Invalid timestamp value");
         }
 
         // Only convert if format is strftime
@@ -249,7 +251,7 @@ class Format
                     IntlDateFormatter::SHORT,
                     IntlDateFormatter::SHORT
                 ),
-                default => throw new \InvalidArgumentException("Unknown locale format: {$icuFormat['format']}")
+                default => throw new InvalidArgumentException("Unknown locale format: {$icuFormat['format']}")
             };
         } else {
             // Custom pattern
@@ -264,12 +266,12 @@ class Format
         }
 
         if (!$formatter) {
-            throw new \RuntimeException("Failed to create IntlDateFormatter for format: $format");
+            throw new RuntimeException("Failed to create IntlDateFormatter for format: $format");
         }
 
         $result = $formatter->format($timestamp);
         if ($result === false) {
-            throw new \RuntimeException("Failed to format timestamp with format: $format");
+            throw new RuntimeException("Failed to format timestamp with format: $format");
         }
 
         return $result;

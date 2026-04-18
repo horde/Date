@@ -28,6 +28,7 @@ use IntlDateFormatter;
 use IntlTimeZone;
 use InvalidArgumentException;
 use RuntimeException;
+use Stringable;
 
 /**
  * ICU pattern formatter using IntlDateFormatter
@@ -50,7 +51,7 @@ class IcuFormatter implements FormatterInterface
      *
      * @param int|DateTimeInterface|DateInterface|Horde_Date $datetime  Unix timestamp, DateTime, DateTimeImmutable, DateInterface, or Horde_Date
      * @param string $pattern  ICU pattern or shortcut ('short', 'medium', 'long', 'full')
-     * @param string|\Stringable $locale  ICU locale (e.g., 'en_US', 'de_DE')
+     * @param string|Stringable $locale  ICU locale (e.g., 'en_US', 'de_DE')
      * @param string|null $timezone  Timezone identifier (null = UTC)
      *
      * @return string  Formatted date string
@@ -61,11 +62,11 @@ class IcuFormatter implements FormatterInterface
     public function format(
         int|DateTimeInterface|DateInterface|Horde_Date $datetime,
         string $pattern,
-        string|\Stringable $locale = 'en_US',
+        string|Stringable $locale = 'en_US',
         ?string $timezone = null
     ) {
         // Convert Stringable to string
-        $locale = (string)$locale;
+        $locale = (string) $locale;
 
         // Convert Horde_Date to DateTimeInterface if needed
         if ($datetime instanceof Horde_Date) {
@@ -122,7 +123,7 @@ class IcuFormatter implements FormatterInterface
      *
      * @param string $formattedString  ICU formatted date string
      * @param string $pattern  ICU pattern (or shortcut: short/medium/long/full)
-     * @param string|\Stringable $locale  ICU locale (e.g., 'en_US', 'de_DE')
+     * @param string|Stringable $locale  ICU locale (e.g., 'en_US', 'de_DE')
      * @param string|null $timezone  Timezone identifier (null = UTC)
      *
      * @return DateInterface  Horde_Date object
@@ -133,11 +134,11 @@ class IcuFormatter implements FormatterInterface
     public function parse(
         string $formattedString,
         string $pattern,
-        string|\Stringable $locale = 'en_US',
+        string|Stringable $locale = 'en_US',
         ?string $timezone = null
     ): DateInterface {
         // Convert Stringable to string
-        $locale = (string)$locale;
+        $locale = (string) $locale;
 
         // Create IntlTimeZone if timezone provided
         $intlTimezone = $timezone ? IntlTimeZone::createTimeZone($timezone) : null;
@@ -178,8 +179,8 @@ class IcuFormatter implements FormatterInterface
 
         if ($timestamp === false) {
             throw new RuntimeException(
-                "Failed to parse date string: $formattedString " .
-                "(pattern: $pattern, locale: $locale)"
+                "Failed to parse date string: $formattedString "
+                . "(pattern: $pattern, locale: $locale)"
             );
         }
 

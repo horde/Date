@@ -106,16 +106,16 @@ class Date extends DateTimeImmutable implements DateInterface
         $year = $year % 100;
 
         if ($negativeyear) {
-            return intval((14609700 * $century + ($year == 0 ? 1 : 0)) / 400) +
-                intval((1461 * $year + 1) / 4) +
-                intval((153 * $month + 2) / 5) +
-                $day + 1721118;
+            return intval((14609700 * $century + ($year == 0 ? 1 : 0)) / 400)
+                + intval((1461 * $year + 1) / 4)
+                + intval((153 * $month + 2) / 5)
+                + $day + 1721118;
         }
 
-        return intval(146097 * $century / 4) +
-            intval(1461 * $year / 4) +
-            intval((153 * $month + 2) / 5) +
-            $day + 1721119;
+        return intval(146097 * $century / 4)
+            + intval(1461 * $year / 4)
+            + intval((153 * $month + 2) / 5)
+            + $day + 1721119;
     }
 
     public static function fromDays(int $days): static
@@ -161,11 +161,11 @@ class Date extends DateTimeImmutable implements DateInterface
             --$year;
         }
 
-        $result = floor((13 * $month - 1) / 5) +
-            $day + ($year % 100) +
-            floor(($year % 100) / 4) +
-            floor(($year / 100) / 4) - 2 *
-            floor($year / 100) + 77;
+        $result = floor((13 * $month - 1) / 5)
+            + $day + ($year % 100)
+            + floor(($year % 100) / 4)
+            + floor(($year / 100) / 4) - 2
+            * floor($year / 100) + 77;
 
         return (int) ($result - 7 * floor($result / 7));
     }

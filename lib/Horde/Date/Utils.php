@@ -17,6 +17,9 @@ declare(strict_types=1);
  * Horde Date wrapper/logic class, including some calculation
  * functions.
  *
+ * Delegates typed work to Horde\Date\Utils while preserving the
+ * untyped legacy API and returning Horde_Date where callers expect it.
+ *
  * @author    Chuck Hagenbuch <chuck@horde.org>
  * @category  Horde
  * @copyright 2004-2017 Horde LLC
@@ -34,7 +37,7 @@ class Horde_Date_Utils
      */
     public static function isLeapYear($year)
     {
-        return ($year % 4 == 0 && $year % 100 != 0) || $year % 400 == 0;
+        return \Horde\Date\Utils::isLeapYear((int) $year);
     }
 
     /**
@@ -48,7 +51,11 @@ class Horde_Date_Utils
      */
     public static function firstDayOfWeek($week, $year)
     {
-        return new Horde_Date(sprintf('%04dW%02d', $year, $week));
+        $modern = \Horde\Date\Utils::firstDayOfWeek((int) $week, (int) $year);
+        return new Horde_Date(
+            $modern->format('Y-m-d H:i:s'),
+            $modern->getTimezone()->getName()
+        );
     }
 
     /**
@@ -64,11 +71,10 @@ class Horde_Date_Utils
         static $cache = [];
         if (!isset($cache[$year][$month])) {
             try {
-                $date = new DateTime(sprintf($year < 0 ? '%05d-%02d-01' : '%04d-%02d-01', $year, $month));
-            } catch (Exception $e) {
+                $cache[$year][$month] = \Horde\Date\Utils::daysInMonth((int) $month, (int) $year);
+            } catch (\Horde\Date\DateException $e) {
                 throw new Horde_Date_Exception($e);
             }
-            $cache[$year][$month] = $date->format('t');
         }
         return $cache[$year][$month];
     }
@@ -139,59 +145,13 @@ class Horde_Date_Utils
      */
     public static function strftime2date($format)
     {
-        $replace = [
-            '/%a/'  => 'D',
-            '/%A/'  => 'l',
-            '/%d/'  => 'd',
-            '/%e/'  => 'j',
-            '/%j/'  => 'z',
-            '/%u/'  => 'N',
-            '/%w/'  => 'w',
-            '/%U/'  => '',
-            '/%V/'  => 'W',
-            '/%W/'  => '',
-            '/%b/'  => 'M',
-            '/%B/'  => 'F',
-            '/%h/'  => 'M',
-            '/%m/'  => 'm',
-            '/%C/'  => '',
-            '/%g/'  => 'y',
-            '/%G/'  => 'o',
-            '/%y/'  => 'y',
-            '/%Y/'  => 'Y',
-            '/%H/'  => 'H',
-            '/%I/'  => 'h',
-            '/%i/'  => 'g',
-            '/%M/'  => 'i',
-            '/%p/'  => 'A',
-            '/%P/'  => 'a',
-            '/%r/'  => 'h:i:s A',
-            '/%R/'  => 'H:i',
-            '/%S/'  => 's',
-            '/%T/'  => 'H:i:s',
-            '/%z/'  => 'O',
-            '/%Z/'  => '',
-            '/%c/'  => '',
-            '/%D/'  => 'm/d/y',
-            '/%F/'  => 'Y-m-d',
-            '/%s/'  => 'U',
-            '/%n/'  => "\n",
-            '/%t/'  => "\t",
-            '/%%/'  => '%',
-        ];
-
-        $callbackPatterns = [
-            '/%X/' => function () {
-                return Horde_Nls::getLangInfo(T_FMT);
-            },
-            '/%x/' => function () {
-                return Horde_Nls::getLangInfo(D_FMT);
-            },
-        ];
-
-        $pass1 = preg_replace_callback_array($callbackPatterns, $format);
-        $pass2 = preg_replace(array_keys($replace), array_values($replace), $pass1);
-        return $pass2;
+        $provider = null;
+        if (class_exists('Horde_Nls')) {
+            $provider = function (int $constant): string {
+                return \Horde_Nls::getLangInfo($constant);
+            };
+        }
+        return \Horde\Date\Utils::strftime2date((string) $format, $provider);
     }
 
     /**

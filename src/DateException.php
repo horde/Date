@@ -17,6 +17,6 @@ declare(strict_types=1);
 
 namespace Horde\Date;
 
-class DateException extends \RuntimeException
-{
-}
+use RuntimeException;
+
+class DateException extends RuntimeException {}
