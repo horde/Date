@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 /**
- * Copyright 2009-2017 Horde LLC (http://www.horde.org/)
+ * Copyright 2009-2026 Horde LLC (http://www.horde.org/)
  *
  * See the enclosed file LICENSE for license information (LGPL). If you
  * did not receive this file, see http://www.horde.org/licenses/lgpl21.
@@ -35,35 +35,35 @@ class Horde_Date_Repeater_Time extends Horde_Date_Repeater
         switch (strlen($t)) {
             case 1:
             case 2:
-                $hours = (int)$t;
+                $hours = (int) $t;
                 $this->ambiguous = true;
                 $this->type = ($hours == 12) ? 0 : $hours * 3600;
                 break;
 
             case 3:
                 $this->ambiguous = true;
-                $this->type = $t[0] * 3600 + (int)substr($t, 1, 2) * 60;
+                $this->type = $t[0] * 3600 + (int) substr($t, 1, 2) * 60;
                 break;
 
             case 4:
-                $this->ambiguous = (strpos($time, ':') !== false) && ($t[0] != 0) && ((int)substr($t, 0, 2) <= 12);
-                $hours = (int)substr($t, 0, 2);
-                $this->type = ($hours == 12) ?
-                    ((int)substr($t, 2, 2) * 60) :
-                    ($hours * 60 * 60 + (int)substr($t, 2, 2) * 60);
+                $this->ambiguous = (strpos($time, ':') !== false) && ($t[0] != 0) && ((int) substr($t, 0, 2) <= 12);
+                $hours = (int) substr($t, 0, 2);
+                $this->type = ($hours == 12)
+                    ? ((int) substr($t, 2, 2) * 60)
+                    : ($hours * 60 * 60 + (int) substr($t, 2, 2) * 60);
                 break;
 
             case 5:
                 $this->ambiguous = true;
-                $this->type = $t[0] * 3600 + (int)substr($t, 1, 2) * 60 + (int)substr($t, 3, 2);
+                $this->type = $t[0] * 3600 + (int) substr($t, 1, 2) * 60 + (int) substr($t, 3, 2);
                 break;
 
             case 6:
-                $this->ambiguous = (strpos($time, ':') !== false) && ($t[0] != 0) && ((int)substr($t, 0, 2) <= 12);
-                $hours = (int)substr($t, 0, 2);
-                $this->type = ($hours == 12) ?
-                    ((int)substr($t, 2, 2) * 60 + (int)substr($t, 4, 2)) :
-                    ($hours * 60 * 60 + (int)substr($t, 2, 2) * 60 + (int)substr($t, 4, 2));
+                $this->ambiguous = (strpos($time, ':') !== false) && ($t[0] != 0) && ((int) substr($t, 0, 2) <= 12);
+                $hours = (int) substr($t, 0, 2);
+                $this->type = ($hours == 12)
+                    ? ((int) substr($t, 2, 2) * 60 + (int) substr($t, 4, 2))
+                    : ($hours * 60 * 60 + (int) substr($t, 2, 2) * 60 + (int) substr($t, 4, 2));
                 break;
 
             default:

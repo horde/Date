@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 /**
- * Copyright 2004-2017 Horde LLC (http://www.horde.org/)
+ * Copyright 2004-2026 Horde LLC (http://www.horde.org/)
  *
  * See the enclosed file LICENSE for license information (LGPL). If you
  * did not receive this file, see http://www.horde.org/licenses/lgpl21.
@@ -37,7 +37,7 @@ class Horde_Date_Utils
      */
     public static function isLeapYear($year)
     {
-        return \Horde\Date\Utils::isLeapYear((int) $year);
+        return Horde\Date\Utils::isLeapYear((int) $year);
     }
 
     /**
@@ -51,7 +51,7 @@ class Horde_Date_Utils
      */
     public static function firstDayOfWeek($week, $year)
     {
-        $modern = \Horde\Date\Utils::firstDayOfWeek((int) $week, (int) $year);
+        $modern = Horde\Date\Utils::firstDayOfWeek((int) $week, (int) $year);
         return new Horde_Date(
             $modern->format('Y-m-d H:i:s'),
             $modern->getTimezone()->getName()
@@ -71,8 +71,8 @@ class Horde_Date_Utils
         static $cache = [];
         if (!isset($cache[$year][$month])) {
             try {
-                $cache[$year][$month] = \Horde\Date\Utils::daysInMonth((int) $month, (int) $year);
-            } catch (\Horde\Date\DateException $e) {
+                $cache[$year][$month] = Horde\Date\Utils::daysInMonth((int) $month, (int) $year);
+            } catch (Horde\Date\DateException $e) {
                 throw new Horde_Date_Exception($e);
             }
         }
@@ -148,10 +148,10 @@ class Horde_Date_Utils
         $provider = null;
         if (class_exists('Horde_Nls')) {
             $provider = function (int $constant): string {
-                return \Horde_Nls::getLangInfo($constant);
+                return Horde_Nls::getLangInfo($constant);
             };
         }
-        return \Horde\Date\Utils::strftime2date((string) $format, $provider);
+        return Horde\Date\Utils::strftime2date((string) $format, $provider);
     }
 
     /**
