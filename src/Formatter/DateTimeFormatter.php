@@ -8,6 +8,7 @@ declare(strict_types=1);
  * See the enclosed file LICENSE for license information (LGPL). If you
  * did not receive this file, see http://www.horde.org/licenses/lgpl21.
  *
+ * @author    Ralf Lang <ralf.lang@ralf-lang.de>
  * @category  Horde
  * @copyright 2026 The Horde Project
  * @license   http://www.horde.org/licenses/lgpl21 LGPL 2.1
@@ -19,6 +20,7 @@ namespace Horde\Date\Formatter;
 use DateTime;
 use DateTimeInterface;
 use DateTimeZone;
+use Horde\Date\Date;
 use Horde\Date\DateInterface;
 use Horde\Date\FormatterInterface;
 use Horde_Date;
@@ -47,7 +49,7 @@ class DateTimeFormatter implements FormatterInterface
     /**
      * Format using DateTime::format() syntax
      *
-     * @param int|DateTimeInterface|Horde_Date $datetime  Unix timestamp, DateTime/DateTimeImmutable, or Horde_Date
+     * @param int|DateTimeInterface|DateInterface|Horde_Date $datetime  Unix timestamp, DateTime/DateTimeImmutable, DateInterface, or Horde_Date
      * @param string $pattern  PHP date() pattern (e.g., 'Y-m-d', 'l, F j, Y')
      * @param string|\Stringable $locale  Ignored (DateTime is not locale-aware)
      * @param string|null $timezone  Timezone identifier (null = UTC)
@@ -55,7 +57,7 @@ class DateTimeFormatter implements FormatterInterface
      * @return string  Formatted date string
      */
     public function format(
-        int|DateTimeInterface|Horde_Date $datetime,
+        int|DateTimeInterface|DateInterface|Horde_Date $datetime,
         string $pattern,
         string|\Stringable $locale = 'en_US',
         ?string $timezone = null
@@ -120,6 +122,6 @@ class DateTimeFormatter implements FormatterInterface
             );
         }
 
-        return new Horde_Date($dateTime);
+        return Date::createFromInterface($dateTime);
     }
 }

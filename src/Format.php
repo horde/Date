@@ -8,6 +8,7 @@ declare(strict_types=1);
  * See the enclosed file LICENSE for license information (LGPL). If you
  * did not receive this file, see http://www.horde.org/licenses/lgpl21.
  *
+ * @author    Ralf Lang <ralf.lang@ralf-lang.de>
  * @category  Horde
  * @copyright 2026 The Horde Project
  * @license   http://www.horde.org/licenses/lgpl21 LGPL 2.1

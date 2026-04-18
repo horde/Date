@@ -8,6 +8,7 @@ declare(strict_types=1);
  * See the enclosed file LICENSE for license information (LGPL). If you
  * did not receive this file, see http://www.horde.org/licenses/lgpl21.
  *
+ * @author    Ralf Lang <ralf.lang@ralf-lang.de>
  * @category  Horde
  * @copyright 2026 The Horde Project
  * @license   http://www.horde.org/licenses/lgpl21 LGPL 2.1
@@ -19,6 +20,7 @@ namespace Horde\Date\Formatter;
 use DateTime;
 use DateTimeInterface;
 use DateTimeZone;
+use Horde\Date\Date;
 use Horde\Date\DateInterface;
 use Horde\Date\FormatterInterface;
 use Horde_Date;
@@ -46,7 +48,7 @@ class IcuFormatter implements FormatterInterface
     /**
      * Format using ICU pattern syntax
      *
-     * @param int|DateTimeInterface|Horde_Date $datetime  Unix timestamp, DateTime, DateTimeImmutable, or Horde_Date
+     * @param int|DateTimeInterface|DateInterface|Horde_Date $datetime  Unix timestamp, DateTime, DateTimeImmutable, DateInterface, or Horde_Date
      * @param string $pattern  ICU pattern or shortcut ('short', 'medium', 'long', 'full')
      * @param string|\Stringable $locale  ICU locale (e.g., 'en_US', 'de_DE')
      * @param string|null $timezone  Timezone identifier (null = UTC)
@@ -57,7 +59,7 @@ class IcuFormatter implements FormatterInterface
      * @throws RuntimeException if formatting fails
      */
     public function format(
-        int|DateTimeInterface|Horde_Date $datetime,
+        int|DateTimeInterface|DateInterface|Horde_Date $datetime,
         string $pattern,
         string|\Stringable $locale = 'en_US',
         ?string $timezone = null
@@ -190,6 +192,6 @@ class IcuFormatter implements FormatterInterface
             $dateTime = new DateTime('@' . $timestamp);
         }
 
-        return new Horde_Date($dateTime);
+        return Date::createFromInterface($dateTime);
     }
 }
