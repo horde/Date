@@ -16,6 +16,8 @@ namespace Horde\Date\Test;
 
 use Horde_Date;
 use PHPUnit\Framework\TestCase;
+use DateTime;
+use DateTimeZone;
 
 /**
  * Tests for Horde_Date::format() method
@@ -23,6 +25,7 @@ use PHPUnit\Framework\TestCase;
  * @category   Horde
  * @package    Date
  * @subpackage UnitTests
+ * @coversNothing
  */
 class DateFormatTest extends TestCase
 {
@@ -273,11 +276,11 @@ class DateFormatTest extends TestCase
 
         // Just verify they all return non-empty strings (except special cases)
         $specifiers = ['d', 'D', 'j', 'l', 'N', 'S', 'w', 'z',
-                       'W', 'F', 'm', 'M', 'n', 't',
-                       'o', 'Y', 'y',
-                       'a', 'A', 'B', 'g', 'G', 'h', 'H', 'i', 's', 'u', 'v',
-                       'e', 'O', 'P', 'T',
-                       'c', 'r', 'U'];
+            'W', 'F', 'm', 'M', 'n', 't',
+            'o', 'Y', 'y',
+            'a', 'A', 'B', 'g', 'G', 'h', 'H', 'i', 's', 'u', 'v',
+            'e', 'O', 'P', 'T',
+            'c', 'r', 'U'];
 
         foreach ($specifiers as $spec) {
             $result = $date->format($spec);
@@ -328,7 +331,7 @@ class DateFormatTest extends TestCase
     {
         $dateString = '2026-03-18 14:30:45';
         $hordeDate = new Horde_Date($dateString, 'UTC');
-        $phpDate = new \DateTime($dateString, new \DateTimeZone('UTC'));
+        $phpDate = new DateTime($dateString, new DateTimeZone('UTC'));
 
         // Should format identically to DateTime
         $this->assertEquals($phpDate->format('Y-m-d'), $hordeDate->format('Y-m-d'));

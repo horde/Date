@@ -18,6 +18,7 @@ use PHPUnit\Framework\TestCase;
  * @category   Horde
  * @package    Date
  * @subpackage UnitTests
+ * @coversNothing
  */
 class MonthTest extends TestCase
 {
@@ -34,8 +35,8 @@ class MonthTest extends TestCase
         $repeater = new Horde_Date_Repeater_Month();
         $offsetSpan = $repeater->offset($span, 1, 'future');
 
-        $this->assertEquals('2006-09-16 14:00:00', (string)$offsetSpan->begin);
-        $this->assertEquals('2006-09-16 14:01:00', (string)$offsetSpan->end);
+        $this->assertEquals('2006-09-16 14:00:00', (string) $offsetSpan->begin);
+        $this->assertEquals('2006-09-16 14:01:00', (string) $offsetSpan->end);
     }
 
     public function testOffsetPast()
@@ -44,8 +45,8 @@ class MonthTest extends TestCase
         $repeater = new Horde_Date_Repeater_Month();
         $offsetSpan = $repeater->offset($span, 1, 'past');
 
-        $this->assertEquals('2006-07-16 14:00:00', (string)$offsetSpan->begin);
-        $this->assertEquals('2006-07-16 14:01:00', (string)$offsetSpan->end);
+        $this->assertEquals('2006-07-16 14:00:00', (string) $offsetSpan->begin);
+        $this->assertEquals('2006-07-16 14:01:00', (string) $offsetSpan->end);
     }
 
 }

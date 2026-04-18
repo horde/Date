@@ -18,6 +18,7 @@ use PHPUnit\Framework\TestCase;
  * @category   Horde
  * @package    Date
  * @subpackage UnitTests
+ * @coversNothing
  */
 class YearTest extends TestCase
 {
@@ -76,12 +77,12 @@ class YearTest extends TestCase
         $years = new Horde_Date_Repeater_Year();
 
         $offsetSpan = $years->offset($span, 3, 'future');
-        $this->assertEquals('2009-08-16 14:00:00', (string)$offsetSpan->begin);
-        $this->assertEquals('2009-08-16 14:00:01', (string)$offsetSpan->end);
+        $this->assertEquals('2009-08-16 14:00:00', (string) $offsetSpan->begin);
+        $this->assertEquals('2009-08-16 14:00:01', (string) $offsetSpan->end);
 
         $offsetSpan = $years->offset($span, 10, 'past');
-        $this->assertEquals('1996-08-16 14:00:00', (string)$offsetSpan->begin);
-        $this->assertEquals('1996-08-16 14:00:01', (string)$offsetSpan->end);
+        $this->assertEquals('1996-08-16 14:00:00', (string) $offsetSpan->begin);
+        $this->assertEquals('1996-08-16 14:00:01', (string) $offsetSpan->end);
     }
 
 }

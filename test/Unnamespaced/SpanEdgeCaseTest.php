@@ -227,7 +227,7 @@ class SpanEdgeCaseTest extends TestCase
             '2026-04-17 10:00:00',
             '2026-04-17 12:00:00'
         );
-        $str = (string)$span;
+        $str = (string) $span;
         $this->assertStringStartsWith('(', $str);
         $this->assertStringEndsWith(')', $str);
         $this->assertStringContainsString('..', $str);

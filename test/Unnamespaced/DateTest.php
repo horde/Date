@@ -15,16 +15,17 @@ use DateTime;
 use DateTimeZone;
 use Horde_Date;
 use Horde_Date_Span;
-
-use function PHP81_BC\strftime;
-
 use PHPUnit\Framework\TestCase;
 use stdClass;
+use Horde_Date_Exception;
+
+use function PHP81_BC\strftime;
 
 /**
  * @category   Horde
  * @package    Date
  * @subpackage UnitTests
+ * @coversNothing
  */
 class DateTest extends TestCase
 {
@@ -51,16 +52,16 @@ class DateTest extends TestCase
         $date->min = 5;
         $date->sec = 6;
 
-        $this->assertEquals('2001-02-03 04:05:06', (string)new Horde_Date($date));
-        $this->assertEquals('2001-02-03 04:05:06', (string)new Horde_Date((array)$date));
-        $this->assertEquals('2001-02-03 04:05:06', (string)new Horde_Date(['year' => 2001, 'month' => 2, 'day' => 3, 'hour' => 4, 'minute' => 5, 'sec' => 6]));
-        $this->assertEquals('2001-02-03 04:05:06', (string)new Horde_Date('20010203040506'));
-        $this->assertEquals('2001-02-03 04:05:06', (string)new Horde_Date('20010203T040506Z'));
-        $this->assertEquals('2001-02-03 04:05:06', (string)new Horde_Date('2001-02-03 04:05:06'));
-        $this->assertEquals('2001-02-03 04:05:06', (string)new Horde_Date(981169506));
+        $this->assertEquals('2001-02-03 04:05:06', (string) new Horde_Date($date));
+        $this->assertEquals('2001-02-03 04:05:06', (string) new Horde_Date((array) $date));
+        $this->assertEquals('2001-02-03 04:05:06', (string) new Horde_Date(['year' => 2001, 'month' => 2, 'day' => 3, 'hour' => 4, 'minute' => 5, 'sec' => 6]));
+        $this->assertEquals('2001-02-03 04:05:06', (string) new Horde_Date('20010203040506'));
+        $this->assertEquals('2001-02-03 04:05:06', (string) new Horde_Date('20010203T040506Z'));
+        $this->assertEquals('2001-02-03 04:05:06', (string) new Horde_Date('2001-02-03 04:05:06'));
+        $this->assertEquals('2001-02-03 04:05:06', (string) new Horde_Date(981169506));
         $date = new Horde_Date('2011-11-08 14:54:00 +0000');
         $date->setTimezone('UTC');
-        $this->assertEquals('2011-11-08 14:54:00', (string)$date);
+        $this->assertEquals('2011-11-08 14:54:00', (string) $date);
 
         $date = new Horde_Date('20010203T040506Z');
         $this->assertEquals('UTC', $date->timezone);
@@ -68,22 +69,22 @@ class DateTest extends TestCase
         $newDate = new Horde_Date($date);
         $this->assertEquals('America/New_York', $newDate->timezone);
         $newDate->setTimezone('UTC');
-        $this->assertEquals('2001-02-03 04:05:06', (string)$newDate);
+        $this->assertEquals('2001-02-03 04:05:06', (string) $newDate);
 
         /* Test creating Horde_Date from DateTime with timezone explicitly set */
         $dt = new DateTime('2011-12-10T04:05:06', new DateTimeZone('Europe/Berlin'));
         $dt->setTimezone(new DateTimeZone('UTC'));
         $date = new Horde_Date($dt);
-        $this->assertEquals('2011-12-10 03:05:06', (string)$date);
+        $this->assertEquals('2011-12-10 03:05:06', (string) $date);
 
         // Test creating Horde_Date from a string that will use DateTime
         // internally to parse the date.
         $date = new Horde_Date('2014-03-20 5:00PM');
-        $this->assertEquals('2014-03-20 17:00:00', (string)$date);
+        $this->assertEquals('2014-03-20 17:00:00', (string) $date);
         $this->assertEquals('Europe/Berlin', $date->timezone);
 
         $date = new Horde_Date('2014-03-20 5:00PM', 'America/New_York');
-        $this->assertEquals('2014-03-20 17:00:00', (string)$date);
+        $this->assertEquals('2014-03-20 17:00:00', (string) $date);
         $this->assertEquals('America/New_York', $date->timezone);
     }
 
@@ -114,12 +115,12 @@ class DateTest extends TestCase
         // Once we pass the actual hour, it works
         $date = new Horde_Date('2011-11-06T07:00:00+0000');
         $date->setTimezone('UTC');
-        $this->assertEquals('2011-11-06 07:00:00', (string)$date);
+        $this->assertEquals('2011-11-06 07:00:00', (string) $date);
 
         // This one works
         $date = new Horde_Date('2011-03-13T07:00:00+0000');
         $date->setTimezone('UTC');
-        $this->assertEquals('2011-03-13 07:00:00', (string)$date);
+        $this->assertEquals('2011-03-13 07:00:00', (string) $date);
 
         date_default_timezone_set($oldtz);
     }
@@ -333,27 +334,27 @@ class DateTest extends TestCase
         date_default_timezone_set('America/New_York');
 
         $date = new Horde_Date('20010203040506');
-        $this->assertEquals('2001-02-03 04:05:06', (string)$date);
+        $this->assertEquals('2001-02-03 04:05:06', (string) $date);
 
         $date->setTimezone('Europe/Berlin');
-        $this->assertEquals('2001-02-03 10:05:06', (string)$date);
+        $this->assertEquals('2001-02-03 10:05:06', (string) $date);
 
         $date = new Horde_Date('20010203040506', 'UTC');
-        $this->assertEquals('2001-02-03 04:05:06', (string)$date);
+        $this->assertEquals('2001-02-03 04:05:06', (string) $date);
 
         $date->setTimezone('Europe/Berlin');
-        $this->assertEquals('2001-02-03 05:05:06', (string)$date);
+        $this->assertEquals('2001-02-03 05:05:06', (string) $date);
 
         $date->setTimezone('W. Europe');
-        $this->assertEquals('2001-02-03 05:05:06', (string)$date);
+        $this->assertEquals('2001-02-03 05:05:06', (string) $date);
 
         $date->setTimezone('CET');
-        $this->assertEquals('2001-02-03 05:05:06', (string)$date);
+        $this->assertEquals('2001-02-03 05:05:06', (string) $date);
 
         $date = new Horde_Date('20010203040506', 'CET');
-        $this->assertEquals('2001-02-03 04:05:06', (string)$date);
+        $this->assertEquals('2001-02-03 04:05:06', (string) $date);
         $date->setTimezone('Europe/Berlin');
-        $this->assertEquals('2001-02-03 04:05:06', (string)$date);
+        $this->assertEquals('2001-02-03 04:05:06', (string) $date);
 
         date_default_timezone_set($oldTimezone);
     }
@@ -362,12 +363,12 @@ class DateTest extends TestCase
     {
         $d = new Horde_Date('2008-01-01 00:00:00');
 
-        $this->assertEquals('2007-12-31 00:00:00', (string)$d->sub(['day' => 1]));
-        $this->assertEquals('2009-01-01 00:00:00', (string)$d->add(['year' => 1]));
-        $this->assertEquals('2008-01-01 04:00:00', (string)$d->add(14400));
+        $this->assertEquals('2007-12-31 00:00:00', (string) $d->sub(['day' => 1]));
+        $this->assertEquals('2009-01-01 00:00:00', (string) $d->add(['year' => 1]));
+        $this->assertEquals('2008-01-01 04:00:00', (string) $d->add(14400));
 
         $span = new Horde_Date_Span('2006-01-01 00:00:00', '2006-08-16 00:00:00');
-        $this->assertEquals('2006-04-24 11:30:00', (string)$span->begin->add($span->width() / 2));
+        $this->assertEquals('2006-04-24 11:30:00', (string) $span->begin->add($span->width() / 2));
     }
 
     public function testSetNthWeekday()
@@ -854,7 +855,7 @@ class DateTest extends TestCase
             $date = new Horde_Date('19701399');
             // If it doesn't throw, it was interpreted as something else
             $this->assertNotEquals(13, $date->month); // Month 13 is invalid
-        } catch (\Horde_Date_Exception $e) {
+        } catch (Horde_Date_Exception $e) {
             // Expected: DateTime rejects invalid month
             $this->assertStringContainsString('Failed to parse', $e->getMessage());
         }
@@ -864,7 +865,7 @@ class DateTest extends TestCase
         try {
             $date = new Horde_Date('19700132');
             $this->assertNotEquals(32, $date->mday); // Day 32 is invalid
-        } catch (\Horde_Date_Exception $e) {
+        } catch (Horde_Date_Exception $e) {
             // Expected: DateTime rejects invalid day
             $this->assertStringContainsString('Failed to parse', $e->getMessage());
         }
@@ -874,7 +875,7 @@ class DateTest extends TestCase
         try {
             $date = new Horde_Date('19700001');
             $this->assertNotEquals(0, $date->month); // Month 0 is invalid
-        } catch (\Horde_Date_Exception $e) {
+        } catch (Horde_Date_Exception $e) {
             // Expected: DateTime rejects invalid month
             $this->assertStringContainsString('Failed to parse', $e->getMessage());
         }
@@ -910,7 +911,7 @@ class DateTest extends TestCase
             $this->assertEquals(1, $date->month);
             $this->assertEquals(1, $date->mday);
             // Note: hour/minute may not be parsed correctly by DateTime
-        } catch (\Horde_Date_Exception $e) {
+        } catch (Horde_Date_Exception $e) {
             // DateTime may reject this format - that's acceptable
             $this->assertStringContainsString('Failed to parse', $e->getMessage());
         }
@@ -931,7 +932,7 @@ class DateTest extends TestCase
             $date = new Horde_Date('1970101'); // 7 digits
             // DateTime may parse this in unexpected ways or reject it
             $this->assertTrue(true); // Just document that it doesn't crash
-        } catch (\Horde_Date_Exception $e) {
+        } catch (Horde_Date_Exception $e) {
             // Rejection is acceptable
             $this->assertStringContainsString('Failed to parse', $e->getMessage());
         }

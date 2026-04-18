@@ -11,6 +11,8 @@ use Horde\Date\Utils;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
+use DateTime;
+use DateTimeZone;
 
 #[CoversClass(Horde_Date_Utils::class)]
 class UtilsFullTest extends TestCase
@@ -55,7 +57,7 @@ class UtilsFullTest extends TestCase
     {
         $this->assertSame(
             $expected,
-            (int)Horde_Date_Utils::daysInMonth($month, $year),
+            (int) Horde_Date_Utils::daysInMonth($month, $year),
             "daysInMonth($month, $year) mismatch"
         );
     }
@@ -225,7 +227,7 @@ class UtilsFullTest extends TestCase
 
     public function testLegacyDateFormatterWithDateTimeInterface(): void
     {
-        $dt = new \DateTime('2026-04-17 10:00:00', new \DateTimeZone('UTC'));
+        $dt = new DateTime('2026-04-17 10:00:00', new DateTimeZone('UTC'));
         $result = Horde_Date_Utils::legacyDateFormatter('%Y-%m-%d', $dt);
         $this->assertSame('2026-04-17', $result);
     }

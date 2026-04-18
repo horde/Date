@@ -255,7 +255,7 @@ class RecurrenceFullTest extends TestCase
             'WEEKLY'              => [Horde_Date_Recurrence::RECUR_WEEKLY, 'Weekly'],
             'MONTHLY_DATE'        => [Horde_Date_Recurrence::RECUR_MONTHLY_DATE, 'Monthly'],
             'MONTHLY_WEEKDAY'     => [Horde_Date_Recurrence::RECUR_MONTHLY_WEEKDAY, 'Monthly'],
-            'MONTHLY_LAST_WEEKDAY'=> [Horde_Date_Recurrence::RECUR_MONTHLY_LAST_WEEKDAY, 'Monthly'],
+            'MONTHLY_LAST_WEEKDAY' => [Horde_Date_Recurrence::RECUR_MONTHLY_LAST_WEEKDAY, 'Monthly'],
             'YEARLY_DATE'         => [Horde_Date_Recurrence::RECUR_YEARLY_DATE, 'Yearly'],
             'YEARLY_DAY'          => [Horde_Date_Recurrence::RECUR_YEARLY_DAY, 'Yearly'],
             'YEARLY_WEEKDAY'      => [Horde_Date_Recurrence::RECUR_YEARLY_WEEKDAY, 'Yearly'],

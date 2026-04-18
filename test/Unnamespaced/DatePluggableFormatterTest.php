@@ -18,6 +18,9 @@ use Horde\Date\Formatter\DateTimeFormatter;
 use Horde\Date\Formatter\IcuFormatter;
 use Horde_Date;
 use PHPUnit\Framework\TestCase;
+use InvalidArgumentException;
+use Stringable;
+use stdClass;
 
 /**
  * Tests for Horde_Date::format() with pluggable formatters
@@ -25,6 +28,7 @@ use PHPUnit\Framework\TestCase;
  * @category   Horde
  * @package    Date
  * @subpackage UnitTests
+ * @coversNothing
  */
 class DatePluggableFormatterTest extends TestCase
 {
@@ -212,7 +216,7 @@ class DatePluggableFormatterTest extends TestCase
      */
     public function testInvalidFormatterClassThrowsException(): void
     {
-        $this->expectException(\InvalidArgumentException::class);
+        $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage('Formatter class not found');
 
         $date = new Horde_Date('2026-03-18 14:30:45');
@@ -224,11 +228,11 @@ class DatePluggableFormatterTest extends TestCase
      */
     public function testFormatterNotImplementingInterfaceThrowsException(): void
     {
-        $this->expectException(\InvalidArgumentException::class);
+        $this->expectException(InvalidArgumentException::class);
         $this->expectExceptionMessage('Formatter must implement FormatterInterface');
 
         $date = new Horde_Date('2026-03-18 14:30:45');
-        $date->format('Y-m-d', new \stdClass());
+        $date->format('Y-m-d', new stdClass());
     }
 
     /**
@@ -239,7 +243,7 @@ class DatePluggableFormatterTest extends TestCase
         $date = new Horde_Date('2026-03-18 14:30:45');
 
         // Create a simple Stringable
-        $pattern = new class () implements \Stringable {
+        $pattern = new class implements Stringable {
             public function __toString(): string
             {
                 return 'yyyy-MM-dd';
