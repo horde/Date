@@ -102,12 +102,12 @@ class RecurrenceTest extends TestCase
         $this->assertSame(3, $r->getInterval());
     }
 
-    public function testSetIntervalIgnoresZero(): void
+    public function testSetIntervalAcceptsZero(): void
     {
         $r = new Recurrence($this->date('2026-01-01'));
         $r->setInterval(5);
         $r->setInterval(0);
-        $this->assertSame(5, $r->getInterval());
+        $this->assertSame(0, $r->getInterval());
     }
 
     public function testSetIntervalIgnoresNegative(): void

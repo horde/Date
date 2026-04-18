@@ -979,12 +979,14 @@ class RecurrenceFullTest extends TestCase
         $this->assertStringContainsString('MP', $rrule10);
         $this->assertStringContainsString('1-', $rrule10);
 
-        // Known limitation: fromRRule10 trims the remainder before the regex
-        // that detects the minus sign, so LAST_WEEKDAY round-trips as WEEKDAY.
+        // The modern class correctly detects the minus sign in "1-",
+        // fixing the legacy trim() bug. Now returns MONTHLY_LAST_WEEKDAY.
         $r2 = new Horde_Date_Recurrence('2026-01-29 10:00:00');
         $r2->fromRRule10($rrule10);
 
-        $this->assertSame(Horde_Date_Recurrence::RECUR_MONTHLY_WEEKDAY, $r2->getRecurType());
+        // The modern class correctly detects the minus sign in "1-",
+        // fixing the legacy trim() bug. Now returns MONTHLY_LAST_WEEKDAY.
+        $this->assertSame(Horde_Date_Recurrence::RECUR_MONTHLY_LAST_WEEKDAY, $r2->getRecurType());
     }
 
     public function testFromRRule20DailyWithByday(): void
