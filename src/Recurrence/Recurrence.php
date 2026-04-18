@@ -955,8 +955,8 @@ class Recurrence implements RecurrenceInterface
             if (str_starts_with($remainder, '#')) {
                 $this->setCount((int) substr($remainder, 1));
             } else {
-                [$year, $month, $mday, $hour, $min, $sec, $tzStr] =
-                    sscanf($remainder, '%04d%02d%02dT%02d%02d%02d%s');
+                [$year, $month, $mday, $hour, $min, $sec, $tzStr]
+                    = sscanf($remainder, '%04d%02d%02dT%02d%02d%02d%s');
                 $tz = ($tzStr === 'Z') ? new DateTimeZone('UTC') : $this->start->getTimezone();
                 $this->setEnd(new DateTimeImmutable(
                     sprintf('%04d-%02d-%02dT%02d:%02d:%02d', $year, $month, $mday, $hour ?? 0, $min ?? 0, $sec ?? 0),

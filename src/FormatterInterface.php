@@ -19,6 +19,8 @@ namespace Horde\Date;
 
 use DateTimeInterface;
 use Horde_Date;
+use RuntimeException;
+use Stringable;
 
 /**
  * Date formatter interface
@@ -40,7 +42,7 @@ interface FormatterInterface
      *
      * @param int|DateTimeInterface|DateInterface|Horde_Date $datetime  Unix timestamp, DateTime/DateTimeImmutable, DateInterface, or Horde_Date
      * @param string $pattern  Format pattern in formatter's syntax
-     * @param string|\Stringable $locale  Locale for formatting (default: 'en_US')
+     * @param string|Stringable $locale  Locale for formatting (default: 'en_US')
      * @param string|null $timezone  Timezone identifier (null = UTC)
      *
      * @return string  Formatted date string (no return type for BC)
@@ -48,7 +50,7 @@ interface FormatterInterface
     public function format(
         int|DateTimeInterface|DateInterface|Horde_Date $datetime,
         string $pattern,
-        string|\Stringable $locale = 'en_US',
+        string|Stringable $locale = 'en_US',
         ?string $timezone = null
     );
 
@@ -59,17 +61,17 @@ interface FormatterInterface
      *
      * @param string $formattedString  Formatted date string
      * @param string $pattern  Format pattern in formatter's syntax
-     * @param string|\Stringable $locale  Locale for parsing (default: 'en_US')
+     * @param string|Stringable $locale  Locale for parsing (default: 'en_US')
      * @param string|null $timezone  Timezone identifier (null = UTC)
      *
      * @return DateInterface  Date object
      *
-     * @throws \RuntimeException if parsing fails
+     * @throws RuntimeException if parsing fails
      */
     public function parse(
         string $formattedString,
         string $pattern,
-        string|\Stringable $locale = 'en_US',
+        string|Stringable $locale = 'en_US',
         ?string $timezone = null
     ): DateInterface;
 }

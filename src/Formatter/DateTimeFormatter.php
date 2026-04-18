@@ -25,6 +25,7 @@ use Horde\Date\DateInterface;
 use Horde\Date\FormatterInterface;
 use Horde_Date;
 use RuntimeException;
+use Stringable;
 
 /**
  * PHP DateTime formatter
@@ -51,7 +52,7 @@ class DateTimeFormatter implements FormatterInterface
      *
      * @param int|DateTimeInterface|DateInterface|Horde_Date $datetime  Unix timestamp, DateTime/DateTimeImmutable, DateInterface, or Horde_Date
      * @param string $pattern  PHP date() pattern (e.g., 'Y-m-d', 'l, F j, Y')
-     * @param string|\Stringable $locale  Ignored (DateTime is not locale-aware)
+     * @param string|Stringable $locale  Ignored (DateTime is not locale-aware)
      * @param string|null $timezone  Timezone identifier (null = UTC)
      *
      * @return string  Formatted date string
@@ -59,11 +60,11 @@ class DateTimeFormatter implements FormatterInterface
     public function format(
         int|DateTimeInterface|DateInterface|Horde_Date $datetime,
         string $pattern,
-        string|\Stringable $locale = 'en_US',
+        string|Stringable $locale = 'en_US',
         ?string $timezone = null
     ) {
         // Convert Stringable to string (locale is ignored but we accept it)
-        $locale = (string)$locale;
+        $locale = (string) $locale;
 
         // Convert Horde_Date to DateTimeInterface if needed
         if ($datetime instanceof Horde_Date) {
@@ -93,7 +94,7 @@ class DateTimeFormatter implements FormatterInterface
      *
      * @param string $formattedString  Formatted date string
      * @param string $pattern  PHP date() pattern (e.g., 'Y-m-d', 'Y-m-d H:i:s')
-     * @param string|\Stringable $locale  Ignored (DateTime is not locale-aware)
+     * @param string|Stringable $locale  Ignored (DateTime is not locale-aware)
      * @param string|null $timezone  Timezone identifier (null = UTC)
      *
      * @return DateInterface  Horde_Date object
@@ -103,11 +104,11 @@ class DateTimeFormatter implements FormatterInterface
     public function parse(
         string $formattedString,
         string $pattern,
-        string|\Stringable $locale = 'en_US',
+        string|Stringable $locale = 'en_US',
         ?string $timezone = null
     ): DateInterface {
         // Convert Stringable to string (locale is ignored but we accept it)
-        $locale = (string)$locale;
+        $locale = (string) $locale;
 
         // Create timezone for parsing
         $tz = $timezone ? new DateTimeZone($timezone) : new DateTimeZone('UTC');
@@ -117,8 +118,8 @@ class DateTimeFormatter implements FormatterInterface
 
         if ($dateTime === false) {
             throw new RuntimeException(
-                "Failed to parse date string: $formattedString " .
-                "(pattern: $pattern)"
+                "Failed to parse date string: $formattedString "
+                . "(pattern: $pattern)"
             );
         }
 
