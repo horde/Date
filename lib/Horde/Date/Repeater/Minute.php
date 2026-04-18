@@ -38,7 +38,7 @@ class Horde_Date_Repeater_Minute extends Horde_Date_Repeater
 
         $end = clone $this->currentMinuteStart;
         $end->min++;
-        return new Horde_Date_Span($this->currentMinuteStart, $end);
+        return new Horde_Date_Span(clone $this->currentMinuteStart, $end);
     }
 
     public function this($pointer = 'future')

@@ -272,15 +272,11 @@ class DateCorrectionTest extends TestCase
 
     public function testAddYearFromFeb29(): void
     {
-        // add(['year' => 1]) only triggers MASK_YEAR correction, which does not
-        // cascade to day. Internal state keeps month=2, mday=29 even though
-        // 2025 is not a leap year. format() normalizes via DateTime.
         $date = new Horde_Date('2024-02-29 12:00:00');
         $result = $date->add(['year' => 1]);
         $this->assertSame(2025, $result->year);
-        $this->assertSame(2, $result->month);
-        $this->assertSame(29, $result->mday);
-        $this->assertSame('2025-03-01', $result->format('Y-m-d'));
+        $this->assertSame(3, $result->month);
+        $this->assertSame(1, $result->mday);
     }
 
     // =========================================================================

@@ -279,7 +279,7 @@ class EdgeCaseTest extends TestCase
         $this->assertSame('2026-04-17 14:03:00', $end2);
     }
 
-    public function testMinuteSpansMutateAfterSubsequentCalls(): void
+    public function testMinuteSpansStableAfterSubsequentCalls(): void
     {
         $minutes = new Horde_Date_Repeater_Minute();
         $minutes->now = new Horde_Date('2026-04-17 14:00:00');
@@ -288,18 +288,19 @@ class EdgeCaseTest extends TestCase
         $this->assertSame('2026-04-17 14:01:00', (string)$span1->begin);
 
         $minutes->next('future');
-        // span1.begin mutates because it shares the currentMinuteStart reference
-        $this->assertSame('2026-04-17 14:02:00', (string)$span1->begin);
+        $this->assertSame('2026-04-17 14:01:00', (string)$span1->begin);
     }
 
     public function testSecondConsecutiveNextNonOverlapping(): void
     {
-        $this->expectException(\TypeError::class);
         $seconds = new Horde_Date_Repeater_Second();
         $seconds->now = new Horde_Date('2026-04-17 14:00:00');
 
-        $seconds->next('future');
-        $seconds->next('future');
+        $span1 = $seconds->next('future');
+        $span1End = (string)$span1->end;
+        $span2 = $seconds->next('future');
+
+        $this->assertSame($span1End, (string)$span2->begin);
     }
 
     // =========================================================================
