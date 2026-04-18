@@ -36,7 +36,7 @@ class Horde_Date_Repeater_Second extends Horde_Date_Repeater
             $this->secondStart = clone $this->now;
             $this->secondStart->sec += $direction;
         } else {
-            $this->secondStart += $direction;
+            $this->secondStart->sec += $direction;
         }
 
         $end = clone $this->secondStart;

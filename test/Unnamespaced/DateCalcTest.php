@@ -57,11 +57,6 @@ class DateCalcTest extends TestCase
     #[DataProvider('toDaysProvider')]
     public function testFromDaysRoundTrip(int $year, int $month, int $day): void
     {
-        if (function_exists('jdtogregorian')) {
-            $this->markTestSkipped(
-                'fromDays() bug: jdtogregorian returns strings which fail the 3-arg constructor string check'
-            );
-        }
         $original = new Horde_Date(['year' => $year, 'month' => $month, 'mday' => $day]);
         $jd = $original->toDays();
         $restored = Horde_Date::fromDays($jd);
@@ -69,15 +64,6 @@ class DateCalcTest extends TestCase
         $this->assertSame($year, $restored->year, "Year mismatch for JD $jd");
         $this->assertSame($month, $restored->month, "Month mismatch for JD $jd");
         $this->assertSame($day, $restored->mday, "Day mismatch for JD $jd");
-    }
-
-    public function testFromDaysStringYearBug(): void
-    {
-        if (!function_exists('jdtogregorian')) {
-            $this->markTestSkipped('Bug only manifests when jdtogregorian is available');
-        }
-        $this->expectException(\Horde_Date_Exception::class);
-        Horde_Date::fromDays(gregoriantojd(1, 1, 1970));
     }
 
     public function testToDaysConsecutiveDaysAreConsecutiveJd(): void

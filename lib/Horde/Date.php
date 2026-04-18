@@ -795,7 +795,7 @@ class Horde_Date implements DateInterface
             }
         }
 
-        return new Horde_Date($year, $month, $day);
+        return new Horde_Date((int)$year, (int)$month, (int)$day);
     }
 
     /**
@@ -1517,6 +1517,14 @@ class Horde_Date implements DateInterface
             /* When correcting the month, always correct the day too. Months
              * have different numbers of days. */
             if (isset($this->_mday)) {
+                $mask |= self::MASK_DAY;
+            }
+        }
+
+        if ($mask & self::MASK_YEAR) {
+            if (isset($this->_mday) &&
+                $this->_mday > 28 &&
+                $this->_mday > Horde_Date_Utils::daysInMonth($this->_month, $this->_year)) {
                 $mask |= self::MASK_DAY;
             }
         }
