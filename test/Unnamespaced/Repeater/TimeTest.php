@@ -17,6 +17,7 @@ use PHPUnit\Framework\TestCase;
  * @category   Horde
  * @package    Date
  * @subpackage UnitTests
+ * @coversNothing
  */
 class TimeTest extends TestCase
 {
@@ -32,33 +33,33 @@ class TimeTest extends TestCase
         $t = new Horde_Date_Repeater_Time('4:00');
         $t->now = $this->now;
 
-        $this->assertEquals('2006-08-16 16:00:00', (string)$t->next('future')->begin);
-        $this->assertEquals('2006-08-17 04:00:00', (string)$t->next('future')->begin);
+        $this->assertEquals('2006-08-16 16:00:00', (string) $t->next('future')->begin);
+        $this->assertEquals('2006-08-17 04:00:00', (string) $t->next('future')->begin);
 
         $t = new Horde_Date_Repeater_Time('13:00');
         $t->now = $this->now;
 
-        $this->assertEquals('2006-08-17 13:00:00', (string)$t->next('future')->begin);
-        $this->assertEquals('2006-08-18 13:00:00', (string)$t->next('future')->begin);
+        $this->assertEquals('2006-08-17 13:00:00', (string) $t->next('future')->begin);
+        $this->assertEquals('2006-08-18 13:00:00', (string) $t->next('future')->begin);
 
         $t = new Horde_Date_Repeater_Time('0400');
         $t->now = $this->now;
 
-        $this->assertEquals('2006-08-17 04:00:00', (string)$t->next('future')->begin);
-        $this->assertEquals('2006-08-18 04:00:00', (string)$t->next('future')->begin);
+        $this->assertEquals('2006-08-17 04:00:00', (string) $t->next('future')->begin);
+        $this->assertEquals('2006-08-18 04:00:00', (string) $t->next('future')->begin);
     }
 
     public function testNextPast()
     {
         $t = new Horde_Date_Repeater_Time('4:00');
         $t->now = $this->now;
-        $this->assertEquals('2006-08-16 04:00:00', (string)$t->next('past')->begin);
-        $this->assertEquals('2006-08-15 16:00:00', (string)$t->next('past')->begin);
+        $this->assertEquals('2006-08-16 04:00:00', (string) $t->next('past')->begin);
+        $this->assertEquals('2006-08-15 16:00:00', (string) $t->next('past')->begin);
 
         $t = new Horde_Date_Repeater_Time('13:00');
         $t->now = $this->now;
-        $this->assertEquals('2006-08-16 13:00:00', (string)$t->next('past')->begin);
-        $this->assertEquals('2006-08-15 13:00:00', (string)$t->next('past')->begin);
+        $this->assertEquals('2006-08-16 13:00:00', (string) $t->next('past')->begin);
+        $this->assertEquals('2006-08-15 13:00:00', (string) $t->next('past')->begin);
     }
 
     public function testType()

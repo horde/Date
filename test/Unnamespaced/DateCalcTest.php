@@ -116,7 +116,7 @@ class DateCalcTest extends TestCase
         $nativeDate = new DateTime($dateStr, new DateTimeZone('UTC'));
 
         $this->assertSame(
-            (int)$nativeDate->format('w'),
+            (int) $nativeDate->format('w'),
             $hordeDate->dayOfWeek(),
             "dayOfWeek() mismatch for $dateStr"
         );
@@ -167,7 +167,7 @@ class DateCalcTest extends TestCase
     public function testWeekOfMonth(int $day, int $expectedWeek): void
     {
         $date = new Horde_Date(['year' => 2026, 'month' => 4, 'mday' => $day]);
-        $this->assertSame($expectedWeek, (int)$date->weekOfMonth());
+        $this->assertSame($expectedWeek, (int) $date->weekOfMonth());
     }
 
     public static function weekOfMonthProvider(): array
@@ -190,7 +190,7 @@ class DateCalcTest extends TestCase
     public function testWeekOfMonthDay31(): void
     {
         $date = new Horde_Date(['year' => 2026, 'month' => 1, 'mday' => 31]);
-        $this->assertSame(5, (int)$date->weekOfMonth());
+        $this->assertSame(5, (int) $date->weekOfMonth());
     }
 
     // =========================================================================
@@ -203,7 +203,7 @@ class DateCalcTest extends TestCase
         $date = new Horde_Date($dateStr);
         $this->assertSame(
             $expectedWeek,
-            (int)$date->weekOfYear(),
+            (int) $date->weekOfYear(),
             "weekOfYear() mismatch for $dateStr"
         );
     }
@@ -228,7 +228,7 @@ class DateCalcTest extends TestCase
     {
         $this->assertSame(
             $expectedWeeks,
-            (int)Horde_Date::weeksInYear($year),
+            (int) Horde_Date::weeksInYear($year),
             "weeksInYear() mismatch for year $year"
         );
     }

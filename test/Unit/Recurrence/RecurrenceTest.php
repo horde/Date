@@ -13,6 +13,8 @@ use Horde\Date\Recurrence\RecurrenceType;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
+use DateTime;
+use ReflectionProperty;
 
 #[CoversClass(Recurrence::class)]
 class RecurrenceTest extends TestCase
@@ -68,7 +70,7 @@ class RecurrenceTest extends TestCase
 
     public function testConstructorAcceptsMutableDateTime(): void
     {
-        $dt = new \DateTime('2026-04-18 10:00:00', new DateTimeZone('UTC'));
+        $dt = new DateTime('2026-04-18 10:00:00', new DateTimeZone('UTC'));
         $r = new Recurrence($dt);
         $this->assertInstanceOf(DateTimeImmutable::class, $r->getStart());
         $this->assertSame('2026-04-18', $r->getStart()->format('Y-m-d'));
@@ -336,7 +338,7 @@ class RecurrenceTest extends TestCase
         $r->setType(RecurrenceType::Daily);
         $r->setInterval(5);
         // Force interval to 0 via reflection since setInterval rejects 0
-        $ref = new \ReflectionProperty($r, 'interval');
+        $ref = new ReflectionProperty($r, 'interval');
         $ref->setValue($r, 0);
         $this->assertNull($r->nextRecurrence($this->date('2026-01-02')));
     }

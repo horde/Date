@@ -12,8 +12,9 @@ use Horde_Date_Repeater_Second;
 use Horde_Date_Span;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\TestCase;
+use Horde_Date_Repeater;
 
-#[CoversClass(\Horde_Date_Repeater::class)]
+#[CoversClass(Horde_Date_Repeater::class)]
 #[CoversClass(Horde_Date_Repeater_Minute::class)]
 #[CoversClass(Horde_Date_Repeater_Second::class)]
 #[CoversClass(Horde_Date_Repeater_Fortnight::class)]
@@ -69,12 +70,12 @@ class EdgeCaseTest extends TestCase
         $minutes->now = new Horde_Date('2026-04-17 14:30:00');
 
         $span = $minutes->next('future');
-        $this->assertSame('2026-04-17 14:31:00', (string)$span->begin);
-        $this->assertSame('2026-04-17 14:32:00', (string)$span->end);
+        $this->assertSame('2026-04-17 14:31:00', (string) $span->begin);
+        $this->assertSame('2026-04-17 14:32:00', (string) $span->end);
 
         $span2 = $minutes->next('future');
-        $this->assertSame('2026-04-17 14:32:00', (string)$span2->begin);
-        $this->assertSame('2026-04-17 14:33:00', (string)$span2->end);
+        $this->assertSame('2026-04-17 14:32:00', (string) $span2->begin);
+        $this->assertSame('2026-04-17 14:33:00', (string) $span2->end);
     }
 
     public function testMinuteNextPast(): void
@@ -83,8 +84,8 @@ class EdgeCaseTest extends TestCase
         $minutes->now = new Horde_Date('2026-04-17 14:30:00');
 
         $span = $minutes->next('past');
-        $this->assertSame('2026-04-17 14:29:00', (string)$span->begin);
-        $this->assertSame('2026-04-17 14:30:00', (string)$span->end);
+        $this->assertSame('2026-04-17 14:29:00', (string) $span->begin);
+        $this->assertSame('2026-04-17 14:30:00', (string) $span->end);
     }
 
     public function testMinuteNextFutureAcrossHourBoundary(): void
@@ -93,8 +94,8 @@ class EdgeCaseTest extends TestCase
         $minutes->now = new Horde_Date('2026-04-17 14:59:00');
 
         $span = $minutes->next('future');
-        $this->assertSame('2026-04-17 15:00:00', (string)$span->begin);
-        $this->assertSame('2026-04-17 15:01:00', (string)$span->end);
+        $this->assertSame('2026-04-17 15:00:00', (string) $span->begin);
+        $this->assertSame('2026-04-17 15:01:00', (string) $span->end);
     }
 
     public function testMinuteThisFuture(): void
@@ -103,8 +104,8 @@ class EdgeCaseTest extends TestCase
         $minutes->now = new Horde_Date('2026-04-17 14:30:30');
 
         $span = $minutes->this('future');
-        $this->assertSame('2026-04-17 14:30:30', (string)$span->begin);
-        $this->assertSame('2026-04-17 14:30:00', (string)$span->end);
+        $this->assertSame('2026-04-17 14:30:30', (string) $span->begin);
+        $this->assertSame('2026-04-17 14:30:00', (string) $span->end);
     }
 
     public function testMinuteThisPast(): void
@@ -113,8 +114,8 @@ class EdgeCaseTest extends TestCase
         $minutes->now = new Horde_Date('2026-04-17 14:30:30');
 
         $span = $minutes->this('past');
-        $this->assertSame('2026-04-17 14:30:00', (string)$span->begin);
-        $this->assertSame('2026-04-17 14:30:30', (string)$span->end);
+        $this->assertSame('2026-04-17 14:30:00', (string) $span->begin);
+        $this->assertSame('2026-04-17 14:30:30', (string) $span->end);
     }
 
     public function testMinuteThisNone(): void
@@ -123,8 +124,8 @@ class EdgeCaseTest extends TestCase
         $minutes->now = new Horde_Date('2026-04-17 14:30:00');
 
         $span = $minutes->this('none');
-        $this->assertSame('2026-04-17 14:30:00', (string)$span->begin);
-        $this->assertSame('2026-04-17 14:31:00', (string)$span->end);
+        $this->assertSame('2026-04-17 14:30:00', (string) $span->begin);
+        $this->assertSame('2026-04-17 14:31:00', (string) $span->end);
     }
 
     public function testMinuteOffset(): void
@@ -136,16 +137,16 @@ class EdgeCaseTest extends TestCase
         );
 
         $offsetSpan = $minutes->offset($span, 5, 'future');
-        $this->assertSame('2026-04-17 14:05:00', (string)$offsetSpan->begin);
+        $this->assertSame('2026-04-17 14:05:00', (string) $offsetSpan->begin);
 
         $offsetSpan = $minutes->offset($span, 90, 'past');
-        $this->assertSame('2026-04-17 12:30:00', (string)$offsetSpan->begin);
+        $this->assertSame('2026-04-17 12:30:00', (string) $offsetSpan->begin);
     }
 
     public function testMinuteToString(): void
     {
         $minutes = new Horde_Date_Repeater_Minute();
-        $this->assertSame('repeater-minute', (string)$minutes);
+        $this->assertSame('repeater-minute', (string) $minutes);
     }
 
     // =========================================================================
@@ -164,8 +165,8 @@ class EdgeCaseTest extends TestCase
         $seconds->now = new Horde_Date('2026-04-17 14:30:00');
 
         $span = $seconds->next('future');
-        $this->assertSame('2026-04-17 14:30:01', (string)$span->begin);
-        $this->assertSame('2026-04-17 14:30:02', (string)$span->end);
+        $this->assertSame('2026-04-17 14:30:01', (string) $span->begin);
+        $this->assertSame('2026-04-17 14:30:02', (string) $span->end);
     }
 
     public function testSecondNextPast(): void
@@ -174,8 +175,8 @@ class EdgeCaseTest extends TestCase
         $seconds->now = new Horde_Date('2026-04-17 14:30:30');
 
         $span = $seconds->next('past');
-        $this->assertSame('2026-04-17 14:30:29', (string)$span->begin);
-        $this->assertSame('2026-04-17 14:30:30', (string)$span->end);
+        $this->assertSame('2026-04-17 14:30:29', (string) $span->begin);
+        $this->assertSame('2026-04-17 14:30:30', (string) $span->end);
     }
 
     public function testSecondThis(): void
@@ -184,8 +185,8 @@ class EdgeCaseTest extends TestCase
         $seconds->now = new Horde_Date('2026-04-17 14:30:00');
 
         $span = $seconds->this('future');
-        $this->assertSame('2026-04-17 14:30:00', (string)$span->begin);
-        $this->assertSame('2026-04-17 14:30:01', (string)$span->end);
+        $this->assertSame('2026-04-17 14:30:00', (string) $span->begin);
+        $this->assertSame('2026-04-17 14:30:01', (string) $span->end);
     }
 
     public function testSecondOffset(): void
@@ -197,14 +198,14 @@ class EdgeCaseTest extends TestCase
         );
 
         $offsetSpan = $seconds->offset($span, 30, 'future');
-        $this->assertSame('2026-04-17 14:00:30', (string)$offsetSpan->begin);
-        $this->assertSame('2026-04-17 14:00:31', (string)$offsetSpan->end);
+        $this->assertSame('2026-04-17 14:00:30', (string) $offsetSpan->begin);
+        $this->assertSame('2026-04-17 14:00:31', (string) $offsetSpan->end);
     }
 
     public function testSecondToString(): void
     {
         $seconds = new Horde_Date_Repeater_Second();
-        $this->assertSame('repeater-second', (string)$seconds);
+        $this->assertSame('repeater-second', (string) $seconds);
     }
 
     // =========================================================================
@@ -247,13 +248,13 @@ class EdgeCaseTest extends TestCase
         );
 
         $offsetSpan = $fortnight->offset($span, 1, 'future');
-        $this->assertSame('2026-05-01 14:00:00', (string)$offsetSpan->begin);
+        $this->assertSame('2026-05-01 14:00:00', (string) $offsetSpan->begin);
     }
 
     public function testFortnightToString(): void
     {
         $fortnight = new Horde_Date_Repeater_Fortnight();
-        $this->assertSame('repeater-fortnight', (string)$fortnight);
+        $this->assertSame('repeater-fortnight', (string) $fortnight);
     }
 
     // =========================================================================
@@ -266,12 +267,12 @@ class EdgeCaseTest extends TestCase
         $minutes->now = new Horde_Date('2026-04-17 14:00:00');
 
         $span1 = $minutes->next('future');
-        $begin1 = (string)$span1->begin;
-        $end1 = (string)$span1->end;
+        $begin1 = (string) $span1->begin;
+        $end1 = (string) $span1->end;
 
         $span2 = $minutes->next('future');
-        $begin2 = (string)$span2->begin;
-        $end2 = (string)$span2->end;
+        $begin2 = (string) $span2->begin;
+        $end2 = (string) $span2->end;
 
         $this->assertSame('2026-04-17 14:01:00', $begin1);
         $this->assertSame('2026-04-17 14:02:00', $end1);
@@ -285,10 +286,10 @@ class EdgeCaseTest extends TestCase
         $minutes->now = new Horde_Date('2026-04-17 14:00:00');
 
         $span1 = $minutes->next('future');
-        $this->assertSame('2026-04-17 14:01:00', (string)$span1->begin);
+        $this->assertSame('2026-04-17 14:01:00', (string) $span1->begin);
 
         $minutes->next('future');
-        $this->assertSame('2026-04-17 14:01:00', (string)$span1->begin);
+        $this->assertSame('2026-04-17 14:01:00', (string) $span1->begin);
     }
 
     public function testSecondConsecutiveNextNonOverlapping(): void
@@ -297,10 +298,10 @@ class EdgeCaseTest extends TestCase
         $seconds->now = new Horde_Date('2026-04-17 14:00:00');
 
         $span1 = $seconds->next('future');
-        $span1End = (string)$span1->end;
+        $span1End = (string) $span1->end;
         $span2 = $seconds->next('future');
 
-        $this->assertSame($span1End, (string)$span2->begin);
+        $this->assertSame($span1End, (string) $span2->begin);
     }
 
     // =========================================================================
@@ -313,7 +314,7 @@ class EdgeCaseTest extends TestCase
         $minutes->now = new Horde_Date('2026-04-17 23:59:00');
 
         $span = $minutes->next('future');
-        $this->assertSame('2026-04-18 00:00:00', (string)$span->begin);
+        $this->assertSame('2026-04-18 00:00:00', (string) $span->begin);
     }
 
     public function testSecondNextAcrossMidnight(): void
@@ -322,7 +323,7 @@ class EdgeCaseTest extends TestCase
         $seconds->now = new Horde_Date('2026-04-17 23:59:59');
 
         $span = $seconds->next('future');
-        $this->assertSame('2026-04-18 00:00:00', (string)$span->begin);
+        $this->assertSame('2026-04-18 00:00:00', (string) $span->begin);
     }
 
     // =========================================================================
@@ -335,6 +336,6 @@ class EdgeCaseTest extends TestCase
         $minutes->now = new Horde_Date('2026-12-31 23:59:00');
 
         $span = $minutes->next('future');
-        $this->assertSame('2027-01-01 00:00:00', (string)$span->begin);
+        $this->assertSame('2027-01-01 00:00:00', (string) $span->begin);
     }
 }

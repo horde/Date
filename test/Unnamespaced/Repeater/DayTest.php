@@ -17,6 +17,7 @@ use PHPUnit\Framework\TestCase;
  * @category   Horde
  * @package    Date
  * @subpackage UnitTests
+ * @coversNothing
  */
 class DayTest extends TestCase
 {
@@ -24,14 +25,14 @@ class DayTest extends TestCase
     {
         $repeater = new Horde_Date_Repeater_Day();
         $repeater->now = new Horde_Date('2009-01-01');
-        $this->assertEquals('(2009-01-02 00:00:00..2009-01-03 00:00:00)', (string)$repeater->next('future'));
+        $this->assertEquals('(2009-01-02 00:00:00..2009-01-03 00:00:00)', (string) $repeater->next('future'));
     }
 
     public function testNextPast()
     {
         $repeater = new Horde_Date_Repeater_Day();
         $repeater->now = new Horde_Date('2009-01-01');
-        $this->assertEquals('(2008-12-31 00:00:00..2009-01-01 00:00:00)', (string)$repeater->next('past'));
+        $this->assertEquals('(2008-12-31 00:00:00..2009-01-01 00:00:00)', (string) $repeater->next('past'));
     }
 
 }

@@ -18,6 +18,7 @@ use PHPUnit\Framework\TestCase;
  * @category   Horde
  * @package    Date
  * @subpackage UnitTests
+ * @coversNothing
  */
 class WeekTest extends TestCase
 {
@@ -34,12 +35,12 @@ class WeekTest extends TestCase
         $weeks->now = $this->now;
 
         $nextWeek = $weeks->next('future');
-        $this->assertEquals('2006-08-20 00:00:00', (string)$nextWeek->begin);
-        $this->assertEquals('2006-08-27 00:00:00', (string)$nextWeek->end);
+        $this->assertEquals('2006-08-20 00:00:00', (string) $nextWeek->begin);
+        $this->assertEquals('2006-08-27 00:00:00', (string) $nextWeek->end);
 
         $nextNextWeek = $weeks->next('future');
-        $this->assertEquals('2006-08-27 00:00:00', (string)$nextNextWeek->begin);
-        $this->assertEquals('2006-09-03 00:00:00', (string)$nextNextWeek->end);
+        $this->assertEquals('2006-08-27 00:00:00', (string) $nextNextWeek->begin);
+        $this->assertEquals('2006-09-03 00:00:00', (string) $nextNextWeek->end);
     }
 
     public function testNextPast()
@@ -48,12 +49,12 @@ class WeekTest extends TestCase
         $weeks->now = $this->now;
 
         $lastWeek = $weeks->next('past');
-        $this->assertEquals('2006-08-06 00:00:00', (string)$lastWeek->begin);
-        $this->assertEquals('2006-08-13 00:00:00', (string)$lastWeek->end);
+        $this->assertEquals('2006-08-06 00:00:00', (string) $lastWeek->begin);
+        $this->assertEquals('2006-08-13 00:00:00', (string) $lastWeek->end);
 
         $lastLastWeek = $weeks->next('past');
-        $this->assertEquals('2006-07-30 00:00:00', (string)$lastLastWeek->begin);
-        $this->assertEquals('2006-08-06 00:00:00', (string)$lastLastWeek->end);
+        $this->assertEquals('2006-07-30 00:00:00', (string) $lastLastWeek->begin);
+        $this->assertEquals('2006-08-06 00:00:00', (string) $lastLastWeek->end);
     }
 
     public function testThisFuture()
@@ -62,8 +63,8 @@ class WeekTest extends TestCase
         $weeks->now = $this->now;
 
         $thisWeek = $weeks->this('future');
-        $this->assertEquals('2006-08-16 15:00:00', (string)$thisWeek->begin);
-        $this->assertEquals('2006-08-20 00:00:00', (string)$thisWeek->end);
+        $this->assertEquals('2006-08-16 15:00:00', (string) $thisWeek->begin);
+        $this->assertEquals('2006-08-20 00:00:00', (string) $thisWeek->end);
     }
 
     public function testThisPast()
@@ -72,8 +73,8 @@ class WeekTest extends TestCase
         $weeks->now = $this->now;
 
         $thisWeek = $weeks->this('past');
-        $this->assertEquals('2006-08-13 00:00:00', (string)$thisWeek->begin);
-        $this->assertEquals('2006-08-16 14:00:00', (string)$thisWeek->end);
+        $this->assertEquals('2006-08-13 00:00:00', (string) $thisWeek->begin);
+        $this->assertEquals('2006-08-16 14:00:00', (string) $thisWeek->end);
     }
 
     public function testOffset()
@@ -82,8 +83,8 @@ class WeekTest extends TestCase
         $span = new Horde_Date_Span($this->now, $this->now->add(1));
 
         $offsetSpan = $weeks->offset($span, 3, 'future');
-        $this->assertEquals('2006-09-06 14:00:00', (string)$offsetSpan->begin);
-        $this->assertEquals('2006-09-06 14:00:01', (string)$offsetSpan->end);
+        $this->assertEquals('2006-09-06 14:00:00', (string) $offsetSpan->begin);
+        $this->assertEquals('2006-09-06 14:00:01', (string) $offsetSpan->end);
     }
 
 }

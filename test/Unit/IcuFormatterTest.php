@@ -315,8 +315,8 @@ class IcuFormatterTest extends TestCase
 
         $result = $formatter->format($timestamp, 'w', 'en_US');
         $this->assertIsNumeric($result);
-        $this->assertGreaterThanOrEqual(1, (int)$result);
-        $this->assertLessThanOrEqual(53, (int)$result);
+        $this->assertGreaterThanOrEqual(1, (int) $result);
+        $this->assertLessThanOrEqual(53, (int) $result);
     }
 
     /**
@@ -373,7 +373,7 @@ class IcuFormatterTest extends TestCase
             $result = $formatter->format($timestamp, "yyyy-MM-dd'incomplete", 'en_US');
             // If it doesn't throw, at least verify we got some output
             $this->assertIsString($result);
-        } catch (InvalidArgumentException | RuntimeException $e) {
+        } catch (InvalidArgumentException|RuntimeException $e) {
             // If it does throw, verify the exception message
             $this->assertStringContainsString('Failed to', $e->getMessage());
         }

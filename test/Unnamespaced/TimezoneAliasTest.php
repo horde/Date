@@ -8,6 +8,7 @@ use Horde_Date;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
+use DateTimeZone;
 
 #[CoversClass(Horde_Date::class)]
 class TimezoneAliasTest extends TestCase
@@ -226,7 +227,7 @@ class TimezoneAliasTest extends TestCase
         $result = Horde_Date::getTimezoneAlias('CET');
         $this->assertNotEmpty($result);
         // It should be a valid timezone
-        $tz = new \DateTimeZone($result);
-        $this->assertInstanceOf(\DateTimeZone::class, $tz);
+        $tz = new DateTimeZone($result);
+        $this->assertInstanceOf(DateTimeZone::class, $tz);
     }
 }

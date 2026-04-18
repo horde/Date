@@ -19,6 +19,7 @@ namespace Horde\Date\Test\Unit;
 use Horde\Date\Formatter\DateTimeFormatter;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\TestCase;
+use RuntimeException;
 
 /**
  * Tests for DateTimeFormatter
@@ -193,7 +194,7 @@ class DateTimeFormatterTest extends TestCase
         $timestamp = 1742565045;
 
         $result = $formatter->format($timestamp, 'U');
-        $this->assertEquals((string)$timestamp, $result);
+        $this->assertEquals((string) $timestamp, $result);
     }
 
     /**
@@ -362,7 +363,7 @@ class DateTimeFormatterTest extends TestCase
      */
     public function testParseInvalidString(): void
     {
-        $this->expectException(\RuntimeException::class);
+        $this->expectException(RuntimeException::class);
         $this->expectExceptionMessage('Failed to parse date string');
 
         $formatter = new DateTimeFormatter();
@@ -374,7 +375,7 @@ class DateTimeFormatterTest extends TestCase
      */
     public function testParseMismatchedPattern(): void
     {
-        $this->expectException(\RuntimeException::class);
+        $this->expectException(RuntimeException::class);
 
         $formatter = new DateTimeFormatter();
         // Try to parse ISO format with US m/d/Y pattern
