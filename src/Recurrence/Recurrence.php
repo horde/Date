@@ -90,7 +90,7 @@ class Recurrence implements RecurrenceInterface
 
     public function setInterval(int $interval): void
     {
-        if ($interval > 0) {
+        if ($interval >= 0) {
             $this->interval = $interval;
         }
     }
@@ -321,17 +321,14 @@ class Recurrence implements RecurrenceInterface
         $startDate = Date::createFromInterface($this->start);
         $tz = $this->start->getTimezone();
 
-        $startWeek = Utils::firstDayOfWeek(
+        $startWeek = $this->firstDayOfWeekInTz(
             (int) $startDate->format('W'),
-            (int) $startDate->format('Y')
+            (int) $startDate->format('Y'),
+            $tz,
+            (int) $startDate->format('G'),
+            (int) $startDate->format('i'),
+            (int) $startDate->format('s')
         );
-        $startWeek = $startWeek
-            ->setTimezone($tz)
-            ->setTime(
-                (int) $startDate->format('G'),
-                (int) $startDate->format('i'),
-                (int) $startDate->format('s')
-            );
         $startWeek = Date::createFromInterface($startWeek);
 
         $week = (int) $after->format('W');
@@ -346,14 +343,14 @@ class Recurrence implements RecurrenceInterface
             $theYear = $afterYear;
         }
 
-        $afterWeek = Utils::firstDayOfWeek($week, $theYear);
-        $afterWeek = $afterWeek
-            ->setTimezone($tz)
-            ->setTime(
-                (int) $startDate->format('G'),
-                (int) $startDate->format('i'),
-                (int) $startDate->format('s')
-            );
+        $afterWeek = $this->firstDayOfWeekInTz(
+            $week,
+            $theYear,
+            $tz,
+            (int) $startDate->format('G'),
+            (int) $startDate->format('i'),
+            (int) $startDate->format('s')
+        );
         $afterWeek = Date::createFromInterface($afterWeek);
         $afterWeekEnd = Date::createFromInterface($afterWeek->modify('+7 days'));
 
@@ -1067,6 +1064,20 @@ class Recurrence implements RecurrenceInterface
     // =========================================================================
     // Internal helpers
     // =========================================================================
+
+    private function firstDayOfWeekInTz(
+        int $week,
+        int $year,
+        DateTimeZone $tz,
+        int $hour,
+        int $min,
+        int $sec
+    ): DateTimeImmutable {
+        return new DateTimeImmutable(
+            sprintf('%04dW%02d %02d:%02d:%02d', $year, $week, $hour, $min, $sec),
+            $tz
+        );
+    }
 
     private function buildDate(int $year, int $month, int $day): DateTimeImmutable
     {
