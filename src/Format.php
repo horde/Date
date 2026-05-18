@@ -76,90 +76,116 @@ class Format
         '%R' => 'HH:mm',         // Time 24-hour (%H:%M)
         '%T' => 'HH:mm:ss',      // Time 24-hour (%H:%M:%S)
         '%r' => 'hh:mm:ss a',    // Time 12-hour (%I:%M:%S %p)
-        '%x' => 'dd.MM.yyyy',    // Locale date (default pattern for compound formats)
-        '%X' => 'HH:mm:ss',      // Locale time (default pattern for compound formats)
-        '%c' => 'EEE dd MMM yyyy HH:mm:ss',  // Locale date+time (default for compound)
         '%n' => "\n",            // Newline
         '%t' => "\t",            // Tab
         '%%' => '%',             // Literal %
     ];
 
     /**
-     * Locale-specific formats that need IntlDateFormatter constants
-     */
-    protected static array $localeFormats = [
-        '%x' => 'date',      // IntlDateFormatter::SHORT for date
-        '%X' => 'time',      // IntlDateFormatter::SHORT for time
-        '%c' => 'datetime',  // IntlDateFormatter::SHORT for both
-    ];
-
-    /**
-     * Cache converted formats
+     * Cache converted formats (keyed by locale:format)
      */
     protected static array $conversionCache = [];
 
     /**
+     * Cache resolved locale patterns (keyed by locale)
+     */
+    protected static array $localePatternCache = [];
+
+    /**
      * Convert strftime format to ICU format
      *
+     * Resolves locale-specific tokens (%x, %X, %c) to the locale's actual
+     * ICU patterns inline, so compound formats like '%a %x' work correctly.
+     *
      * @param string $strftimeFormat  strftime format string
-     * @return string|array  ICU format pattern, or ['type' => 'locale', 'format' => ...] for locale formats
+     * @param string $locale  ICU locale for resolving %x/%X/%c (default: 'en_US')
+     * @return string  ICU format pattern
      */
-    public static function strftimeToIcu(string $strftimeFormat): string|array
+    public static function strftimeToIcu(string $strftimeFormat, string $locale = 'en_US'): string
     {
-        // Check cache
-        if (isset(self::$conversionCache[$strftimeFormat])) {
-            return self::$conversionCache[$strftimeFormat];
+        $cacheKey = $locale . ':' . $strftimeFormat;
+
+        if (isset(self::$conversionCache[$cacheKey])) {
+            return self::$conversionCache[$cacheKey];
         }
 
-        // Check if it's a locale-specific format
-        if (isset(self::$localeFormats[$strftimeFormat])) {
-            $result = ['type' => 'locale', 'format' => self::$localeFormats[$strftimeFormat]];
-            self::$conversionCache[$strftimeFormat] = $result;
-            return $result;
+        // Resolve locale-specific tokens (%x, %X, %c) to actual ICU patterns
+        $localePatterns = self::resolveLocalePatterns($locale);
+        $format = str_replace(
+            ['%x', '%X', '%c'],
+            [$localePatterns['date'], $localePatterns['time'], $localePatterns['datetime']],
+            $strftimeFormat
+        );
+
+        // If no strftime specifiers remain after locale resolution, return as-is
+        if (!str_contains($format, '%')) {
+            self::$conversionCache[$cacheKey] = $format;
+            return $format;
         }
 
-        // Convert pattern using string replacement
-        // Use placeholders to track boundaries for separator insertion
+        // Convert remaining pattern using string replacement
         $patterns = self::$strftimeToIcuMap;
         uksort($patterns, fn($a, $b) => strlen($b) <=> strlen($a));
 
-        $icuFormat = $strftimeFormat;
+        $icuFormat = $format;
         foreach ($patterns as $strftime => $icu) {
-            // Wrap each ICU pattern with boundary markers
             $placeholder = "\x00" . $icu . "\x00";
             $icuFormat = str_replace($strftime, $placeholder, $icuFormat);
         }
 
-        // Now insert \x01 separators where adjacent patterns use same letter
-        // Example: "\x00yyyy\x00\x00yy\x00" → "yyyy\x01yy"
+        // Insert separators where adjacent patterns use same letter
         $icuFormat = self::insertAdjacentSeparators($icuFormat);
 
-        // Check for unconverted patterns (edge cases)
+        // Warn about unconverted patterns
         if (preg_match('/%[a-zA-Z]/', $icuFormat)) {
-            // Log warning about unsupported pattern
             error_log("Horde\\Date\\Format: Unsupported strftime pattern in format: $strftimeFormat");
         }
 
-        self::$conversionCache[$strftimeFormat] = $icuFormat;
+        self::$conversionCache[$cacheKey] = $icuFormat;
         return $icuFormat;
+    }
+
+    /**
+     * Resolve locale-specific strftime tokens to their actual ICU patterns
+     *
+     * Queries IntlDateFormatter for the locale's SHORT date and MEDIUM time
+     * patterns and returns them for inline substitution.
+     *
+     * @param string $locale  ICU locale identifier
+     * @return array{date: string, time: string, datetime: string}
+     */
+    protected static function resolveLocalePatterns(string $locale): array
+    {
+        if (isset(self::$localePatternCache[$locale])) {
+            return self::$localePatternCache[$locale];
+        }
+
+        $dateFmt = IntlDateFormatter::create($locale, IntlDateFormatter::SHORT, IntlDateFormatter::NONE);
+        $timeFmt = IntlDateFormatter::create($locale, IntlDateFormatter::NONE, IntlDateFormatter::MEDIUM);
+        $dateTimeFmt = IntlDateFormatter::create($locale, IntlDateFormatter::SHORT, IntlDateFormatter::MEDIUM);
+
+        $result = [
+            'date' => $dateFmt ? $dateFmt->getPattern() : 'M/d/yy',
+            'time' => $timeFmt ? $timeFmt->getPattern() : 'h:mm:ss a',
+            'datetime' => $dateTimeFmt ? $dateTimeFmt->getPattern() : 'M/d/yy, h:mm:ss a',
+        ];
+
+        self::$localePatternCache[$locale] = $result;
+        return $result;
     }
 
     /**
      * Insert non-printable separators between adjacent same-letter ICU patterns
      *
      * Processes a string with \x00 boundary markers around ICU patterns.
-     * When two patterns are adjacent (\x00pattern1\x00\x00pattern2\x00) and
-     * start with the same letter, inserts \x01 separator between them.
-     *
-     * Example: "\x00yyyy\x00\x00yy\x00" → "yyyy\x01yy"
-     * Example: "\x00yyyy\x00\x00MM\x00" → "yyyyMM" (different letters, no separator)
+     * When two patterns are adjacent and start with the same letter,
+     * inserts \x01 separator between them.
      *
      * @param string $format  Format string with \x00 boundary markers
      * @return string  Format string with \x01 separators and \x00 markers removed
      */
     protected static function insertAdjacentSeparators(string $format): string
     {
-        // Split by \x00 to get patterns and literals
         $parts = explode("\x00", $format);
 
         $result = '';
@@ -169,16 +195,12 @@ class Format
             $part = $parts[$i];
 
             if ($part === '') {
-                // Empty part from adjacent \x00 markers, skip
                 continue;
             }
 
-            // Check if this part is a pattern (starts with pattern letter)
             if (preg_match('/^[yMdHhmsSDEwWazZ]/', $part)) {
-                // This is a pattern
                 $patternLetter = $part[0];
 
-                // If previous was also a pattern with same letter, insert separator
                 if ($prevPattern !== null && $prevPattern[0] === $patternLetter) {
                     $result .= "\x01";
                 }
@@ -186,9 +208,8 @@ class Format
                 $result .= $part;
                 $prevPattern = $part;
             } else {
-                // This is a literal
                 $result .= $part;
-                $prevPattern = null; // Reset tracking
+                $prevPattern = null;
             }
         }
 
@@ -196,7 +217,7 @@ class Format
     }
 
     /**
-     * Format a date using strftime format (auto-converts to ICU)
+     * Format a date using strftime or ICU format (auto-converts strftime to ICU)
      *
      * @param int|string|DateTime|DateTimeInterface $timestamp  Timestamp or date object
      * @param string $format  strftime or ICU format string
@@ -208,11 +229,9 @@ class Format
         string $format,
         string $locale = 'en_US'
     ): string {
-        // Convert timestamp to int if needed
         if ($timestamp instanceof DateTime || $timestamp instanceof DateTimeInterface) {
             $timestamp = $timestamp->getTimestamp();
         } elseif (is_string($timestamp)) {
-            // Handle numeric string timestamps (e.g., from Horde_Date::format('U'))
             if (is_numeric($timestamp)) {
                 $timestamp = (int) $timestamp;
             } else {
@@ -220,41 +239,31 @@ class Format
             }
         }
 
-        // Validate timestamp conversion
         if ($timestamp === false || !is_int($timestamp)) {
             throw new InvalidArgumentException("Invalid timestamp value");
         }
 
-        // Only convert if format is strftime
+        // Convert strftime to ICU if needed
         if (self::isStrftimeFormat($format)) {
-            $icuFormat = self::strftimeToIcu($format);
+            $icuFormat = self::strftimeToIcu($format, $locale);
         } else {
-            // Already ICU format, use as-is
             $icuFormat = $format;
         }
 
-        // Handle locale-specific formats
-        if (is_array($icuFormat) && $icuFormat['type'] === 'locale') {
-            $formatter = match ($icuFormat['format']) {
-                'date' => IntlDateFormatter::create(
-                    $locale,
-                    IntlDateFormatter::SHORT,
-                    IntlDateFormatter::NONE
-                ),
-                'time' => IntlDateFormatter::create(
-                    $locale,
-                    IntlDateFormatter::NONE,
-                    IntlDateFormatter::SHORT
-                ),
-                'datetime' => IntlDateFormatter::create(
-                    $locale,
-                    IntlDateFormatter::SHORT,
-                    IntlDateFormatter::SHORT
-                ),
-                default => throw new InvalidArgumentException("Unknown locale format: {$icuFormat['format']}")
+        // Handle IcuFormatter shortcuts
+        if (in_array($icuFormat, ['short', 'medium', 'long', 'full'], true)) {
+            $dateStyle = match ($icuFormat) {
+                'short' => IntlDateFormatter::SHORT,
+                'medium' => IntlDateFormatter::MEDIUM,
+                'long' => IntlDateFormatter::LONG,
+                'full' => IntlDateFormatter::FULL,
             };
+            $formatter = IntlDateFormatter::create(
+                $locale,
+                $dateStyle,
+                IntlDateFormatter::NONE
+            );
         } else {
-            // Custom pattern
             $formatter = IntlDateFormatter::create(
                 $locale,
                 IntlDateFormatter::NONE,
@@ -287,13 +296,10 @@ class Format
      */
     public static function isStrftimeFormat(string $format): bool
     {
-        // Must contain % character
         if (!str_contains($format, '%')) {
             return false;
         }
 
-        // Check for known strftime specifiers
-        // This avoids false positives like "50% complete"
         $strftimePattern = '/%[aAbBCdDeHIjmMnpPrRStTuUVwWxXyYzZFGghklZ%]/';
         return preg_match($strftimePattern, $format) === 1;
     }
@@ -301,12 +307,11 @@ class Format
     /**
      * Clear the conversion cache
      *
-     * Useful for testing or when format definitions change at runtime
-     *
      * @return void
      */
     public static function clearCache(): void
     {
         self::$conversionCache = [];
+        self::$localePatternCache = [];
     }
 }
