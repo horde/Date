@@ -23,9 +23,7 @@ use Horde_Date;
 use Horde_Date_Exception;
 use InvalidArgumentException;
 use Exception;
-use Horde_Nls;
-
-use function PHP81_BC\strftime;
+use Horde\Date\Format;
 
 /**
  * Mutable date class backed by DateTimeImmutable.
@@ -435,93 +433,6 @@ class HordeLegacyDate extends Horde_Date
 
     public function strftime($format)
     {
-        if (preg_match('/%[^' . self::$_supportedSpecs . ']/', $format)) {
-            $format = $this->_fixPolyfillFormat($format);
-            return strftime($format, $this->timestamp());
-        }
-        return $this->_strftime($format);
-    }
-
-    protected function _strftime($format)
-    {
-        return preg_replace_callback(
-            '/(%([-#]?)[%bBCdDeHImMnpRStTxXyY])/',
-            [$this, '_regexCallback'],
-            $format,
-        );
-    }
-
-    protected function _regexCallback($reg)
-    {
-        $year = (int) $this->inner->format('Y');
-        $month = (int) $this->inner->format('n');
-        $mday = (int) $this->inner->format('j');
-        $hour = (int) $this->inner->format('G');
-        $min = (int) $this->inner->format('i');
-        $sec = (int) $this->inner->format('s');
-
-        switch ($reg[0]) {
-            case '%b':
-                return $this->strftime(Horde_Nls::getLangInfo(constant('ABMON_' . $month)));
-            case '%B':
-                return $this->strftime(Horde_Nls::getLangInfo(constant('MON_' . $month)));
-            case '%C':
-                return (int) ($year / 100);
-            case '%-d':
-            case '%#d':
-                return sprintf('%d', $mday);
-            case '%d':
-                return sprintf('%02d', $mday);
-            case '%D':
-                return $this->strftime('%m/%d/%y');
-            case '%e':
-                return sprintf('%2d', $mday);
-            case '%-H':
-            case '%#H':
-                return sprintf('%d', $hour);
-            case '%H':
-                return sprintf('%02d', $hour);
-            case '%-I':
-            case '%#I':
-                return sprintf('%d', $hour == 0 ? 12 : ($hour > 12 ? $hour - 12 : $hour));
-            case '%I':
-                return sprintf('%02d', $hour == 0 ? 12 : ($hour > 12 ? $hour - 12 : $hour));
-            case '%-m':
-            case '%#m':
-                return sprintf('%d', $month);
-            case '%m':
-                return sprintf('%02d', $month);
-            case '%-M':
-            case '%#M':
-                return sprintf('%d', $min);
-            case '%M':
-                return sprintf('%02d', $min);
-            case '%n':
-                return "\n";
-            case '%p':
-                return $this->strftime(Horde_Nls::getLangInfo($hour < 12 ? AM_STR : PM_STR));
-            case '%R':
-                return $this->strftime('%H:%M');
-            case '%-S':
-            case '%#S':
-                return sprintf('%d', $sec);
-            case '%S':
-                return sprintf('%02d', $sec);
-            case '%t':
-                return "\t";
-            case '%T':
-                return $this->strftime('%H:%M:%S');
-            case '%x':
-                return $this->strftime(Horde_Nls::getLangInfo(D_FMT));
-            case '%X':
-                return $this->strftime(Horde_Nls::getLangInfo(T_FMT));
-            case '%y':
-                return substr(sprintf('%04d', $year), -2);
-            case '%Y':
-                return (int) $year;
-            case '%%':
-                return '%';
-        }
-        return $reg[0];
+        return Format::formatDate($this->timestamp(), $format);
     }
 }

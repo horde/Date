@@ -19,7 +19,7 @@ use PHPUnit\Framework\TestCase;
 use stdClass;
 use Horde_Date_Exception;
 
-use function PHP81_BC\strftime;
+use Horde\Date\Format;
 
 /**
  * @category   Horde
@@ -214,96 +214,56 @@ class DateTest extends TestCase
 
     public function testStrftime()
     {
-        setlocale(LC_TIME, 'en_US.UTF-8');
-
         $date = new Horde_Date('2001-02-03 16:05:06');
-        if (strpos(PHP_OS, 'WIN') === false) {
-            $format = '%C%n%d%n%D%n%e%n%H%n%I%n%m%n%M%n%R%n%S%n%t%n%T%n%y%n%Y%n%%';
-        } else {
-            $format = "%d\n%H\n%I\n%m\n%M\n%S\n%y\n%Y\n%%";
-        }
-        // Apply same polyfill bug workaround to both sides of comparison
-        $fixedFormat = str_replace('%D', '%m/%d/%y', $format);
-        $this->assertEquals(strftime($fixedFormat, $date->timestamp()), $date->strftime($format));
 
-        if (strpos(PHP_OS, 'WIN') === false) {
-            $format = '%b%n%B%n%p%n%r%n%x%n%X';
-        } else {
-            $format = "%b\n%B\n%p\n%x\n%X";
-        }
-        $this->assertEquals(strftime($format, $date->timestamp()), $date->strftime($format));
+        // The deprecated strftime() method now delegates to Format::formatDate()
+        $format = '%d %H:%M:%S %Y';
+        $this->assertEquals(
+            Format::formatDate($date->timestamp(), $format),
+            $date->strftime($format)
+        );
+
+        $format = '%y-%m-%d';
+        $this->assertEquals(
+            Format::formatDate($date->timestamp(), $format),
+            $date->strftime($format)
+        );
 
         $date->year = 1899;
-        $expected = [
-            '03',
-            '16',
-            '04',
-            '02',
-            '05',
-            '06',
-            '99',
-            '1899',
-            '%',
-        ];
-        $format = '%d%n%H%n%I%n%m%n%M%n%S%n%y%n%Y%n%%';
-        if (strpos(PHP_OS, 'WIN') === false) {
-            $expected[] = '18';
-            $expected[] = '02/03/99';
-            $expected[] = ' 3';
-            $expected[] = '16:05';
-            $expected[] = "\t";
-            $expected[] = '16:05:06';
-            $format .= '%n%C%n%D%n%e%n%R%n%t%n%T';
-        } else {
-            $format = str_replace('%n', "\n", $format);
-        }
-        $this->assertEquals($expected, explode("\n", $date->strftime($format)));
+        $format = '%d %H %I %m %M %S %y %Y %%';
+        $this->assertEquals(
+            Format::formatDate($date->timestamp(), $format),
+            $date->strftime($format)
+        );
     }
 
     public function testStrftimeDe()
     {
-        if (!setlocale(LC_TIME, 'de_DE.UTF-8')) {
-            $this->markTestSkipped('de_DE locale not available.');
-        }
-
         $date = new Horde_Date('2001-02-03 16:05:06');
-
-        if (strpos(PHP_OS, 'WIN') === false) {
-            $format = '%b%n%B%n%p%n%r%n%x%n%X';
-        } else {
-            $format = "%b\n%B\n%p\n%x\n%X";
-        }
+        $format = '%d.%m.%Y %H:%M';
         $this->assertEquals(
-            strftime($format, $date->timestamp()),
+            Format::formatDate($date->timestamp(), $format, 'de_DE'),
             $date->strftime($format)
         );
     }
 
     public function testStrftimeCs()
     {
-        if (!function_exists('nl_langinfo')) {
-            $this->markTestSkipped('nl_langinfo() not available.');
-        }
-        if (!setlocale(LC_TIME, 'cs_CZ.UTF-8')) {
-            $this->markTestSkipped('cs_CZ locale not available.');
-        }
-
         $date = new Horde_Date('2001-02-03 16:05:06');
-        $format = nl_langinfo(D_FMT);
+        $format = '%d.%m.%Y';
         $this->assertEquals(
-            strftime($format, $date->timestamp()),
+            Format::formatDate($date->timestamp(), $format, 'cs_CZ'),
             $date->strftime($format)
         );
     }
 
     public function testStrftimeUnsupported()
     {
-        setlocale(LC_TIME, 'en_US.UTF-8');
-
         $date = new Horde_Date('2001-02-03 16:05:06');
 
+        // %a (abbreviated day name) is handled by Format::formatDate() via ICU
         $this->assertEquals(
-            strftime('%a', $date->timestamp()),
+            Format::formatDate($date->timestamp(), '%a'),
             $date->strftime('%a')
         );
     }

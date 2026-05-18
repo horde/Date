@@ -22,6 +22,7 @@ use DateTimeInterface;
 use DateTimeZone;
 use Horde\Date\Date;
 use Horde\Date\DateInterface;
+use Horde\Date\Format;
 use Horde\Date\FormatterInterface;
 use Horde_Date;
 use IntlDateFormatter;
@@ -67,6 +68,11 @@ class IcuFormatter implements FormatterInterface
     ) {
         // Convert Stringable to string
         $locale = (string) $locale;
+
+        // Auto-detect and convert legacy strftime patterns
+        if (Format::isStrftimeFormat($pattern)) {
+            $pattern = Format::strftimeToIcu($pattern, $locale);
+        }
 
         // Convert Horde_Date to DateTimeInterface if needed
         if ($datetime instanceof Horde_Date) {

@@ -16,8 +16,6 @@ use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
 use InvalidArgumentException;
 
-use function PHP81_BC\strftime;
-
 #[CoversClass(HordeLegacyDate::class)]
 class HordeLegacyDateTest extends TestCase
 {

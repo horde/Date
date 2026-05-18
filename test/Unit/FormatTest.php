@@ -55,24 +55,30 @@ class FormatTest extends TestCase
     }
 
     /**
-     * Test locale-specific formats
+     * Test locale-specific formats resolve to ICU patterns
      */
     public function testLocaleFormats(): void
     {
-        $result = Format::strftimeToIcu('%x');
-        $this->assertIsArray($result);
-        $this->assertEquals('locale', $result['type']);
-        $this->assertEquals('date', $result['format']);
+        // %x resolves to locale's SHORT date pattern
+        $result = Format::strftimeToIcu('%x', 'en_US');
+        $this->assertIsString($result);
+        $this->assertStringContainsString('/', $result); // en_US uses M/d/yy
 
-        $result = Format::strftimeToIcu('%X');
-        $this->assertIsArray($result);
-        $this->assertEquals('locale', $result['type']);
-        $this->assertEquals('time', $result['format']);
+        // %X resolves to locale's MEDIUM time pattern
+        $result = Format::strftimeToIcu('%X', 'en_US');
+        $this->assertIsString($result);
+        $this->assertStringContainsString(':', $result); // time has colons
 
-        $result = Format::strftimeToIcu('%c');
-        $this->assertIsArray($result);
-        $this->assertEquals('locale', $result['type']);
-        $this->assertEquals('datetime', $result['format']);
+        // %c resolves to locale's SHORT date + MEDIUM time pattern
+        $result = Format::strftimeToIcu('%c', 'en_US');
+        $this->assertIsString($result);
+        $this->assertStringContainsString('/', $result);
+        $this->assertStringContainsString(':', $result);
+
+        // Different locale produces different pattern
+        $resultDe = Format::strftimeToIcu('%x', 'de_DE');
+        $resultEn = Format::strftimeToIcu('%x', 'en_US');
+        $this->assertNotEquals($resultDe, $resultEn);
     }
 
     /**
