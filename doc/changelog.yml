@@ -208,6 +208,33 @@
     Fix Travis tests.
     Add Travis configuration and .gitignore files.
     Development mode for Horde_Date-2.4.2
+3.0.0-RC1:
+  api: 3.0.0-RC1
+  state:
+    release: RC
+    api: RC
+  date: 2026-05-19
+  license:
+    identifier: LGPL-2.1-only
+    uri: https://spdx.org/licenses/LGPL-2.1-only.html
+  notes: |-
+    Merge pull request #11 from horde/refactor/strftime-icu-migration
+    refactor(strftime): Migrate to native usage of IntlDateFormatter and DateTime
+    chore: Add keywords, use PHP 8.1+
+    test: Cover HordeLegacyDate compatibility with Horde_Date
+    docs: update UPGRADING guide to .md format and strategies for adopting modern 3.0
+    feat: interface-compatible drop-in replacement for Horde_Date
+    style: php-cs-fixer in lib
+    style: tests, php-cs-fixer
+    style: php-cs-fixer
+    chore: Add Torben. Jan isn't currently active.
+    test: Amend recurrence tests
+    feat: Recurrence needs to mind timezones
+    test: Cover src/ variant with tests
+    feat: Flesh out Horde_Date src/ branch
+    fix: Casting and coupling problems
+    test: Improve coverage of recurrence, repeater, timezonealias
+    fix setlocale to provide proper type
 2.4.2:
   api: 2.4.0
   state:
