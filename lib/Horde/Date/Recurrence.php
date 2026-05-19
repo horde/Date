@@ -177,12 +177,12 @@ class Horde_Date_Recurrence
 
     public function recurOnDay($dayMask)
     {
-        return ($this->modern->getDayMask() & $dayMask);
+        return ($this->modern->getDayMask() & (int) $dayMask);
     }
 
     public function setRecurOnDay($dayMask)
     {
-        $this->modern->setDayMask($dayMask);
+        $this->modern->setDayMask((int) $dayMask);
     }
 
     public function getRecurOnDays()
