@@ -985,10 +985,10 @@ class Horde_Date_Recurrence
         $recurEnd = $this->getRecurEnd();
         $string .= "\n" . Horde_Date_Translation::t("Ends after") . ': '
             . ($this->hasRecurEnd()
-               ? \Horde\Date\Format::formatDate($recurEnd->timestamp(), $date_format)
+               ? Horde\Date\Format::formatDate($recurEnd->timestamp(), $date_format)
                    . ($recurEnd->hour == 23 && $recurEnd->min == 59
                       ? ''
-                      : ' ' . \Horde\Date\Format::formatDate($recurEnd->timestamp(), $time_format))
+                      : ' ' . Horde\Date\Format::formatDate($recurEnd->timestamp(), $time_format))
                : ($this->getRecurCount()
                   ? sprintf(Horde_Date_Translation::t("%d times"), $this->getRecurCount())
                   : Horde_Date_Translation::t("No end date")));
@@ -1024,7 +1024,7 @@ class Horde_Date_Recurrence
         $horde_date = new Horde_Date(['year' => $match[1],
             'month' => $match[2],
             'mday' => $match[3]]);
-        return \Horde\Date\Format::formatDate($horde_date->timestamp(), $format);
+        return Horde\Date\Format::formatDate($horde_date->timestamp(), $format);
     }
 
     /**

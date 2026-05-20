@@ -117,7 +117,7 @@ class Horde_Date_Utils
 
         if ($delta > 24 && $delta < 48) {
             $date = new Horde_Date($time);
-            return sprintf(Horde_Date_Translation::t("yesterday at %s"), \Horde\Date\Format::formatDate($date->timestamp(), $time_format));
+            return sprintf(Horde_Date_Translation::t("yesterday at %s"), Horde\Date\Format::formatDate($date->timestamp(), $time_format));
         }
 
         $delta = round($delta / 24);
@@ -131,7 +131,7 @@ class Horde_Date_Utils
         }
 
         // Default to the user specified date format.
-        return \Horde\Date\Format::formatDate($date->timestamp(), $date_format);
+        return Horde\Date\Format::formatDate($date->timestamp(), $date_format);
     }
 
     /**
