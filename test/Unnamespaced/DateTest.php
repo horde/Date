@@ -18,7 +18,6 @@ use Horde_Date_Span;
 use PHPUnit\Framework\TestCase;
 use stdClass;
 use Horde_Date_Exception;
-
 use Horde\Date\Format;
 
 /**

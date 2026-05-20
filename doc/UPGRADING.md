@@ -190,6 +190,132 @@ if ($d->month !== $targetMonth) {
 }
 ```
 
+### New: `Horde\Date\Duration` — iCalendar DURATION value type
+
+Immutable value object representing an RFC 5545 DURATION (§3.3.6).
+
+```php
+use Horde\Date\Duration;
+
+// Named factory methods — no multi-format constructor
+$d = Duration::fromIcalendar('P1DT2H30M');
+$d = Duration::fromSeconds(5400);
+$d = Duration::fromParts(days: 1, hours: 2, minutes: 30);
+$d = Duration::fromDateDiff($start, $end);
+$d = Duration::zero();
+
+// Accessors
+$d->toSeconds();      // Total seconds (signed)
+$d->isNegative();
+$d->isZero();
+$d->getWeeks();       // Non-zero only for weeks form
+$d->getDays();
+$d->getHours();
+$d->getMinutes();
+$d->getSeconds();
+
+// Calendar-aware arithmetic (respects DST transitions)
+$later = $d->addTo($dateTimeImmutable);
+$earlier = $d->subtractFrom($dateTimeImmutable);
+
+// Serialization
+$d->toIcalendar();    // "P1DT2H30M"
+$d->toDateInterval(); // Native DateInterval (absolute magnitude)
+(string) $d;          // Same as toIcalendar()
+```
+
+### New: `Horde\Date\Period` — iCalendar PERIOD value type
+
+Immutable value object representing an RFC 5545 PERIOD (§3.3.9).
+This is the modern replacement for `Horde_Date_Span`.
+
+```php
+use Horde\Date\Period;
+use Horde\Date\Duration;
+
+// Named factory methods
+$p = Period::fromStartEnd($start, $end);
+$p = Period::fromStartDuration($start, Duration::fromIcalendar('PT2H'));
+$p = Period::fromIcalendar('20260520T090000Z/20260520T110000Z');
+$p = Period::fromIcalendar('20260520T090000Z/PT2H');
+
+// Accessors — return Horde\Date\Date (extends DateTimeImmutable)
+$p->getStart();       // Horde\Date\Date
+$p->getEnd();         // Horde\Date\Date
+$p->getDuration();    // Duration
+$p->getWidth();       // Seconds (int)
+
+// Containment and overlap
+$p->contains($dateTime);          // [start, end) — half-open
+$p->containsInclusive($dateTime); // [start, end] — closed
+$p->overlaps($otherPeriod);
+$p->encloses($otherPeriod);
+$p->intersect($otherPeriod);      // ?Period (null if disjoint)
+
+// Serialization
+$p->toIcalendar();             // "20260520T090000Z/20260520T110000Z"
+$p->toIcalendarWithDuration(); // "20260520T090000Z/PT2H"
+(string) $p;                   // Same as toIcalendar()
+```
+
+### Migrating from `Horde_Date_Span` to `Horde\Date\Period`
+
+`Period` supersedes `Horde_Date_Span`. The legacy class remains available
+but new code should use `Period`.
+
+**Key differences:**
+
+| Aspect | `Horde_Date_Span` | `Horde\Date\Period` |
+|--------|-------------------|---------------------|
+| Mutability | Mutable (`$span->begin = ...`) | Immutable (no setters) |
+| Internal types | `Horde_Date` (mutable) | `Horde\Date\Date` (immutable, extends `DateTimeImmutable`) |
+| Construction | `new Span($begin, $end)` | Named factories: `fromStartEnd()`, `fromStartDuration()`, `fromIcalendar()` |
+| Width | `$span->width()` → float seconds | `$p->getWidth()` → int seconds |
+| Shifting | `$span->add($seconds)` mutates in place | Not supported — create a new Period |
+| Containment | `$span->includes($date)` | `$p->contains($date)` (half-open) or `$p->containsInclusive($date)` |
+| Overlap | Not available | `$p->overlaps($other)`, `$p->intersect($other)` |
+| iCalendar | Not available | `$p->toIcalendar()`, `Period::fromIcalendar()` |
+| Duration | Not available | `$p->getDuration()` returns `Duration` |
+| Comparison | Not available | `$p->equals($other)`, `$p->compareTo($other)` |
+
+**Migration examples:**
+
+```php
+// Before
+use Horde_Date;
+use Horde_Date_Span;
+
+$span = new Horde_Date_Span(
+    new Horde_Date('2026-05-20 09:00:00'),
+    new Horde_Date('2026-05-20 11:00:00'),
+);
+$seconds = $span->width();
+$contains = $span->includes($someDate);
+$span->add(3600); // shift forward 1 hour
+
+// After
+use Horde\Date\Period;
+use Horde\Date\Duration;
+use DateTimeImmutable;
+
+$period = Period::fromStartEnd(
+    new DateTimeImmutable('2026-05-20T09:00:00Z'),
+    new DateTimeImmutable('2026-05-20T11:00:00Z'),
+);
+$seconds = $period->getWidth();
+$contains = $period->contains($someDate);
+// Shifting requires building a new Period
+$shifted = Period::fromStartEnd(
+    Duration::fromSeconds(3600)->addTo($period->getStart()),
+    Duration::fromSeconds(3600)->addTo($period->getEnd()),
+);
+```
+
+**`Period::contains()` uses half-open interval semantics** (`[start, end)`):
+the start instant is included, the end instant is excluded. This matches
+standard interval arithmetic and avoids double-counting at boundaries.
+Use `containsInclusive()` if you need closed-interval behavior.
+
 ### Upgrading Horde_Date_Recurrence
 
 `Horde_Date_Recurrence` is now a thin wrapper over
