@@ -63,11 +63,13 @@ final class DayMask
         self::SATURDAY => 'SA',
     ];
 
+    /** Check whether a specific day bit is set in the given mask. */
     public static function includes(int $mask, int $day): bool
     {
         return ($mask & $day) !== 0;
     }
 
+    /** Combine multiple day constants into a single bitmask. */
     public static function fromDays(int ...$days): int
     {
         $mask = 0;
@@ -104,6 +106,7 @@ final class DayMask
         return $days;
     }
 
+    /** Count the number of individual days set in a bitmask. */
     public static function count(int $mask): int
     {
         $count = 0;

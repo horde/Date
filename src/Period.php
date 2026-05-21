@@ -41,10 +41,11 @@ final class Period implements Stringable
         }
     }
 
-    // =========================================================================
-    // Factory methods
-    // =========================================================================
+    /** @section Factory methods */
 
+    /**
+     * Create a period from explicit start and end date-times.
+     */
     public static function fromStartEnd(DateTimeInterface $start, DateTimeInterface $end): self
     {
         return new self(
@@ -53,6 +54,9 @@ final class Period implements Stringable
         );
     }
 
+    /**
+     * Create a period from a start date-time and a non-negative duration.
+     */
     public static function fromStartDuration(DateTimeInterface $start, Duration $duration): self
     {
         if ($duration->isNegative()) {
@@ -102,15 +106,19 @@ final class Period implements Stringable
         return new self($start, $end);
     }
 
-    // =========================================================================
-    // Accessors
-    // =========================================================================
+    /** @section Accessors */
 
+    /**
+     * Get the start of this period.
+     */
     public function getStart(): Date
     {
         return $this->start;
     }
 
+    /**
+     * Get the end of this period.
+     */
     public function getEnd(): Date
     {
         return $this->end;
@@ -140,9 +148,7 @@ final class Period implements Stringable
         return $this->start == $this->end;
     }
 
-    // =========================================================================
-    // Containment and overlap
-    // =========================================================================
+    /** @section Containment and overlap */
 
     /**
      * Whether the given point in time falls within this period (inclusive of start, exclusive of end).
@@ -193,10 +199,11 @@ final class Period implements Stringable
         return new self($start, $end);
     }
 
-    // =========================================================================
-    // Comparison
-    // =========================================================================
+    /** @section Comparison */
 
+    /**
+     * Whether this period is identical to another (same start and end).
+     */
     public function equals(self $other): bool
     {
         return $this->start == $other->start && $this->end == $other->end;
@@ -215,9 +222,7 @@ final class Period implements Stringable
         return $this->end <=> $other->end;
     }
 
-    // =========================================================================
-    // Serialization
-    // =========================================================================
+    /** @section Serialization */
 
     /**
      * Serialize to iCalendar PERIOD format using explicit start/end form.
@@ -242,15 +247,19 @@ final class Period implements Stringable
         return self::formatDateTime($start) . '/' . $this->getDuration()->toIcalendar();
     }
 
+    /**
+     * Stringable implementation; returns iCalendar start/end form.
+     */
     public function __toString(): string
     {
         return $this->toIcalendar();
     }
 
-    // =========================================================================
-    // Internal helpers
-    // =========================================================================
+    /** @section Internal helpers */
 
+    /**
+     * Parse a compact iCalendar date-time string (YYYYMMDDTHHMMSS[Z]).
+     */
     private static function parseDateTime(string $value): Date
     {
         // iCalendar date-time: YYYYMMDDTHHMMSS or YYYYMMDDTHHMMSSZ
@@ -294,6 +303,9 @@ final class Period implements Stringable
         ];
     }
 
+    /**
+     * Format a Date as a compact iCalendar date-time, appending Z for UTC.
+     */
     private static function formatDateTime(Date $dt): string
     {
         if ($dt->getTimezone()->getName() === 'UTC' || $dt->getOffset() === 0) {

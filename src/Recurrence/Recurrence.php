@@ -37,7 +37,10 @@ class Recurrence implements RecurrenceInterface
     private array $exceptions = [];
     /** @var list<string> YYYYMMDD strings */
     private array $completions = [];
+    /** @var list<string> YYYYMMDD strings */
+    private array $rdates = [];
 
+    /** Create a new recurrence rule starting at the given date. */
     public function __construct(DateTimeInterface $start)
     {
         $this->start = $start instanceof DateTimeImmutable
@@ -45,49 +48,53 @@ class Recurrence implements RecurrenceInterface
             : DateTimeImmutable::createFromInterface($start);
     }
 
-    // =========================================================================
-    // Interface Getters
-    // =========================================================================
+    /** @section Interface Getters */
 
+    /** Get the recurrence type. */
     public function getType(): RecurrenceType
     {
         return $this->type;
     }
 
+    /** Get the interval between recurrences. */
     public function getInterval(): int
     {
         return $this->interval;
     }
 
+    /** Get the start date of the recurrence series. */
     public function getStart(): DateTimeImmutable
     {
         return $this->start;
     }
 
+    /** Get the end date, or null if unbounded. */
     public function getEnd(): ?DateTimeImmutable
     {
         return $this->end;
     }
 
+    /** Get the maximum occurrence count, or null if not count-limited. */
     public function getCount(): ?int
     {
         return $this->count;
     }
 
+    /** Get the bitmask of active days (for weekly recurrences). */
     public function getDayMask(): int
     {
         return $this->dayMask;
     }
 
-    // =========================================================================
-    // Setters
-    // =========================================================================
+    /** @section Setters */
 
+    /** Set the recurrence type. */
     public function setType(RecurrenceType $type): void
     {
         $this->type = $type;
     }
 
+    /** Set the interval between recurrences (ignored if negative). */
     public function setInterval(int $interval): void
     {
         if ($interval >= 0) {
@@ -95,6 +102,7 @@ class Recurrence implements RecurrenceInterface
         }
     }
 
+    /** Set the start date of the recurrence series. */
     public function setStart(DateTimeInterface $start): void
     {
         $this->start = $start instanceof DateTimeImmutable
@@ -102,6 +110,7 @@ class Recurrence implements RecurrenceInterface
             : DateTimeImmutable::createFromInterface($start);
     }
 
+    /** Set the end date (clears count if a date is provided). */
     public function setEnd(?DateTimeInterface $end): void
     {
         if ($end !== null) {
@@ -114,6 +123,7 @@ class Recurrence implements RecurrenceInterface
         }
     }
 
+    /** Set the occurrence count limit (clears end date if count is provided). */
     public function setCount(?int $count): void
     {
         if ($count !== null && $count > 0) {
@@ -124,11 +134,13 @@ class Recurrence implements RecurrenceInterface
         }
     }
 
+    /** Set the day-of-week bitmask for weekly recurrences. */
     public function setDayMask(int $mask): void
     {
         $this->dayMask = $mask;
     }
 
+    /** Reset all recurrence properties to their defaults. */
     public function reset(): void
     {
         $this->type = RecurrenceType::None;
@@ -138,23 +150,25 @@ class Recurrence implements RecurrenceInterface
         $this->dayMask = 0;
         $this->exceptions = [];
         $this->completions = [];
+        $this->rdates = [];
     }
 
+    /** Check whether this recurrence has a meaningful end date. */
     public function hasEnd(): bool
     {
         return $this->end !== null
             && (int) $this->end->format('Y') !== 9999;
     }
 
+    /** Check whether this recurrence is limited by an occurrence count. */
     public function hasCount(): bool
     {
         return $this->count !== null;
     }
 
-    // =========================================================================
-    // Exception / Completion Management
-    // =========================================================================
+    /** @section Exception / Completion Management */
 
+    /** Add an exception date (excluded occurrence). */
     public function addException(DateTimeInterface $date): void
     {
         $key = $date->format('Ymd');
@@ -163,6 +177,7 @@ class Recurrence implements RecurrenceInterface
         }
     }
 
+    /** Remove an exception date. */
     public function deleteException(DateTimeInterface $date): void
     {
         $key = $date->format('Ymd');
@@ -173,26 +188,31 @@ class Recurrence implements RecurrenceInterface
         }
     }
 
+    /** Check whether a date is marked as an exception. */
     public function hasException(DateTimeInterface $date): bool
     {
         return in_array($date->format('Ymd'), $this->exceptions, true);
     }
 
+    /** Get all exception dates as YYYYMMDD strings. */
     public function getExceptions(): array
     {
         return $this->exceptions;
     }
 
+    /** Replace the entire exceptions list. */
     public function setExceptions(array $exceptions): void
     {
         $this->exceptions = array_values($exceptions);
     }
 
+    /** Add a completion date. */
     public function addCompletion(DateTimeInterface $date): void
     {
         $this->completions[] = $date->format('Ymd');
     }
 
+    /** Remove a completion date. */
     public function deleteCompletion(DateTimeInterface $date): void
     {
         $key = $date->format('Ymd');
@@ -203,25 +223,149 @@ class Recurrence implements RecurrenceInterface
         }
     }
 
+    /** Check whether a date is marked as completed. */
     public function hasCompletion(DateTimeInterface $date): bool
     {
         return in_array($date->format('Ymd'), $this->completions, true);
     }
 
+    /** Get all completion dates as YYYYMMDD strings. */
     public function getCompletions(): array
     {
         return $this->completions;
     }
 
+    /** Replace the entire completions list. */
     public function setCompletions(array $completions): void
     {
         $this->completions = array_values($completions);
     }
 
-    // =========================================================================
-    // nextRecurrence / nextActiveRecurrence / hasActiveRecurrence
-    // =========================================================================
+    /** @section RDATE Management */
 
+    /**
+     * Add an RDATE (extra recurrence date) to this recurrence rule.
+     */
+    public function addRdate(DateTimeInterface $date): void
+    {
+        $key = $date->format('Ymd');
+        if (!in_array($key, $this->rdates, true)) {
+            $this->rdates[] = $key;
+        }
+    }
+
+    /**
+     * Remove an RDATE from this recurrence rule.
+     */
+    public function deleteRdate(DateTimeInterface $date): void
+    {
+        $key = $date->format('Ymd');
+        $idx = array_search($key, $this->rdates, true);
+        if ($idx !== false) {
+            unset($this->rdates[$idx]);
+            $this->rdates = array_values($this->rdates);
+        }
+    }
+
+    /**
+     * Check whether a given date is an RDATE in this recurrence rule.
+     */
+    public function hasRdate(DateTimeInterface $date): bool
+    {
+        return in_array($date->format('Ymd'), $this->rdates, true);
+    }
+
+    /**
+     * Get all RDATEs as YYYYMMDD strings.
+     *
+     * @return list<string>
+     */
+    public function getRdates(): array
+    {
+        return $this->rdates;
+    }
+
+    /**
+     * Set the RDATE list directly.
+     *
+     * @param list<string> $dates YYYYMMDD strings
+     */
+    public function setRdates(array $dates): void
+    {
+        $this->rdates = array_values($dates);
+    }
+
+    /** @section Bounded range expansion */
+
+    /**
+     * Expand all active occurrences (RRULE + RDATE - EXDATE) within a date range.
+     *
+     * Returns a sorted, deduplicated list of occurrence timestamps. The
+     * result is capped at $limit entries to prevent runaway expansion on
+     * infinite recurrences.
+     *
+     * @return list<DateTimeImmutable>
+     */
+    public function expandRange(DateTimeInterface $from, DateTimeInterface $until, int $limit = 1000): array
+    {
+        $tz = $this->start->getTimezone();
+        $fromImm = $from instanceof DateTimeImmutable
+            ? $from->setTimezone($tz)
+            : DateTimeImmutable::createFromInterface($from)->setTimezone($tz);
+        $untilImm = $until instanceof DateTimeImmutable
+            ? $until->setTimezone($tz)
+            : DateTimeImmutable::createFromInterface($until)->setTimezone($tz);
+
+        $results = [];
+        $seen = [];
+
+        $current = $fromImm->modify('-1 day');
+        while (count($results) < $limit) {
+            $next = $this->nextRecurrence($current);
+            if ($next === null || $next > $untilImm) {
+                break;
+            }
+            if (!$this->hasException($next) && !$this->hasCompletion($next)) {
+                $key = $next->format('Ymd');
+                if (!isset($seen[$key])) {
+                    $seen[$key] = true;
+                    $results[] = $next;
+                }
+            }
+            $current = $next->modify('+1 day');
+        }
+
+        foreach ($this->rdates as $rdateKey) {
+            if (isset($seen[$rdateKey])) {
+                continue;
+            }
+            $rdate = new DateTimeImmutable(
+                substr($rdateKey, 0, 4) . '-' . substr($rdateKey, 4, 2) . '-' . substr($rdateKey, 6, 2)
+                . 'T' . $this->start->format('H:i:s'),
+                $tz,
+            );
+            if ($rdate < $fromImm || $rdate > $untilImm) {
+                continue;
+            }
+            if ($this->hasException($rdate) || $this->hasCompletion($rdate)) {
+                continue;
+            }
+            $seen[$rdateKey] = true;
+            $results[] = $rdate;
+        }
+
+        usort($results, fn(DateTimeImmutable $a, DateTimeImmutable $b) => $a <=> $b);
+
+        if (count($results) > $limit) {
+            $results = array_slice($results, 0, $limit);
+        }
+
+        return $results;
+    }
+
+    /** @section nextRecurrence / nextActiveRecurrence / hasActiveRecurrence */
+
+    /** Find the next occurrence on or after the given date. */
     public function nextRecurrence(DateTimeInterface $after): ?DateTimeImmutable
     {
         $tz = $this->start->getTimezone();
@@ -253,22 +397,49 @@ class Recurrence implements RecurrenceInterface
         };
     }
 
+    /** Find the next occurrence that is not excepted or completed. */
     public function nextActiveRecurrence(DateTimeInterface $after): ?DateTimeImmutable
     {
         $next = $this->nextRecurrence($after);
         while ($next !== null) {
             if (!$this->hasException($next) && !$this->hasCompletion($next)) {
-                return $next;
+                break;
             }
             $next = $this->nextRecurrence($next->modify('+1 day'));
         }
-        return null;
+
+        $nextRdate = $this->nextRdateAfter($after);
+
+        if ($next === null && $nextRdate === null) {
+            return null;
+        }
+        if ($next === null) {
+            return $nextRdate;
+        }
+        if ($nextRdate === null) {
+            return $next;
+        }
+
+        return $nextRdate < $next ? $nextRdate : $next;
     }
 
+    /** Check whether at least one active occurrence remains. */
     public function hasActiveRecurrence(): bool
     {
-        if (!$this->hasEnd()) {
+        if (!$this->hasEnd() && $this->type !== RecurrenceType::None) {
             return true;
+        }
+
+        if ($this->rdates !== []) {
+            foreach ($this->rdates as $rdateKey) {
+                $rdate = new DateTimeImmutable(
+                    substr($rdateKey, 0, 4) . '-' . substr($rdateKey, 4, 2) . '-' . substr($rdateKey, 6, 2),
+                    $this->start->getTimezone(),
+                );
+                if (!$this->hasException($rdate) && !$this->hasCompletion($rdate)) {
+                    return true;
+                }
+            }
         }
 
         $next = $this->nextRecurrence($this->start);
@@ -281,10 +452,44 @@ class Recurrence implements RecurrenceInterface
         return false;
     }
 
-    // =========================================================================
-    // Private recurrence algorithms
-    // =========================================================================
+    /** @section Private recurrence algorithms */
 
+    /**
+     * Find the earliest RDATE strictly after the given date.
+     */
+    private function nextRdateAfter(DateTimeInterface $after): ?DateTimeImmutable
+    {
+        if ($this->rdates === []) {
+            return null;
+        }
+
+        $tz = $this->start->getTimezone();
+        $afterKey = $after->format('Ymd');
+        $candidates = [];
+
+        foreach ($this->rdates as $rdateKey) {
+            if ($rdateKey <= $afterKey) {
+                continue;
+            }
+            $rdate = new DateTimeImmutable(
+                substr($rdateKey, 0, 4) . '-' . substr($rdateKey, 4, 2) . '-' . substr($rdateKey, 6, 2)
+                . 'T' . $this->start->format('H:i:s'),
+                $tz,
+            );
+            if (!$this->hasException($rdate) && !$this->hasCompletion($rdate)) {
+                $candidates[] = $rdate;
+            }
+        }
+
+        if ($candidates === []) {
+            return null;
+        }
+
+        usort($candidates, fn(DateTimeImmutable $a, DateTimeImmutable $b) => $a <=> $b);
+        return $candidates[0];
+    }
+
+    /** Compute the next daily recurrence after the given date. */
     private function nextDaily(Date $after): ?DateTimeImmutable
     {
         $startDate = Date::createFromInterface($this->start);
@@ -312,6 +517,7 @@ class Recurrence implements RecurrenceInterface
         return null;
     }
 
+    /** Compute the next weekly recurrence after the given date. */
     private function nextWeekly(Date $after): ?DateTimeImmutable
     {
         if ($this->dayMask === 0) {
@@ -415,6 +621,7 @@ class Recurrence implements RecurrenceInterface
         return null;
     }
 
+    /** Compute the next monthly-by-date recurrence after the given date. */
     private function nextMonthlyDate(Date $after): ?DateTimeImmutable
     {
         $startDate = Date::createFromInterface($this->start);
@@ -476,6 +683,7 @@ class Recurrence implements RecurrenceInterface
         }
     }
 
+    /** Compute the next monthly-by-weekday recurrence after the given date. */
     private function nextMonthlyWeekday(Date $after): ?DateTimeImmutable
     {
         $startDate = Date::createFromInterface($this->start);
@@ -535,6 +743,7 @@ class Recurrence implements RecurrenceInterface
         }
     }
 
+    /** Compute the next yearly-by-date recurrence after the given date. */
     private function nextYearlyDate(Date $after): ?DateTimeImmutable
     {
         $startDate = Date::createFromInterface($this->start);
@@ -580,6 +789,7 @@ class Recurrence implements RecurrenceInterface
         return $candidate;
     }
 
+    /** Compute the next yearly-by-day-of-year recurrence after the given date. */
     private function nextYearlyDay(Date $after): ?DateTimeImmutable
     {
         $startDate = Date::createFromInterface($this->start);
@@ -614,6 +824,7 @@ class Recurrence implements RecurrenceInterface
         return $estart;
     }
 
+    /** Compute the next yearly-by-weekday recurrence after the given date. */
     private function nextYearlyWeekday(Date $after): ?DateTimeImmutable
     {
         $startDate = Date::createFromInterface($this->start);
@@ -661,10 +872,9 @@ class Recurrence implements RecurrenceInterface
         }
     }
 
-    // =========================================================================
-    // RRULE generation
-    // =========================================================================
+    /** @section RRULE generation */
 
+    /** Generate an iCalendar RRULE string in RFC 5545 (vCalendar 2.0) format. */
     public function toRRule20(): string
     {
         $startDate = Date::createFromInterface($this->start);
@@ -733,6 +943,7 @@ class Recurrence implements RecurrenceInterface
         return $rrule;
     }
 
+    /** Generate an iCalendar RRULE string in vCalendar 1.0 format. */
     public function toRRule10(): string
     {
         $startDate = Date::createFromInterface($this->start);
@@ -795,10 +1006,9 @@ class Recurrence implements RecurrenceInterface
         return $rrule . ' #' . ($this->count ?? 0);
     }
 
-    // =========================================================================
-    // RRULE parsing
-    // =========================================================================
+    /** @section RRULE parsing */
 
+    /** Parse an RFC 5545 (vCalendar 2.0) RRULE string into this object. */
     public function fromRRule20(string $rrule): void
     {
         $this->reset();
@@ -880,6 +1090,7 @@ class Recurrence implements RecurrenceInterface
         }
     }
 
+    /** Parse a vCalendar 1.0 RRULE string into this object. */
     public function fromRRule10(string $rrule): void
     {
         $this->reset();
@@ -966,10 +1177,9 @@ class Recurrence implements RecurrenceInterface
         }
     }
 
-    // =========================================================================
-    // Serialization
-    // =========================================================================
+    /** @section Serialization */
 
+    /** Serialize this recurrence to a compact JSON-friendly stdClass. */
     public function toJson(): stdClass
     {
         $json = new stdClass();
@@ -990,9 +1200,13 @@ class Recurrence implements RecurrenceInterface
         if ($this->exceptions !== []) {
             $json->ex = $this->exceptions;
         }
+        if ($this->rdates !== []) {
+            $json->rd = $this->rdates;
+        }
         return $json;
     }
 
+    /** Serialize this recurrence to an associative array for storage. */
     public function toHash(): array
     {
         $startStr = $this->start->format('Y-m-d H:i:s') . '/' . $this->start->getTimezone()->getName();
@@ -1009,9 +1223,11 @@ class Recurrence implements RecurrenceInterface
             'data' => $this->dayMask ?: null,
             'exceptions' => $this->exceptions,
             'completions' => $this->completions,
+            'rdates' => $this->rdates,
         ];
     }
 
+    /** Reconstruct a Recurrence instance from a hash array. */
     public static function fromHash(array $hash): static
     {
         $startParts = explode('/', $hash['start'], 2);
@@ -1032,10 +1248,12 @@ class Recurrence implements RecurrenceInterface
         $recurrence->dayMask = (int) ($hash['data'] ?? 0);
         $recurrence->exceptions = $hash['exceptions'] ?? [];
         $recurrence->completions = $hash['completions'] ?? [];
+        $recurrence->rdates = $hash['rdates'] ?? [];
 
         return $recurrence;
     }
 
+    /** Check whether this recurrence rule equals another (ignoring exceptions). */
     public function isEqual(self $other): bool
     {
         return $this->type === $other->type
@@ -1046,6 +1264,7 @@ class Recurrence implements RecurrenceInterface
             && $this->dayMask === $other->dayMask;
     }
 
+    /** Get the translated human-readable name of this recurrence type. */
     public function getRecurName(): string
     {
         return match ($this->type) {
@@ -1061,10 +1280,9 @@ class Recurrence implements RecurrenceInterface
         };
     }
 
-    // =========================================================================
-    // Internal helpers
-    // =========================================================================
+    /** @section Internal helpers */
 
+    /** Get the first day (Monday) of a given ISO week in a specific timezone. */
     private function firstDayOfWeekInTz(
         int $week,
         int $year,
@@ -1079,6 +1297,7 @@ class Recurrence implements RecurrenceInterface
         );
     }
 
+    /** Build a DateTimeImmutable for a given year/month/day using the start time. */
     private function buildDate(int $year, int $month, int $day): DateTimeImmutable
     {
         $tz = $this->start->getTimezone();
@@ -1094,6 +1313,7 @@ class Recurrence implements RecurrenceInterface
         );
     }
 
+    /** Build a DateTimeImmutable from a year and day-of-year offset. */
     private function buildDateFromDayOfYear(int $year, int $dayOfYear): DateTimeImmutable
     {
         $jan1 = new DateTimeImmutable(
@@ -1103,6 +1323,7 @@ class Recurrence implements RecurrenceInterface
         return $jan1->modify('+' . ($dayOfYear - 1) . ' days');
     }
 
+    /** Convert any DateTimeInterface to a DateTimeImmutable. */
     private function toDateTimeImmutable(DateTimeInterface $date): DateTimeImmutable
     {
         if ($date instanceof DateTimeImmutable) {

@@ -269,6 +269,9 @@ class TimezoneMapper
     /** @var array<string, list<array{dst: bool, offset: int, timezone_id: string}>>|null */
     private static ?array $timezoneAbbreviations = null;
 
+    /**
+     * Resolve a timezone string to a TimezoneInfo with canonical IANA name.
+     */
     public static function resolve(string $timezone): TimezoneInfo
     {
         self::$timezoneIdentifiers ??= array_flip(DateTimeZone::listIdentifiers());
@@ -292,11 +295,17 @@ class TimezoneMapper
         return new TimezoneInfo($timezone);
     }
 
+    /**
+     * Resolve a timezone string and return its canonical IANA name.
+     */
     public static function toIana(string $timezone): string
     {
         return self::resolve($timezone)->getIanaName();
     }
 
+    /**
+     * Check whether the given timezone string is a non-canonical alias.
+     */
     public static function isAlias(string $timezone): bool
     {
         return self::resolve($timezone)->isAlias();
@@ -318,6 +327,9 @@ class TimezoneMapper
         return self::$runtimeAliases + self::$aliases;
     }
 
+    /**
+     * Clear all runtime aliases and cached identifier lists.
+     */
     public static function resetRuntimeAliases(): void
     {
         self::$runtimeAliases = [];

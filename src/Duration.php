@@ -39,9 +39,7 @@ final class Duration implements Stringable
         private readonly int $seconds,
     ) {}
 
-    // =========================================================================
-    // Factory methods
-    // =========================================================================
+    /** @section Factory methods */
 
     /**
      * Parse an iCalendar duration string (RFC 5545 §3.3.6).
@@ -171,15 +169,15 @@ final class Duration implements Stringable
         return new self(false, 0, 0, 0, 0, 0);
     }
 
-    // =========================================================================
-    // Accessors
-    // =========================================================================
+    /** @section Accessors */
 
+    /** Whether this duration is negative. */
     public function isNegative(): bool
     {
         return $this->negative;
     }
 
+    /** Whether all components are zero. */
     public function isZero(): bool
     {
         return $this->weeks === 0
@@ -197,26 +195,31 @@ final class Duration implements Stringable
         return $this->weeks > 0;
     }
 
+    /** Get the weeks component. */
     public function getWeeks(): int
     {
         return $this->weeks;
     }
 
+    /** Get the days component. */
     public function getDays(): int
     {
         return $this->days;
     }
 
+    /** Get the hours component. */
     public function getHours(): int
     {
         return $this->hours;
     }
 
+    /** Get the minutes component. */
     public function getMinutes(): int
     {
         return $this->minutes;
     }
 
+    /** Get the seconds component. */
     public function getSeconds(): int
     {
         return $this->seconds;
@@ -260,9 +263,7 @@ final class Duration implements Stringable
         return $interval;
     }
 
-    // =========================================================================
-    // Arithmetic
-    // =========================================================================
+    /** @section Arithmetic */
 
     /**
      * Add this duration to a point in time.
@@ -317,23 +318,21 @@ final class Duration implements Stringable
         return new self(false, $this->weeks, $this->days, $this->hours, $this->minutes, $this->seconds);
     }
 
-    // =========================================================================
-    // Comparison
-    // =========================================================================
+    /** @section Comparison */
 
+    /** Whether two durations represent the same total time. */
     public function equals(self $other): bool
     {
         return $this->toSeconds() === $other->toSeconds();
     }
 
+    /** Compare two durations by total seconds (-1, 0, 1). */
     public function compareTo(self $other): int
     {
         return $this->toSeconds() <=> $other->toSeconds();
     }
 
-    // =========================================================================
-    // Serialization
-    // =========================================================================
+    /** @section Serialization */
 
     /**
      * Serialize to RFC 5545 DURATION format.
@@ -370,6 +369,7 @@ final class Duration implements Stringable
         return $result;
     }
 
+    /** Stringable implementation; returns RFC 5545 DURATION format. */
     public function __toString(): string
     {
         return $this->toIcalendar();

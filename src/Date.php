@@ -36,15 +36,19 @@ class Date extends DateTimeImmutable implements DateInterface
     public const FRIDAY = 5;
     public const SATURDAY = 6;
 
-    // =========================================================================
-    // DateInterface
-    // =========================================================================
+    /** @section DateInterface */
 
+    /**
+     * Format the date using a pattern, with optional locale-aware formatter.
+     *
+     * @param string|FormatterInterface|null $formatter Formatter class name, instance, or null for PHP's default
+     * @param Stringable|string|null $locale Locale identifier for locale-aware formatting
+     */
     public function format(
         Stringable|string $pattern,
         string|FormatterInterface|null $formatter = null,
         Stringable|string|null $locale = null,
-    ) {
+    ): string {
         $pattern = (string) $pattern;
 
         if ($formatter === null && $locale === null) {
@@ -70,20 +74,21 @@ class Date extends DateTimeImmutable implements DateInterface
         return $formatter->format($this, $pattern, $locale, $timezone);
     }
 
+    /** Return the Unix timestamp. */
     public function timestamp(): int
     {
         return $this->getTimestamp();
     }
 
+    /** Return self as DateTimeImmutable (this class already extends it). */
     public function toDateTimeImmutable(): DateTimeImmutable
     {
         return $this;
     }
 
-    // =========================================================================
-    // Calendar calculations
-    // =========================================================================
+    /** @section Calendar calculations */
 
+    /** Convert this date to a Julian Day Count. */
     public function toDays(): int
     {
         $month = (int) parent::format('n');
@@ -118,6 +123,7 @@ class Date extends DateTimeImmutable implements DateInterface
             + $day + 1721119;
     }
 
+    /** Create a Date instance from a Julian Day Count. */
     public static function fromDays(int $days): static
     {
         if (function_exists('jdtogregorian')) {
@@ -148,6 +154,7 @@ class Date extends DateTimeImmutable implements DateInterface
         return new static(sprintf('%04d-%02d-%02d', (int) $year, (int) $month, (int) $day));
     }
 
+    /** Return the day of the week (0=Sunday through 6=Saturday). */
     public function dayOfWeek(): int
     {
         $month = (int) parent::format('n');
@@ -170,21 +177,25 @@ class Date extends DateTimeImmutable implements DateInterface
         return (int) ($result - 7 * floor($result / 7));
     }
 
+    /** Return the 1-based day of the year (1-366). */
     public function dayOfYear(): int
     {
         return (int) parent::format('z') + 1;
     }
 
+    /** Return which week of the month this date falls in (1-5). */
     public function weekOfMonth(): int
     {
         return (int) ceil((int) parent::format('j') / 7);
     }
 
+    /** Return the ISO-8601 week number of the year. */
     public function weekOfYear(): int
     {
         return (int) parent::format('W');
     }
 
+    /** Return the number of ISO-8601 weeks in the given year. */
     public static function weeksInYear(int $year): int
     {
         $date = new static($year . '-12-31');
@@ -194,6 +205,12 @@ class Date extends DateTimeImmutable implements DateInterface
         return $date->weekOfYear();
     }
 
+    /**
+     * Return a date set to the Nth occurrence of a weekday in this month.
+     *
+     * @param int $weekday Day of week (0=Sunday through 6=Saturday)
+     * @param int $nth Occurrence number; negative counts from end of month
+     */
     public function withNthWeekday(int $weekday, int $nth = 1): static
     {
         if ($weekday < 0 || $weekday > 6) {
@@ -229,6 +246,7 @@ class Date extends DateTimeImmutable implements DateInterface
         return $this->setDate($year, $month, $day);
     }
 
+    /** Return the absolute number of days between this date and another. */
     public function diffDays(DateTimeInterface $other): int
     {
         $otherDate = $other instanceof self
@@ -238,10 +256,9 @@ class Date extends DateTimeImmutable implements DateInterface
         return abs($this->toDays() - $otherDate->toDays());
     }
 
-    // =========================================================================
-    // Comparison
-    // =========================================================================
+    /** @section Comparison */
 
+    /** Compare the date portion only, ignoring time. Returns <0, 0, or >0. */
     public function compareDate(DateTimeInterface $other): int
     {
         $thisY = (int) parent::format('Y');
@@ -261,6 +278,7 @@ class Date extends DateTimeImmutable implements DateInterface
         return $thisD - $otherD;
     }
 
+    /** Compare the time portion only, ignoring date. Returns <0, 0, or >0. */
     public function compareTime(DateTimeInterface $other): int
     {
         $thisH = (int) parent::format('G');
@@ -280,6 +298,7 @@ class Date extends DateTimeImmutable implements DateInterface
         return $thisS - $otherS;
     }
 
+    /** Compare both date and time. Returns <0, 0, or >0. */
     public function compareDateTime(DateTimeInterface $other): int
     {
         $cmp = $this->compareDate($other);
@@ -289,25 +308,27 @@ class Date extends DateTimeImmutable implements DateInterface
         return $this->compareTime($other);
     }
 
+    /** Check whether this date/time is before another. */
     public function before(DateTimeInterface $other): bool
     {
         return $this->compareDateTime($other) < 0;
     }
 
+    /** Check whether this date/time is after another. */
     public function after(DateTimeInterface $other): bool
     {
         return $this->compareDateTime($other) > 0;
     }
 
+    /** Check whether this date/time is equal to another. */
     public function equals(DateTimeInterface $other): bool
     {
         return $this->compareDateTime($other) === 0;
     }
 
-    // =========================================================================
-    // Arithmetic
-    // =========================================================================
+    /** @section Arithmetic */
 
+    /** Return a new Date with the given amounts added to each component. */
     public function addParts(
         int $years = 0,
         int $months = 0,
@@ -344,6 +365,7 @@ class Date extends DateTimeImmutable implements DateInterface
         return $result;
     }
 
+    /** Return a new Date with the given amounts subtracted from each component. */
     public function subParts(
         int $years = 0,
         int $months = 0,
@@ -355,15 +377,19 @@ class Date extends DateTimeImmutable implements DateInterface
         return $this->addParts(-$years, -$months, -$days, -$hours, -$minutes, -$seconds);
     }
 
-    // =========================================================================
-    // Serialization
-    // =========================================================================
+    /** @section Serialization */
 
+    /** Serialize to JSON as an ISO-8601 datetime string without timezone. */
     public function toJson(): string
     {
         return parent::format('Y-m-d\TH:i:s');
     }
 
+    /**
+     * Serialize to iCalendar DATETIME format (e.g. 20260521T130000Z).
+     *
+     * @param bool $floating If true, omit timezone (local/floating time)
+     */
     public function toiCalendar(bool $floating = false): string
     {
         if ($floating) {

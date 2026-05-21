@@ -29,6 +29,7 @@ enum RecurrenceType: int
     case YearlyWeekday = 7;
     case MonthlyLastWeekday = 8;
 
+    /** Get a human-readable label for this recurrence type. */
     public function label(): string
     {
         return match ($this) {
@@ -44,6 +45,7 @@ enum RecurrenceType: int
         };
     }
 
+    /** Create a RecurrenceType from a legacy integer type constant. */
     public static function fromLegacy(int $type): self
     {
         return self::from($type);
