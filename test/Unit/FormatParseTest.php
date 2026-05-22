@@ -183,6 +183,25 @@ class FormatParseTest extends TestCase
         $this->assertFalse(Format::isPhpDateFormat('EEEE, MMMM dd'));
     }
 
+    public function testIsPhpDateFormatRejectsIcuShortcuts(): void
+    {
+        $this->assertFalse(Format::isPhpDateFormat('short'));
+        $this->assertFalse(Format::isPhpDateFormat('medium'));
+        $this->assertFalse(Format::isPhpDateFormat('long'));
+        $this->assertFalse(Format::isPhpDateFormat('full'));
+    }
+
+    public function testParseIcuShortcutPattern(): void
+    {
+        $result = Format::parse('29.05.26', 'short', 'de_DE');
+
+        $this->assertInstanceOf(DateInterface::class, $result);
+        $dt = $result->toDateTimeImmutable();
+        $this->assertSame('2026', $dt->format('Y'));
+        $this->assertSame('05', $dt->format('m'));
+        $this->assertSame('29', $dt->format('d'));
+    }
+
     public function testIsPhpDateFormatRejectsStrftime(): void
     {
         // isPhpDateFormat is only called after isStrftimeFormat returns false,
