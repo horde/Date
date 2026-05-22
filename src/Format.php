@@ -400,6 +400,11 @@ class Format
      */
     public static function isPhpDateFormat(string $pattern): bool
     {
+        // ICU locale shortcuts (handled by IcuFormatter, not PHP date())
+        if (in_array($pattern, ['short', 'medium', 'long', 'full'], true)) {
+            return false;
+        }
+
         // These characters are unique to PHP date() and don't appear as single
         // letters in ICU patterns in the same way
         $phpOnlyChars = ['i', 'j', 'n', 'g', 'A', 'N', 'L', 'o', 'U', 'u'];
