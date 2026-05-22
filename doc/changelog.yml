@@ -208,6 +208,23 @@
     Fix Travis tests.
     Add Travis configuration and .gitignore files.
     Development mode for Horde_Date-2.4.2
+3.0.0-RC3:
+  api: 3.0.0-RC3
+  state:
+    release: RC
+    api: RC
+  date: 2026-05-22
+  license:
+    identifier: LGPL-2.1-only
+    uri: https://spdx.org/licenses/LGPL-2.1-only.html
+  notes: |-
+    chore:gitignore
+    refactor: Port to modern NLS implementation
+    fix(format): remove PHP date() auto-detection from Format::parse()
+    Update FormatParseTest.php
+    Enhance isPhpDateFormat to exclude ICU shortcuts
+    Merge pull request #14 from horde/feat/format-parse
+    feat(date): add Format::parse() and Format::parseDateTime()
 3.0.0-RC2:
   api: 3.0.0-RC2
   state:
