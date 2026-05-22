@@ -51,17 +51,6 @@ class FormatParseTest extends TestCase
         $this->assertSame('22', $dt->format('d'));
     }
 
-    public function testParsePhpDatePattern(): void
-    {
-        $result = Format::parse('2026-05-22', 'Y-m-d');
-
-        $this->assertInstanceOf(DateInterface::class, $result);
-        $dt = $result->toDateTimeImmutable();
-        $this->assertSame('2026', $dt->format('Y'));
-        $this->assertSame('05', $dt->format('m'));
-        $this->assertSame('22', $dt->format('d'));
-    }
-
     public function testParseWithTime24h(): void
     {
         $result = Format::parse('22.05.2026 14:30', 'dd.MM.yyyy HH:mm', 'de_DE');
@@ -168,29 +157,6 @@ class FormatParseTest extends TestCase
         $this->assertSame('30', $dt->format('i'));
     }
 
-    public function testIsPhpDateFormatDetectsPhpPatterns(): void
-    {
-        $this->assertTrue(Format::isPhpDateFormat('Y-m-d'));
-        $this->assertTrue(Format::isPhpDateFormat('Y-m-d H:i:s'));
-        $this->assertTrue(Format::isPhpDateFormat('d/m/Y'));
-        $this->assertTrue(Format::isPhpDateFormat('j.n.Y'));
-    }
-
-    public function testIsPhpDateFormatRejectsIcuPatterns(): void
-    {
-        $this->assertFalse(Format::isPhpDateFormat('dd.MM.yyyy'));
-        $this->assertFalse(Format::isPhpDateFormat('yyyy-MM-dd HH:mm:ss'));
-        $this->assertFalse(Format::isPhpDateFormat('EEEE, MMMM dd'));
-    }
-
-    public function testIsPhpDateFormatRejectsIcuShortcuts(): void
-    {
-        $this->assertFalse(Format::isPhpDateFormat('short'));
-        $this->assertFalse(Format::isPhpDateFormat('medium'));
-        $this->assertFalse(Format::isPhpDateFormat('long'));
-        $this->assertFalse(Format::isPhpDateFormat('full'));
-    }
-
     public function testParseIcuShortcutPattern(): void
     {
         $result = Format::parse('29.05.26', 'short', 'de_DE');
@@ -200,14 +166,5 @@ class FormatParseTest extends TestCase
         $this->assertSame('2026', $dt->format('Y'));
         $this->assertSame('05', $dt->format('m'));
         $this->assertSame('29', $dt->format('d'));
-    }
-
-    public function testIsPhpDateFormatRejectsStrftime(): void
-    {
-        // isPhpDateFormat is only called after isStrftimeFormat returns false,
-        // so it doesn't need to handle strftime patterns. But patterns without
-        // a % are already not strftime — verify ICU-like patterns are rejected.
-        $this->assertFalse(Format::isPhpDateFormat('dd.MM.yyyy'));
-        $this->assertFalse(Format::isPhpDateFormat('EEEE, MMMM dd'));
     }
 }

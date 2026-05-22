@@ -19,7 +19,6 @@ namespace Horde\Date;
 
 use DateTime;
 use DateTimeInterface;
-use Horde\Date\Formatter\DateTimeFormatter;
 use Horde\Date\Formatter\IcuFormatter;
 use IntlDateFormatter;
 use InvalidArgumentException;
@@ -310,11 +309,14 @@ class Format
     /**
      * Parse a formatted date string to a DateInterface object
      *
-     * Detects the pattern type (strftime, ICU, or PHP date()) and dispatches
-     * to the appropriate formatter's parse method.
+     * Auto-detects strftime patterns (containing %) and converts them to ICU.
+     * All other patterns are treated as ICU (including shortcuts like short,
+     * medium, long, full).
+     *
+     * For PHP date() patterns, use DateTimeFormatter::parse() directly.
      *
      * @param string $formattedString  The date string to parse
-     * @param string $pattern  Format pattern (strftime, ICU, or PHP date() syntax)
+     * @param string $pattern  Format pattern (strftime or ICU syntax)
      * @param string|Stringable $locale  Locale for parsing (default: 'en_US')
      * @param string|null $timezone  Timezone identifier (null = UTC)
      *
@@ -336,12 +338,6 @@ class Format
             return $formatter->parse($formattedString, $icuPattern, $locale, $timezone);
         }
 
-        if (self::isPhpDateFormat($pattern)) {
-            $formatter = new DateTimeFormatter();
-            return $formatter->parse($formattedString, $pattern, $locale, $timezone);
-        }
-
-        // Default: treat as ICU pattern
         $formatter = new IcuFormatter();
         return $formatter->parse($formattedString, $pattern, $locale, $timezone);
     }
@@ -353,9 +349,13 @@ class Format
      * the string atomically. This avoids regex-based string splitting which
      * breaks with AM/PM markers and other multi-word tokens.
      *
+     * PHP date() patterns are not auto-detected due to ambiguity with ICU
+     * single-letter patterns. Use DateTimeFormatter::parse() directly for
+     * PHP date() syntax.
+     *
      * @param string $formattedString  The date+time string to parse
-     * @param string $datePattern  Date format pattern (strftime, ICU, or PHP date())
-     * @param string $timePattern  Time format pattern (strftime, ICU, or PHP date())
+     * @param string $datePattern  Date format pattern (strftime or ICU)
+     * @param string $timePattern  Time format pattern (strftime or ICU)
      * @param string|Stringable $locale  Locale for parsing (default: 'en_US')
      * @param string|null $timezone  Timezone identifier (null = UTC)
      *
@@ -386,43 +386,6 @@ class Format
 
         $formatter = new IcuFormatter();
         return $formatter->parse($formattedString, $combinedPattern, $locale, $timezone);
-    }
-
-    /**
-     * Detect if a pattern uses PHP date() syntax (single letters like Y, m, d, H, i, s)
-     *
-     * Distinguishes from ICU patterns which use repeated letters (yyyy, MM, dd).
-     * A pattern is considered PHP date() if it contains characteristic PHP date
-     * letters that do not appear in ICU patterns as single characters.
-     *
-     * @param string $pattern  Pattern to check
-     * @return bool  True if the pattern appears to be PHP date() syntax
-     */
-    public static function isPhpDateFormat(string $pattern): bool
-    {
-        // ICU locale shortcuts (handled by IcuFormatter, not PHP date())
-        if (in_array($pattern, ['short', 'medium', 'long', 'full'], true)) {
-            return false;
-        }
-
-        // These characters are unique to PHP date() and don't appear as single
-        // letters in ICU patterns in the same way
-        $phpOnlyChars = ['i', 'j', 'n', 'g', 'A', 'N', 'L', 'o', 'U', 'u'];
-        foreach ($phpOnlyChars as $char) {
-            if (str_contains($pattern, $char)) {
-                return true;
-            }
-        }
-
-        // Single Y/m/d/H/s without repetition is PHP style
-        // ICU uses yyyy, MM, dd, HH, ss (repeated)
-        if (preg_match('/(?<![a-zA-Z])([YmdHsG])(?![a-zA-Z])/', $pattern)
-            && !preg_match('/(yyyy|MM|dd|HH|mm|ss|EEEE|EEE)/', $pattern)
-        ) {
-            return true;
-        }
-
-        return false;
     }
 
     /**

@@ -39,6 +39,11 @@ use Stringable;
  * Note: This formatter ignores the locale parameter as DateTime::format()
  * is not locale-aware. For locale-aware formatting, use IcuFormatter.
  *
+ * PHP date() patterns are NOT auto-detected by Format::parse() because
+ * single-letter PHP format characters (e.g. 'u', 'o') are ambiguous with
+ * ICU patterns and locale shortcuts ('short', 'long', 'full'). Callers
+ * that need PHP date() parsing must use this formatter directly.
+ *
  * @author    Ralf Lang <ralf.lang@ralf-lang.de>
  * @category  Horde
  * @copyright 2026 The Horde Project
