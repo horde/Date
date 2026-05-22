@@ -19,9 +19,12 @@ namespace Horde\Date;
 
 use DateTime;
 use DateTimeInterface;
+use Horde\Date\Formatter\DateTimeFormatter;
+use Horde\Date\Formatter\IcuFormatter;
 use IntlDateFormatter;
 use InvalidArgumentException;
 use RuntimeException;
+use Stringable;
 
 /**
  * Date format conversion utilities
@@ -302,6 +305,119 @@ class Format
 
         $strftimePattern = '/%[aAbBCdDeHIjmMnpPrRStTuUVwWxXyYzZFGghklZ%]/';
         return preg_match($strftimePattern, $format) === 1;
+    }
+
+    /**
+     * Parse a formatted date string to a DateInterface object
+     *
+     * Detects the pattern type (strftime, ICU, or PHP date()) and dispatches
+     * to the appropriate formatter's parse method.
+     *
+     * @param string $formattedString  The date string to parse
+     * @param string $pattern  Format pattern (strftime, ICU, or PHP date() syntax)
+     * @param string|Stringable $locale  Locale for parsing (default: 'en_US')
+     * @param string|null $timezone  Timezone identifier (null = UTC)
+     *
+     * @return DateInterface  Parsed date object
+     *
+     * @throws RuntimeException if parsing fails
+     */
+    public static function parse(
+        string $formattedString,
+        string $pattern,
+        string|Stringable $locale = 'en_US',
+        ?string $timezone = null
+    ): DateInterface {
+        $locale = (string) $locale;
+
+        if (self::isStrftimeFormat($pattern)) {
+            $icuPattern = self::strftimeToIcu($pattern, $locale);
+            $formatter = new IcuFormatter();
+            return $formatter->parse($formattedString, $icuPattern, $locale, $timezone);
+        }
+
+        if (self::isPhpDateFormat($pattern)) {
+            $formatter = new DateTimeFormatter();
+            return $formatter->parse($formattedString, $pattern, $locale, $timezone);
+        }
+
+        // Default: treat as ICU pattern
+        $formatter = new IcuFormatter();
+        return $formatter->parse($formattedString, $pattern, $locale, $timezone);
+    }
+
+    /**
+     * Parse a formatted date+time string using separate date and time patterns
+     *
+     * Combines date and time patterns into a single ICU pattern and parses
+     * the string atomically. This avoids regex-based string splitting which
+     * breaks with AM/PM markers and other multi-word tokens.
+     *
+     * @param string $formattedString  The date+time string to parse
+     * @param string $datePattern  Date format pattern (strftime, ICU, or PHP date())
+     * @param string $timePattern  Time format pattern (strftime, ICU, or PHP date())
+     * @param string|Stringable $locale  Locale for parsing (default: 'en_US')
+     * @param string|null $timezone  Timezone identifier (null = UTC)
+     *
+     * @return DateInterface  Parsed date object
+     *
+     * @throws RuntimeException if parsing fails
+     */
+    public static function parseDateTime(
+        string $formattedString,
+        string $datePattern,
+        string $timePattern,
+        string|Stringable $locale = 'en_US',
+        ?string $timezone = null
+    ): DateInterface {
+        $locale = (string) $locale;
+
+        // Convert both patterns to ICU if needed
+        $icuDate = self::isStrftimeFormat($datePattern)
+            ? self::strftimeToIcu($datePattern, $locale)
+            : $datePattern;
+
+        $icuTime = self::isStrftimeFormat($timePattern)
+            ? self::strftimeToIcu($timePattern, $locale)
+            : $timePattern;
+
+        // Combine into a single ICU pattern with space separator
+        $combinedPattern = $icuDate . ' ' . $icuTime;
+
+        $formatter = new IcuFormatter();
+        return $formatter->parse($formattedString, $combinedPattern, $locale, $timezone);
+    }
+
+    /**
+     * Detect if a pattern uses PHP date() syntax (single letters like Y, m, d, H, i, s)
+     *
+     * Distinguishes from ICU patterns which use repeated letters (yyyy, MM, dd).
+     * A pattern is considered PHP date() if it contains characteristic PHP date
+     * letters that do not appear in ICU patterns as single characters.
+     *
+     * @param string $pattern  Pattern to check
+     * @return bool  True if the pattern appears to be PHP date() syntax
+     */
+    public static function isPhpDateFormat(string $pattern): bool
+    {
+        // These characters are unique to PHP date() and don't appear as single
+        // letters in ICU patterns in the same way
+        $phpOnlyChars = ['i', 'j', 'n', 'g', 'A', 'N', 'L', 'o', 'U', 'u'];
+        foreach ($phpOnlyChars as $char) {
+            if (str_contains($pattern, $char)) {
+                return true;
+            }
+        }
+
+        // Single Y/m/d/H/s without repetition is PHP style
+        // ICU uses yyyy, MM, dd, HH, ss (repeated)
+        if (preg_match('/(?<![a-zA-Z])([YmdHsG])(?![a-zA-Z])/', $pattern)
+            && !preg_match('/(yyyy|MM|dd|HH|mm|ss|EEEE|EEE)/', $pattern)
+        ) {
+            return true;
+        }
+
+        return false;
     }
 
     /**
