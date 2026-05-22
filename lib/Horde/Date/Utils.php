@@ -146,9 +146,10 @@ class Horde_Date_Utils
     public static function strftime2date($format)
     {
         $provider = null;
-        if (class_exists('Horde_Nls')) {
-            $provider = function (int $constant): string {
-                return Horde_Nls::getLangInfo($constant);
+        if (class_exists(Horde\Nls\Nls::class)) {
+            $nls = new Horde\Nls\Nls();
+            $provider = function (int $constant) use ($nls): string|false {
+                return $nls->getLangInfo($constant);
             };
         }
         return Horde\Date\Utils::strftime2date((string) $format, $provider);
