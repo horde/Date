@@ -7,6 +7,7 @@ namespace Horde\Date\Test\Unit;
 use Horde\Date\Date;
 use Horde\Date\DateException;
 use Horde\Date\Utils;
+use Horde\Nls\Nls;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\TestCase;
@@ -203,5 +204,35 @@ class UtilsTest extends TestCase
     public function testStrftime2dateComposite(): void
     {
         $this->assertSame('Y-m-d H:i:s', Utils::strftime2date('%Y-%m-%d %H:%M:%S'));
+    }
+
+    public function testStrftime2dateWithNlsProvider(): void
+    {
+        $nls = new Nls();
+        $provider = function (int $constant) use ($nls): string|false {
+            return $nls->getLangInfo($constant);
+        };
+
+        $dateFormat = Utils::strftime2date('%x', $provider);
+        $timeFormat = Utils::strftime2date('%X', $provider);
+
+        // nl_langinfo returns strftime format strings (e.g. %m/%d/%y)
+        // which are then converted by the second pass of strftime2date.
+        // Verify the provider's output is processed correctly end-to-end.
+        $expectedDate = Utils::strftime2date(nl_langinfo(D_FMT));
+        $expectedTime = Utils::strftime2date(nl_langinfo(T_FMT));
+
+        $this->assertSame($expectedDate, $dateFormat);
+        $this->assertSame($expectedTime, $timeFormat);
+    }
+
+    public function testStrftime2dateWithNlsProviderFalseReturnFallsBack(): void
+    {
+        $provider = function (int $constant): string|false {
+            return false;
+        };
+
+        $this->assertSame('m/d/Y', Utils::strftime2date('%x', $provider));
+        $this->assertSame('H:i:s', Utils::strftime2date('%X', $provider));
     }
 }

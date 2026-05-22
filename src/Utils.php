@@ -133,13 +133,19 @@ class Utils
         $callbackPatterns = [
             '/%X/' => function () use ($localeInfoProvider): string {
                 if ($localeInfoProvider !== null) {
-                    return $localeInfoProvider(T_FMT);
+                    $result = $localeInfoProvider(T_FMT);
+                    if ($result !== false) {
+                        return $result;
+                    }
                 }
                 return 'H:i:s';
             },
             '/%x/' => function () use ($localeInfoProvider): string {
                 if ($localeInfoProvider !== null) {
-                    return $localeInfoProvider(D_FMT);
+                    $result = $localeInfoProvider(D_FMT);
+                    if ($result !== false) {
+                        return $result;
+                    }
                 }
                 return 'm/d/Y';
             },
