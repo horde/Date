@@ -1543,7 +1543,7 @@ class Horde_Date implements DateInterface
 
     protected function _initializeFromObject($date)
     {
-        if ($date instanceof DateTime) {
+        if ($date instanceof \DateTimeInterface) {
             $this->_year  = (int) $date->format('Y');
             $this->_month = (int) $date->format('m');
             $this->_mday  = (int) $date->format('d');
@@ -1551,19 +1551,25 @@ class Horde_Date implements DateInterface
             $this->_min   = (int) $date->format('i');
             $this->_sec   = (int) $date->format('s');
             $this->_initializeTimezone($date->getTimezone()->getName());
-        } else {
-            $is_horde_date = $date instanceof Horde_Date;
+
+            return;
+        }
+
+        if ($date instanceof Horde_Date) {
             foreach (['year', 'month', 'mday', 'hour', 'min', 'sec'] as $key) {
-                if ($is_horde_date || isset($date->$key)) {
-                    $this->{'_' . $key} = (int) $date->$key;
-                }
+                $this->{'_' . $key} = (int) $date->$key;
             }
-            if (!$is_horde_date) {
-                $this->_correct();
-            } else {
-                $this->_initializeTimezone($date->timezone);
+            $this->_initializeTimezone($date->timezone);
+
+            return;
+        }
+
+        foreach (['year', 'month', 'mday', 'hour', 'min', 'sec'] as $key) {
+            if (isset($date->$key)) {
+                $this->{'_' . $key} = (int) $date->$key;
             }
         }
+        $this->_correct();
     }
 
     protected function _initializeTimezone($timezone)

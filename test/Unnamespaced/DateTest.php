@@ -12,13 +12,14 @@ namespace Horde\Date\Test;
 use date_default_timezone_get;
 use date_default_timezone_set;
 use DateTime;
+use DateTimeImmutable;
 use DateTimeZone;
+use Horde\Date\Format;
 use Horde_Date;
 use Horde_Date_Span;
 use PHPUnit\Framework\TestCase;
 use stdClass;
 use Horde_Date_Exception;
-use Horde\Date\Format;
 
 /**
  * @category   Horde
@@ -75,6 +76,24 @@ class DateTest extends TestCase
         $dt->setTimezone(new DateTimeZone('UTC'));
         $date = new Horde_Date($dt);
         $this->assertEquals('2011-12-10 03:05:06', (string) $date);
+
+        $dti = new DateTimeImmutable('2026-06-23 12:00:00', new DateTimeZone('UTC'));
+        $date = new Horde_Date($dti);
+        $this->assertEquals(2026, $date->year);
+        $this->assertEquals(6, $date->month);
+        $this->assertEquals(23, $date->mday);
+
+        $parsed = Format::parseDateTime(
+            '23.06.2026 12:00',
+            '%d.%m.%Y',
+            'HH:mm',
+            'de_DE'
+        );
+        $date = new Horde_Date($parsed->toDateTimeImmutable());
+        $this->assertEquals(2026, $date->year);
+        $this->assertEquals(6, $date->month);
+        $this->assertEquals(23, $date->mday);
+        $this->assertGreaterThan(0, $date->timestamp());
 
         // Test creating Horde_Date from a string that will use DateTime
         // internally to parse the date.
