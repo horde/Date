@@ -82,6 +82,16 @@ class DateTest extends TestCase
         $this->assertEquals(2026, $date->year);
         $this->assertEquals(6, $date->month);
         $this->assertEquals(23, $date->mday);
+        $this->assertEquals(12, $date->hour);
+        $this->assertEquals(0, $date->min);
+        $this->assertEquals(0, $date->sec);
+        $this->assertEquals('UTC', $date->timezone);
+
+        /* DateTimeImmutable with a non-UTC timezone must preserve the zone. */
+        $dti = new DateTimeImmutable('2026-06-23 12:00:00', new DateTimeZone('America/New_York'));
+        $date = new Horde_Date($dti);
+        $this->assertEquals('2026-06-23 12:00:00', (string) $date);
+        $this->assertEquals('America/New_York', $date->timezone);
 
         $parsed = Format::parseDateTime(
             '23.06.2026 12:00',

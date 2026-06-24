@@ -1543,7 +1543,7 @@ class Horde_Date implements DateInterface
 
     protected function _initializeFromObject($date)
     {
-        if ($date instanceof \DateTimeInterface) {
+        if ($date instanceof DateTimeInterface) {
             $this->_year  = (int) $date->format('Y');
             $this->_month = (int) $date->format('m');
             $this->_mday  = (int) $date->format('d');
