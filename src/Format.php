@@ -41,6 +41,11 @@ use Stringable;
 class Format
 {
     /**
+     * Constant for the $timeOnly parameter of formatDate().
+     */
+     public const TIME_ONLY = true;
+
+    /**
      * Mapping of strftime specifiers to ICU patterns
      */
     protected static array $strftimeToIcuMap = [
@@ -229,7 +234,8 @@ class Format
     public static function formatDate(
         int|string|DateTime|DateTimeInterface $timestamp,
         string $format,
-        string $locale = 'en_US'
+        string $locale = 'en_US',
+        bool $timeOnly = false
     ): string {
         if ($timestamp instanceof DateTime || $timestamp instanceof DateTimeInterface) {
             $timestamp = $timestamp->getTimestamp();
@@ -262,8 +268,8 @@ class Format
             };
             $formatter = IntlDateFormatter::create(
                 $locale,
-                $dateStyle,
-                IntlDateFormatter::NONE
+                $timeOnly ? IntlDateFormatter::NONE : $dateStyle,
+                $timeOnly ? $dateStyle : IntlDateFormatter::NONE
             );
         } else {
             $formatter = IntlDateFormatter::create(
