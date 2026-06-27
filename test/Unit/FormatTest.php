@@ -876,4 +876,87 @@ class FormatTest extends TestCase
         // Non-numeric, invalid date string should fail
         Format::formatDate('not-a-valid-date', 'yyyy-MM-dd', 'en_US');
     }
+
+    /**
+     * Bare named styles ('short', 'medium', 'long', 'full') format the
+     * locale's date portion and suppress the time portion.
+     *
+     * Regression guard: this is the pre-existing public behaviour and
+     * must not change when the time-only style names are added.
+     */
+    public function testNamedDateStylesFormatDateOnly(): void
+    {
+        $timestamp = strtotime('2026-03-17 14:30:00');
+
+        foreach (['short', 'medium', 'long', 'full'] as $style) {
+            $result = Format::formatDate($timestamp, $style, 'en_US');
+
+            // Day-of-month is present in every English date-style level
+            // (short uses '26' for year, so we cannot assert on '2026').
+            $this->assertStringContainsString('17', $result, "style=$style");
+            // Time digits must not leak into a date-only rendering.
+            $this->assertStringNotContainsString('14:30', $result, "style=$style");
+            $this->assertStringNotContainsString('2:30', $result, "style=$style");
+            $this->assertStringNotContainsString('PM', $result, "style=$style");
+        }
+    }
+
+    /**
+     * Time-only named styles ('short-time', 'medium-time', 'long-time',
+     * 'full-time') format the locale's time portion and suppress the date.
+     *
+     * This is the replacement vocabulary for the now-removed TIME_ONLY
+     * flag; see horde/base PR #120 for the motivating use case (prefs
+     * defaults needing locale-aware time rendering).
+     */
+    public function testNamedTimeStylesFormatTimeOnly(): void
+    {
+        $timestamp = strtotime('2026-03-17 14:30:45');
+
+        foreach (['short-time', 'medium-time', 'long-time', 'full-time'] as $style) {
+            $result = Format::formatDate($timestamp, $style, 'en_US');
+
+            // Date components must not appear in a time-only rendering.
+            $this->assertStringNotContainsString('2026', $result, "style=$style");
+            $this->assertStringNotContainsString('March', $result, "style=$style");
+            $this->assertStringNotContainsString('17', $result, "style=$style");
+
+            // The hour digit is present in every English time-style level.
+            // en_US uses 12-hour clock, so the rendering contains '2' not '14'.
+            $this->assertMatchesRegularExpression('/\d/', $result, "style=$style");
+        }
+    }
+
+    /**
+     * 'medium-time' in fr_FR produces the locale-canonical 24-hour
+     * HH:mm:ss rendering. This is the exact case PR #120 needs: a
+     * French user opening the preferences sees a French clock by
+     * default, not the US 'h:mm:ss a' pattern.
+     */
+    public function testMediumTimeFrenchLocaleProduces24HourFormat(): void
+    {
+        $timestamp = strtotime('2026-03-17 14:30:45');
+
+        $result = Format::formatDate($timestamp, 'medium-time', 'fr_FR');
+
+        $this->assertStringContainsString('14:30:45', $result);
+        $this->assertStringNotContainsString('PM', $result);
+        $this->assertStringNotContainsString('AM', $result);
+    }
+
+    /**
+     * 'short-time' drops the seconds component; the four levels are
+     * meaningfully distinct rather than aliases of each other.
+     */
+    public function testShortTimeOmitsSeconds(): void
+    {
+        $timestamp = strtotime('2026-03-17 14:30:45');
+
+        $short = Format::formatDate($timestamp, 'short-time', 'fr_FR');
+        $medium = Format::formatDate($timestamp, 'medium-time', 'fr_FR');
+
+        $this->assertStringContainsString('14:30', $short);
+        $this->assertStringNotContainsString(':45', $short);
+        $this->assertStringContainsString(':45', $medium);
+    }
 }

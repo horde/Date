@@ -41,9 +41,28 @@ use Stringable;
 class Format
 {
     /**
-     * Constant for the $timeOnly parameter of formatDate().
+     * Named ICU style shortcuts accepted by formatDate().
+     *
+     * The bare names ('short', 'medium', 'long', 'full') format the date
+     * portion only, matching IntlDateFormatter's date-style axis. The
+     * '-time' suffixed names format the time portion only via the same
+     * style axis, so callers never need to remember which side is which
+     * and never need a separate flag parameter.
+     *
+     * @var array<string, array{0: int, 1: int}>  Map of style name to
+     *     [date style constant, time style constant] passed to
+     *     IntlDateFormatter::create().
      */
-     public const TIME_ONLY = true;
+    protected const NAMED_STYLES = [
+        'short'       => [IntlDateFormatter::SHORT,  IntlDateFormatter::NONE],
+        'medium'      => [IntlDateFormatter::MEDIUM, IntlDateFormatter::NONE],
+        'long'        => [IntlDateFormatter::LONG,   IntlDateFormatter::NONE],
+        'full'        => [IntlDateFormatter::FULL,   IntlDateFormatter::NONE],
+        'short-time'  => [IntlDateFormatter::NONE,   IntlDateFormatter::SHORT],
+        'medium-time' => [IntlDateFormatter::NONE,   IntlDateFormatter::MEDIUM],
+        'long-time'   => [IntlDateFormatter::NONE,   IntlDateFormatter::LONG],
+        'full-time'   => [IntlDateFormatter::NONE,   IntlDateFormatter::FULL],
+    ];
 
     /**
      * Mapping of strftime specifiers to ICU patterns
@@ -224,18 +243,42 @@ class Format
     }
 
     /**
-     * Format a date using strftime or ICU format (auto-converts strftime to ICU)
+     * Format a date using strftime or ICU format (auto-converts strftime to ICU).
+     *
+     * The $format argument accepts three sub-languages, dispatched by value:
+     *
+     *  - **Named ICU style shortcut.** One of the keys of
+     *    {@see self::NAMED_STYLES}:
+     *      - 'short', 'medium', 'long', 'full' — locale's date pattern at
+     *        the matching ICU style level, time portion suppressed.
+     *      - 'short-time', 'medium-time', 'long-time', 'full-time' — the
+     *        locale's time pattern at the matching ICU style level, date
+     *        portion suppressed. Use these where Horde 5 code relied on
+     *        strftime('%X') for locale-aware time rendering.
+     *    Resolved through IntlDateFormatter's two style axes, so the
+     *    output is always locale-correct.
+     *
+     *  - **strftime pattern** (contains `%`). Converted to an ICU pattern
+     *    via {@see self::strftimeToIcu()} and then formatted. Provided
+     *    for compatibility with pre-Horde 6 callers; new code should
+     *    write the ICU pattern directly or use a named style above.
+     *
+     *  - **ICU pattern.** Any other string is treated as a literal
+     *    IntlDateFormatter pattern, e.g. 'yyyy-MM-dd', 'HH:mm:ss',
+     *    'EEE, d MMM yyyy'.
      *
      * @param int|string|DateTime|DateTimeInterface $timestamp  Timestamp or date object
-     * @param string $format  strftime or ICU format string
+     * @param string $format  Named style, strftime pattern, or ICU pattern (see above)
      * @param string $locale  ICU locale (default: 'en_US')
      * @return string  Formatted date
+     *
+     * @throws InvalidArgumentException if $timestamp cannot be resolved to an int.
+     * @throws RuntimeException if IntlDateFormatter cannot be created or fails to format.
      */
     public static function formatDate(
         int|string|DateTime|DateTimeInterface $timestamp,
         string $format,
-        string $locale = 'en_US',
-        bool $timeOnly = false
+        string $locale = 'en_US'
     ): string {
         if ($timestamp instanceof DateTime || $timestamp instanceof DateTimeInterface) {
             $timestamp = $timestamp->getTimestamp();
@@ -258,19 +301,10 @@ class Format
             $icuFormat = $format;
         }
 
-        // Handle IcuFormatter shortcuts
-        if (in_array($icuFormat, ['short', 'medium', 'long', 'full'], true)) {
-            $dateStyle = match ($icuFormat) {
-                'short' => IntlDateFormatter::SHORT,
-                'medium' => IntlDateFormatter::MEDIUM,
-                'long' => IntlDateFormatter::LONG,
-                'full' => IntlDateFormatter::FULL,
-            };
-            $formatter = IntlDateFormatter::create(
-                $locale,
-                $timeOnly ? IntlDateFormatter::NONE : $dateStyle,
-                $timeOnly ? $dateStyle : IntlDateFormatter::NONE
-            );
+        // Named ICU style shortcuts (date-only and time-only variants).
+        if (isset(self::NAMED_STYLES[$icuFormat])) {
+            [$dateStyle, $timeStyle] = self::NAMED_STYLES[$icuFormat];
+            $formatter = IntlDateFormatter::create($locale, $dateStyle, $timeStyle);
         } else {
             $formatter = IntlDateFormatter::create(
                 $locale,
