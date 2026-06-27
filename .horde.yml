@@ -7,26 +7,22 @@ list: dev
 type: library
 homepage: https://www.horde.org/libraries/Horde_Date
 authors:
-  -
-    name: Ralf Lang
+  - name: Ralf Lang
     user: rlang
     email: ralf.lang@ralf-lang.de
     active: true
     role: lead
-  -
-    name: Torben Dannhauer
+  - name: Torben Dannhauer
     user: tdannhauer
     email: torben@dannhauer.de
     active: true
     role: releasemanager
-  -
-    name: Jan Schneider
+  - name: Jan Schneider
     user: jan
     email: jan@horde.org
     active: false
     role: lead
-  -
-    name: Chuck Hagenbuch
+  - name: Chuck Hagenbuch
     user: chuck
     email: chuck@horde.org
     active: false
@@ -63,3 +59,46 @@ keywords:
   - recurrence
   - legacy_timezones
   - spans
+ci-platform:
+  '8.1':
+    - php: ^7.4 || ^8
+    - ext-dom
+    - ext-hash
+    - ext-pcre
+    - ext-simplexml
+    - ext-spl
+  '8.2':
+    - php: ^7.4 || ^8
+    - ext-dom
+    - ext-hash
+    - ext-pcre
+    - ext-simplexml
+    - ext-spl
+  '8.3':
+    - php: ^7.4 || ^8
+    - ext-dom
+    - ext-hash
+    - ext-pcre
+    - ext-simplexml
+    - ext-spl
+  '8.4':
+    - php: ^7.4 || ^8
+    - ext-dom
+    - ext-hash
+    - ext-pcre
+    - ext-simplexml
+    - ext-spl
+  '8.5':
+    - php: ^7.4 || ^8
+    - ext-dom
+    - ext-hash
+    - ext-pcre
+    - ext-simplexml
+    - ext-spl
+  '8.6':
+    - php: ^7.4 || ^8
+    - ext-dom
+    - ext-hash
+    - ext-pcre
+    - ext-simplexml
+    - ext-spl
