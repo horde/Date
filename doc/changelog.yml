@@ -1,213 +1,14 @@
 ---
-3.0.0alpha5:
-  api: 3.0.0alpha1
-  state:
-    release: alpha
-    api: alpha
-  date: 2022-10-08
-  license:
-    identifier: LGPL-2.1
-    uri: http://www.horde.org/licenses/lgpl21
-  notes: |+
-3.0.0alpha4:
-  api: 3.0.0alpha1
-  state:
-    release: alpha
-    api: alpha
-  date: 2022-10-08
-  license:
-    identifier: LGPL-2.1
-    uri: http://www.horde.org/licenses/lgpl21
-  notes: |
-    [rla] Fix some PHP 8.1 issues.
-    |+
-3.0.0alpha3:
-  api: 3.0.0alpha1
-  state:
-    release: alpha
-    api: alpha
-  date: 2021-03-13
-  license:
-    identifier: LGPL-2.1
-    uri: http://www.horde.org/licenses/lgpl21
-  notes: |+
-3.0.0alpha2:
-  api: 3.0.0alpha1
-  state:
-    release: alpha
-    api: alpha
-  date: 2021-02-24
-  license:
-    identifier: LGPL-2.1
-    uri: http://www.horde.org/licenses/lgpl21
-  notes: |+
-3.0.0alpha1:
-  api: 3.0.0alpha1
+3.0.0:
+  api: 3.0.0
   state:
     release: stable
     api: stable
-  date: 2021-02-24
-  license:
-    identifier: LGPL-2.1
-    uri: http://www.horde.org/licenses/lgpl21
-  notes: |
-    [rla] Begin conversion for composer usage.
-3.0.0-beta8:
-  api: 3.0.0-beta8
-  state:
-    release: beta
-    api: beta
-  date: 2026-03-20
+  date: 2026-06-30
   license:
     identifier: LGPL-2.1-only
     uri: https://spdx.org/licenses/LGPL-2.1-only.html
-  notes: |-
-    Improve date parsing to handle YYYYMMDD format
-    Add deprecated numeric timestamp string tests
-3.0.0-beta7:
-  api: 3.0.0-beta7
-  state:
-    release: beta
-    api: beta
-  date: 2026-03-20
-  license:
-    identifier: LGPL-2.1-only
-    uri: https://spdx.org/licenses/LGPL-2.1-only.html
-  notes: |-
-    fix: Address horde/activesync#15 - allow some timestamp-ish strings as unix timestamps, otherwise delegate to DateTime.
-3.0.0-beta6:
-  api: 3.0.0-beta6
-  state:
-    release: beta
-    api: beta
-  date: 2026-03-19
-  license:
-    identifier: LGPL-2.1-only
-    uri: https://spdx.org/licenses/LGPL-2.1-only.html
-  notes: |-
-    fix: Formatting dates outside int11 timestamp range. #6
-3.0.0-beta5:
-  api: 3.0.0-beta5
-  state:
-    release: beta
-    api: beta
-  date: 2026-03-19
-  license:
-    identifier: LGPL-2.1-only
-    uri: https://spdx.org/licenses/LGPL-2.1-only.html
-  notes: |-
-    test: cover new int conversions related to https://github.com/horde/Date/issues/5
-    fix: Defensively cast to int. Adresses horde/Date#5 partially.
-3.0.0-beta4:
-  api: 3.0.0-beta4
-  state:
-    release: beta
-    api: beta
-  date: 2026-03-18
-  license:
-    identifier: LGPL-2.1-only
-    uri: https://spdx.org/licenses/LGPL-2.1-only.html
-  notes: |-
-    feat: Formatters support DateTime(Immutable) and Horde_Date natively
-    fix: Support quirky formats in the Format class
-    fix(polyfill): preprocess problematic identifiers before passing them to the strftime polyfill
-3.0.0-beta3:
-  api: 3.0.0-beta3
-  state:
-    release: beta
-    api: beta
-  date: 2026-03-18
-  license:
-    identifier: LGPL-2.1-only
-    uri: https://spdx.org/licenses/LGPL-2.1-only.html
-  notes: |-
-    test: Much improved/fixed test coverage
-    chore(release): bump version to 3.0.0-beta2
-    feat(format): detect format type before converting
-3.0.0-beta2:
-  api: 3.0.0-beta2
-  state:
-    release: beta
-    api: beta
-  date: 2026-03-18
-  license:
-    identifier: LGPL-2.1-only
-    uri: https://spdx.org/licenses/LGPL-2.1-only.html
-  notes: |-
-    feat(format): detect format type before converting
-3.0.0-beta1:
-  api: 3.0.0-beta1
-  state:
-    release: beta
-    api: beta
-  date: 2026-03-17
-  license:
-    identifier: LGPL-2.1-only
-    uri: https://spdx.org/licenses/LGPL-2.1-only.html
-  notes: |-
-    refactor(date): upgrade to Horde\Util\HordeString
-    feat(date): add Format class for strftime to ICU conversion
-3.0.0-alpha6:
-  api: 3.0.0-alpha6
-  state:
-    release: alpha
-    api: alpha
-  date: 2026-03-07
-  license:
-    identifier: LGPL-2.1-only
-    uri: https://spdx.org/licenses/LGPL-2.1-only.html
-  notes: |-
-    Merge pull request #4 from amulet1/FRAMEWORK_6_0
-    fix: Add @property block for static analyzers
-    Update metadata and workflows - define dev dependencies.
-    Stub of namespaced date library
-    PSR-4 unit tests
-    Fix strftime2date. Add a convenience wrapper.
-    Development mode for Date-3.0.0alpha5
-    Released Date-3.0.0alpha4
-    Fix [#15054] Thunderbird-generated events issue
-    Convert Unit Tests for PHPUnit 9
-    Development mode for Date-3.0.0alpha5
-    Released Date-3.0.0alpha3
-    Development mode for Date-3.0.0alpha4
-    Released Date-3.0.0alpha2
-    Development mode for Date-3.0.0alpha3
-    Released Date-3.0.0alpha1
-    Components updated the package files.
-    Merge pull request #2 from maintaina-com/backport-php81-fix
-    PHP 8.1: use 'now' rather than null for current date
-    Merge branch 'ralflang-patch-1'
-    Add unit test for bug #15054
-    Fix [#15054] Thunderbird-generated events issue
-    Update supported PHP versions and configuration names.
-    Standardize descriptions.
-    Enable PHP 7.3 CI.
-    [jan] Allow passing a time format to Horde_Date_Recurrence#toString() (Bug #14768).
-    [jan] Allow passing a time format to Horde_Date_Recurrence#toString() (Bug #14768).
-    Update package definitions.
-    Fix getting exit code on PHP 7.2+.
-    Mark Chuck and Michael as inactive.
-    package.xml must not contain empty <notes> tags.
-    Create CHANGES for all components.
-    Regenerate package.xml from changelog.yml.
-    Build changelog.yml from existing changelog(s).
-    Update .horde.yml with extended information.
-    Update composer.json.
-    Enable 7.2 builds.
-    PEAR on 5.6 and 7.0 is fixed.
-    Update file list
-    Move phpunit configuration to base directory.
-    Indicate markup language.
-    Update references to COPYING files.
-    Use LICENSE consistently and move to base directory.
-    Stop flooding #horde channel.
-    Use https URLs.
-    Install all dependencies but PECL extensions.
-    Hopefully this finally fixes Travis builds now.
-    Always discover channel manually, due to Travis bug.
-    Fix Travis tests.
-    Add Travis configuration and .gitignore files.
-    Development mode for Horde_Date-2.4.2
+  notes: "chore: update CI\nrefactor: Rework PR19 as discussed\nci: install horde-components CI pipeline\nfeat(format): add TIME_ONLY constant and  parameter to formatDate()\ntest: More complete assertions2\nfix(date): accept DateTimeInterface in legacy Horde_Date constructor\nchore: Update workflow dependency"
 3.0.0-RC3:
   api: 3.0.0-RC3
   state:
@@ -217,14 +18,7 @@
   license:
     identifier: LGPL-2.1-only
     uri: https://spdx.org/licenses/LGPL-2.1-only.html
-  notes: |-
-    chore:gitignore
-    refactor: Port to modern NLS implementation
-    fix(format): remove PHP date() auto-detection from Format::parse()
-    Update FormatParseTest.php
-    Enhance isPhpDateFormat to exclude ICU shortcuts
-    Merge pull request #14 from horde/feat/format-parse
-    feat(date): add Format::parse() and Format::parseDateTime()
+  notes: "chore:gitignore\nrefactor: Port to modern NLS implementation\nfix(format): remove PHP date() auto-detection from Format::parse()\nUpdate FormatParseTest.php\nEnhance isPhpDateFormat to exclude ICU shortcuts\nMerge pull request #14 from horde/feat/format-parse\nfeat(date): add Format::parse() and Format::parseDateTime()"
 3.0.0-RC2:
   api: 3.0.0-RC2
   state:
@@ -234,11 +28,7 @@
   license:
     identifier: LGPL-2.1-only
     uri: https://spdx.org/licenses/LGPL-2.1-only.html
-  notes: |-
-    feat: Implement RFC 5546 recurrence including test cases taken from RFC examples
-    Cast dayMask to int in recurOnDay methods
-    style: Don't use leading \ in PSR-0 code
-    feat: Implement immutable Duration and Period based on icalendar specs
+  notes: "feat: Implement RFC 5546 recurrence including test cases taken from RFC examples\nCast dayMask to int in recurOnDay methods\nstyle: Don't use leading \\ in PSR-0 code\nfeat: Implement immutable Duration and Period based on icalendar specs"
 3.0.0-RC1:
   api: 3.0.0-RC1
   state:
@@ -248,24 +38,147 @@
   license:
     identifier: LGPL-2.1-only
     uri: https://spdx.org/licenses/LGPL-2.1-only.html
-  notes: |-
-    Merge pull request #11 from horde/refactor/strftime-icu-migration
-    refactor(strftime): Migrate to native usage of IntlDateFormatter and DateTime
-    chore: Add keywords, use PHP 8.1+
-    test: Cover HordeLegacyDate compatibility with Horde_Date
-    docs: update UPGRADING guide to .md format and strategies for adopting modern 3.0
-    feat: interface-compatible drop-in replacement for Horde_Date
-    style: php-cs-fixer in lib
-    style: tests, php-cs-fixer
-    style: php-cs-fixer
-    chore: Add Torben. Jan isn't currently active.
-    test: Amend recurrence tests
-    feat: Recurrence needs to mind timezones
-    test: Cover src/ variant with tests
-    feat: Flesh out Horde_Date src/ branch
-    fix: Casting and coupling problems
-    test: Improve coverage of recurrence, repeater, timezonealias
-    fix setlocale to provide proper type
+  notes: "Merge pull request #11 from horde/refactor/strftime-icu-migration\nrefactor(strftime): Migrate to native usage of IntlDateFormatter and DateTime\nchore: Add keywords, use PHP 8.1+\ntest: Cover HordeLegacyDate compatibility with Horde_Date\ndocs: update UPGRADING guide to .md format and strategies for adopting modern 3.0\nfeat: interface-compatible drop-in replacement for Horde_Date\nstyle: php-cs-fixer in lib\nstyle: tests, php-cs-fixer\nstyle: php-cs-fixer\nchore: Add Torben. Jan isn't currently active.\ntest: Amend recurrence tests\nfeat: Recurrence needs to mind timezones\ntest: Cover src/ variant with tests\nfeat: Flesh out Horde_Date src/ branch\nfix: Casting and coupling problems\ntest: Improve coverage of recurrence, repeater, timezonealias\nfix setlocale to provide proper type"
+3.0.0-beta8:
+  api: 3.0.0-beta8
+  state:
+    release: beta
+    api: beta
+  date: 2026-03-20
+  license:
+    identifier: LGPL-2.1-only
+    uri: https://spdx.org/licenses/LGPL-2.1-only.html
+  notes: "Improve date parsing to handle YYYYMMDD format\nAdd deprecated numeric timestamp string tests"
+3.0.0-beta7:
+  api: 3.0.0-beta7
+  state:
+    release: beta
+    api: beta
+  date: 2026-03-20
+  license:
+    identifier: LGPL-2.1-only
+    uri: https://spdx.org/licenses/LGPL-2.1-only.html
+  notes: 'fix: Address horde/activesync#15 - allow some timestamp-ish strings as unix timestamps, otherwise delegate to DateTime.'
+3.0.0-beta6:
+  api: 3.0.0-beta6
+  state:
+    release: beta
+    api: beta
+  date: 2026-03-19
+  license:
+    identifier: LGPL-2.1-only
+    uri: https://spdx.org/licenses/LGPL-2.1-only.html
+  notes: 'fix: Formatting dates outside int11 timestamp range. #6'
+3.0.0-beta5:
+  api: 3.0.0-beta5
+  state:
+    release: beta
+    api: beta
+  date: 2026-03-19
+  license:
+    identifier: LGPL-2.1-only
+    uri: https://spdx.org/licenses/LGPL-2.1-only.html
+  notes: "test: cover new int conversions related to https://github.com/horde/Date/issues/5\nfix: Defensively cast to int. Adresses horde/Date#5 partially."
+3.0.0-beta4:
+  api: 3.0.0-beta4
+  state:
+    release: beta
+    api: beta
+  date: 2026-03-18
+  license:
+    identifier: LGPL-2.1-only
+    uri: https://spdx.org/licenses/LGPL-2.1-only.html
+  notes: "feat: Formatters support DateTime(Immutable) and Horde_Date natively\nfix: Support quirky formats in the Format class\nfix(polyfill): preprocess problematic identifiers before passing them to the strftime polyfill"
+3.0.0-beta3:
+  api: 3.0.0-beta3
+  state:
+    release: beta
+    api: beta
+  date: 2026-03-18
+  license:
+    identifier: LGPL-2.1-only
+    uri: https://spdx.org/licenses/LGPL-2.1-only.html
+  notes: "test: Much improved/fixed test coverage\nchore(release): bump version to 3.0.0-beta2\nfeat(format): detect format type before converting"
+3.0.0-beta2:
+  api: 3.0.0-beta2
+  state:
+    release: beta
+    api: beta
+  date: 2026-03-18
+  license:
+    identifier: LGPL-2.1-only
+    uri: https://spdx.org/licenses/LGPL-2.1-only.html
+  notes: 'feat(format): detect format type before converting'
+3.0.0-beta1:
+  api: 3.0.0-beta1
+  state:
+    release: beta
+    api: beta
+  date: 2026-03-17
+  license:
+    identifier: LGPL-2.1-only
+    uri: https://spdx.org/licenses/LGPL-2.1-only.html
+  notes: "refactor(date): upgrade to Horde\\Util\\HordeString\nfeat(date): add Format class for strftime to ICU conversion"
+3.0.0-alpha6:
+  api: 3.0.0-alpha6
+  state:
+    release: alpha
+    api: alpha
+  date: 2026-03-07
+  license:
+    identifier: LGPL-2.1-only
+    uri: https://spdx.org/licenses/LGPL-2.1-only.html
+  notes: "Merge pull request #4 from amulet1/FRAMEWORK_6_0\nfix: Add @property block for static analyzers\nUpdate metadata and workflows - define dev dependencies.\nStub of namespaced date library\nPSR-4 unit tests\nFix strftime2date. Add a convenience wrapper.\nDevelopment mode for Date-3.0.0alpha5\nReleased Date-3.0.0alpha4\nFix [#15054] Thunderbird-generated events issue\nConvert Unit Tests for PHPUnit 9\nDevelopment mode for Date-3.0.0alpha5\nReleased Date-3.0.0alpha3\nDevelopment mode for Date-3.0.0alpha4\nReleased Date-3.0.0alpha2\nDevelopment mode for Date-3.0.0alpha3\nReleased Date-3.0.0alpha1\nComponents updated the package files.\nMerge pull request #2 from maintaina-com/backport-php81-fix\nPHP 8.1: use 'now' rather than null for current date\nMerge branch 'ralflang-patch-1'\nAdd unit test for bug #15054\nFix [#15054] Thunderbird-generated events issue\nUpdate supported PHP versions and configuration names.\nStandardize descriptions.\nEnable PHP 7.3 CI.\n[jan] Allow passing a time format to Horde_Date_Recurrence#toString() (Bug #14768).\n[jan] Allow passing a time format to Horde_Date_Recurrence#toString() (Bug #14768).\nUpdate package definitions.\nFix getting exit code on PHP 7.2+.\nMark Chuck and Michael as inactive.\npackage.xml must not contain empty <notes> tags.\nCreate CHANGES for all components.\nRegenerate package.xml from changelog.yml.\nBuild changelog.yml from existing changelog(s).\nUpdate .horde.yml with extended information.\nUpdate composer.json.\nEnable 7.2 builds.\nPEAR on 5.6 and 7.0 is fixed.\nUpdate file list\nMove phpunit configuration to base directory.\nIndicate markup language.\nUpdate references to COPYING files.\nUse LICENSE consistently and move to base directory.\nStop flooding #horde channel.\nUse https URLs.\nInstall all dependencies but PECL extensions.\nHopefully this finally fixes Travis builds now.\nAlways discover channel manually, due to Travis bug.\nFix Travis tests.\nAdd Travis configuration and .gitignore files.\nDevelopment mode for Horde_Date-2.4.2"
+3.0.0alpha5:
+  api: 3.0.0alpha1
+  state:
+    release: alpha
+    api: alpha
+  date: 2022-10-08
+  license:
+    identifier: LGPL-2.1
+    uri: http://www.horde.org/licenses/lgpl21
+  notes: ''
+3.0.0alpha4:
+  api: 3.0.0alpha1
+  state:
+    release: alpha
+    api: alpha
+  date: 2022-10-08
+  license:
+    identifier: LGPL-2.1
+    uri: http://www.horde.org/licenses/lgpl21
+  notes: "[rla] Fix some PHP 8.1 issues.\n|+\n"
+3.0.0alpha3:
+  api: 3.0.0alpha1
+  state:
+    release: alpha
+    api: alpha
+  date: 2021-03-13
+  license:
+    identifier: LGPL-2.1
+    uri: http://www.horde.org/licenses/lgpl21
+  notes: ''
+3.0.0alpha2:
+  api: 3.0.0alpha1
+  state:
+    release: alpha
+    api: alpha
+  date: 2021-02-24
+  license:
+    identifier: LGPL-2.1
+    uri: http://www.horde.org/licenses/lgpl21
+  notes: ''
+3.0.0alpha1:
+  api: 3.0.0alpha1
+  state:
+    release: stable
+    api: stable
+  date: 2021-02-24
+  license:
+    identifier: LGPL-2.1
+    uri: http://www.horde.org/licenses/lgpl21
+  notes: "[rla] Begin conversion for composer usage.\n"
 2.4.2:
   api: 2.4.0
   state:
@@ -275,8 +188,7 @@
   license:
     identifier: LGPL-2.1
     uri: http://www.horde.org/licenses/lgpl21
-  notes: |
-    [jan] Allow passing a time format to Horde_Date_Recurrence#toString() (Bug #14768).
+  notes: "[jan] Allow passing a time format to Horde_Date_Recurrence#toString() (Bug #14768).\n"
 2.4.1:
   api: 2.4.0
   state:
@@ -286,8 +198,7 @@
   license:
     identifier: LGPL-2.1
     uri: http://www.horde.org/licenses/lgpl21
-  notes: |
-    [jan] Fix translating the string representation of a recurrence rule.
+  notes: "[jan] Fix translating the string representation of a recurrence rule.\n"
 2.4.0:
   api: 2.4.0
   state:
@@ -297,8 +208,7 @@
   license:
     identifier: LGPL-2.1
     uri: http://www.horde.org/licenses/lgpl21
-  notes: |
-    [jan] Add Horde_Date_Recurrence::fromHash() and toHash().
+  notes: "[jan] Add Horde_Date_Recurrence::fromHash() and toHash().\n"
 2.3.2:
   api: 2.3.0
   state:
@@ -308,8 +218,7 @@
   license:
     identifier: LGPL-2.1
     uri: http://www.horde.org/licenses/lgpl21
-  notes: |
-    [jan] Update German translation.
+  notes: "[jan] Update German translation.\n"
 2.3.1:
   api: 2.3.0
   state:
@@ -319,8 +228,7 @@
   license:
     identifier: LGPL-2.1
     uri: http://www.horde.org/licenses/lgpl21
-  notes: |
-    [jan] Add old Olson timezone names as aliases.
+  notes: "[jan] Add old Olson timezone names as aliases.\n"
 2.3.0:
   api: 2.3.0
   state:
@@ -330,9 +238,7 @@
   license:
     identifier: LGPL-2.1
     uri: http://www.horde.org/licenses/lgpl21
-  notes: |
-    [jan] Add Horde_Date::getTimezoneAlias().
-    [jan] Update Greek translation (Limperis Antonis <limperis@cti.gr>).
+  notes: "[jan] Add Horde_Date::getTimezoneAlias().\n[jan] Update Greek translation (Limperis Antonis <limperis@cti.gr>).\n"
 2.2.0:
   api: 2.2.0
   state:
@@ -342,9 +248,7 @@
   license:
     identifier: LGPL-2.1
     uri: http://www.horde.org/licenses/lgpl21
-  notes: |
-    [mjr] Add Horde_Date_Recurrence::isEqual().
-    [jan] Mark PHP 7 as supported.
+  notes: "[mjr] Add Horde_Date_Recurrence::isEqual().\n[jan] Mark PHP 7 as supported.\n"
 2.1.1:
   api: 2.1.0
   state:
@@ -354,8 +258,7 @@
   license:
     identifier: LGPL-2.1
     uri: http://www.horde.org/licenses/lgpl21
-  notes: |
-    [jan] Updated UK translation.
+  notes: "[jan] Updated UK translation.\n"
 2.1.0:
   api: 2.1.0
   state:
@@ -365,10 +268,7 @@
   license:
     identifier: LGPL-2.1
     uri: http://www.horde.org/licenses/lgpl21
-  notes: |
-    [jan] Support monthly recurrence by last weekday (Request #1922).
-    [jan] Support negative occurrences in Horde_Date#setNthWeekday().
-    [jan] Add Galician translation.
+  notes: "[jan] Support monthly recurrence by last weekday (Request #1922).\n[jan] Support negative occurrences in Horde_Date#setNthWeekday().\n[jan] Add Galician translation.\n"
 2.0.13:
   api: 2.0.0
   state:
@@ -378,8 +278,7 @@
   license:
     identifier: LGPL-2.1
     uri: http://www.horde.org/licenses/lgpl21
-  notes: |
-    [jan] Support loading translations from Composer-installed package.
+  notes: "[jan] Support loading translations from Composer-installed package.\n"
 2.0.12:
   api: 2.0.0
   state:
@@ -389,8 +288,7 @@
   license:
     identifier: LGPL-2.1
     uri: http://www.horde.org/licenses/lgpl21
-  notes: |
-    [jan] Fix calculating recurrence end if UNTIL property of iCalendar data is DATE value (Bug #13401).
+  notes: "[jan] Fix calculating recurrence end if UNTIL property of iCalendar data is DATE value (Bug #13401).\n"
 2.0.11:
   api: 2.0.0
   state:
@@ -400,9 +298,7 @@
   license:
     identifier: LGPL-2.1
     uri: http://www.horde.org/licenses/lgpl21
-  notes: |
-    [jan] Update Hungarian translation (Andras Galos <galosa@netinform.hu>).
-    [jan] Update Spanish translation (Manuel P. Ayala <mayala@unex.es>).
+  notes: "[jan] Update Hungarian translation (Andras Galos <galosa@netinform.hu>).\n[jan] Update Spanish translation (Manuel P. Ayala <mayala@unex.es>).\n"
 2.0.10:
   api: 2.0.0
   state:
@@ -412,10 +308,7 @@
   license:
     identifier: LGPL-2.1
     uri: http://www.horde.org/licenses/lgpl21
-  notes: |
-    [jan] Update Brazilian Portuguese translation (Luis Felipe Marzagao <duli@easylifeproject.org>).
-    [jan] Update Japanese translation (Hiromi Kimura <hiromi@tac.tsukuba.ac.jp>).
-    [jan] Update Hungarian translation (Andras Galos <galosa@netinform.hu>).
+  notes: "[jan] Update Brazilian Portuguese translation (Luis Felipe Marzagao <duli@easylifeproject.org>).\n[jan] Update Japanese translation (Hiromi Kimura <hiromi@tac.tsukuba.ac.jp>).\n[jan] Update Hungarian translation (Andras Galos <galosa@netinform.hu>).\n"
 2.0.9:
   api: 2.0.0
   state:
@@ -425,8 +318,7 @@
   license:
     identifier: LGPL-2.1
     uri: http://www.horde.org/licenses/lgpl21
-  notes: |
-    [mjr] Fix setting timezone parameter when parsing certain string representations.
+  notes: "[mjr] Fix setting timezone parameter when parsing certain string representations.\n"
 2.0.8:
   api: 2.0.0
   state:
@@ -436,12 +328,7 @@
   license:
     identifier: LGPL-2.1
     uri: http://www.horde.org/licenses/lgpl21
-  notes: |
-    [jan] Fix date calculation if providing both a timestamp and a timezone (Bug #12843).
-    [mjr] Add ability to return human readable description of recurrence rules.
-    [mjr] Fix issue that could cause incorrect month values when populating an empty date object.
-    [mjr] Fix handling of RRULE with full datetime UNTIL values (Bug #12869).
-    [rla] Add aliases for Windows and Lotus timezone identifiers (Bug #11688).
+  notes: "[jan] Fix date calculation if providing both a timestamp and a timezone (Bug #12843).\n[mjr] Add ability to return human readable description of recurrence rules.\n[mjr] Fix issue that could cause incorrect month values when populating an empty date object.\n[mjr] Fix handling of RRULE with full datetime UNTIL values (Bug #12869).\n[rla] Add aliases for Windows and Lotus timezone identifiers (Bug #11688).\n"
 2.0.7:
   api: 2.0.0
   state:
@@ -451,9 +338,7 @@
   license:
     identifier: LGPL-2.1
     uri: http://www.horde.org/licenses/lgpl21
-  notes: |
-    [jan] Correct dates with very large days-of-month more efficiently (Bug #12615).
-    [jan] Don't limit the argument to Horde_Date_Utils::isLeapYear() to 4 digits.
+  notes: "[jan] Correct dates with very large days-of-month more efficiently (Bug #12615).\n[jan] Don't limit the argument to Horde_Date_Utils::isLeapYear() to 4 digits.\n"
 2.0.6:
   api: 2.0.0
   state:
@@ -463,8 +348,7 @@
   license:
     identifier: LGPL-2.1
     uri: http://www.horde.org/licenses/lgpl21
-  notes: |
-    [jan] Don't use /e modifier with preg_replace() calls (Remi Collet <fedora@famillecollet.com>).
+  notes: "[jan] Don't use /e modifier with preg_replace() calls (Remi Collet <fedora@famillecollet.com>).\n"
 2.0.5:
   api: 2.0.0
   state:
@@ -474,8 +358,7 @@
   license:
     identifier: LGPL-2.1
     uri: http://www.horde.org/licenses/lgpl21
-  notes: |
-    [jan] Fix parsing yearly recurrences on the same day from Kolab data (Bug #12227).
+  notes: "[jan] Fix parsing yearly recurrences on the same day from Kolab data (Bug #12227).\n"
 2.0.4:
   api: 2.0.0
   state:
@@ -485,8 +368,7 @@
   license:
     identifier: LGPL-2.1
     uri: http://www.horde.org/licenses/lgpl21
-  notes: |
-    [jan] Fix recurring dates on the 5th weekday of a month (Bug #11181).
+  notes: "[jan] Fix recurring dates on the 5th weekday of a month (Bug #11181).\n"
 2.0.3:
   api: 2.0.0
   state:
@@ -496,10 +378,7 @@
   license:
     identifier: LGPL-2.1
     uri: http://www.horde.org/licenses/lgpl21
-  notes: |
-    [jan] Update French translation (Paul De Vlieger <paul.de_vlieger@moniut.univ-bpclermont.fr>).
-    [jan] Fix error: DateTime::__construct(): Failed to parse time string (-001-11-01).
-    [jan] Catch DateTime exception in Horde_Date_Utils:daysInMonth() (Bug #11916).
+  notes: "[jan] Update French translation (Paul De Vlieger <paul.de_vlieger@moniut.univ-bpclermont.fr>).\n[jan] Fix error: DateTime::__construct(): Failed to parse time string (-001-11-01).\n[jan] Catch DateTime exception in Horde_Date_Utils:daysInMonth() (Bug #11916).\n"
 2.0.2:
   api: 2.0.0
   state:
@@ -509,9 +388,7 @@
   license:
     identifier: LGPL-2.1
     uri: http://www.horde.org/licenses/lgpl21
-  notes: |
-    [jan] Add Basque translation (Ibon Igartua <ibon.igartua@ehu.es>).
-    [jan] Fix more strftime() formatting of certain locale-specific format specifiers (Bug #11831).
+  notes: "[jan] Add Basque translation (Ibon Igartua <ibon.igartua@ehu.es>).\n[jan] Fix more strftime() formatting of certain locale-specific format specifiers (Bug #11831).\n"
 2.0.1:
   api: 2.0.0
   state:
@@ -521,65 +398,7 @@
   license:
     identifier: LGPL-2.1
     uri: http://www.horde.org/licenses/lgpl21
-  notes: |
-    [jan] Update Dutch translation (Arjen de Korte <build+horde@de-korte.org>).
-    [jan] Fix strftime() formatting of certain locale-specific format specifiers.
-2.0.0beta3:
-  api: 2.0.0
-  state:
-    release: beta
-    api: alpha
-  date: 2012-10-12
-  license:
-    identifier: LGPL-2.1
-    uri: http://www.horde.org/licenses/lgpl21
-  notes: |
-    [mjr] Fix adding completed recurrence exceptions.
-2.0.0beta2:
-  api: 2.0.0
-  state:
-    release: beta
-    api: alpha
-  date: 2012-08-29
-  license:
-    identifier: LGPL-2.1
-    uri: http://www.horde.org/licenses/lgpl21
-  notes: |
-    [jan] Include time when parsing recurrence end date from vCalendar/iCalendar.
-2.0.0beta1:
-  api: 2.0.0
-  state:
-    release: beta
-    api: alpha
-  date: 2012-07-19
-  license:
-    identifier: LGPL-2.1
-    uri: http://www.horde.org/licenses/lgpl21
-  notes: |
-    First beta release for Horde 5.
-2.0.0alpha1:
-  api: 2.0.0
-  state:
-    release: alpha
-    api: alpha
-  date: 2012-07-06
-  license:
-    identifier: LGPL-2.1
-    uri: http://www.horde.org/licenses/lgpl21
-  notes: |
-    First alpha release for Horde 5.
-    [jan] Rename fromHash()/toHash() to fromKolab()/toKolab().
-2.0.0RC1:
-  api: 2.0.0
-  state:
-    release: beta
-    api: alpha
-  date: 2012-10-26
-  license:
-    identifier: LGPL-2.1
-    uri: http://www.horde.org/licenses/lgpl21
-  notes: |
-    [jan] Support non-padding operators in strftime() formatting (Bug #10435).
+  notes: "[jan] Update Dutch translation (Arjen de Korte <build+horde@de-korte.org>).\n[jan] Fix strftime() formatting of certain locale-specific format specifiers.\n"
 2.0.0:
   api: 2.0.0
   state:
@@ -589,8 +408,57 @@
   license:
     identifier: LGPL-2.1
     uri: http://www.horde.org/licenses/lgpl21
-  notes: |
-    First stable release for Horde 5.
+  notes: "First stable release for Horde 5.\n"
+2.0.0RC1:
+  api: 2.0.0
+  state:
+    release: beta
+    api: alpha
+  date: 2012-10-26
+  license:
+    identifier: LGPL-2.1
+    uri: http://www.horde.org/licenses/lgpl21
+  notes: "[jan] Support non-padding operators in strftime() formatting (Bug #10435).\n"
+2.0.0beta3:
+  api: 2.0.0
+  state:
+    release: beta
+    api: alpha
+  date: 2012-10-12
+  license:
+    identifier: LGPL-2.1
+    uri: http://www.horde.org/licenses/lgpl21
+  notes: "[mjr] Fix adding completed recurrence exceptions.\n"
+2.0.0beta2:
+  api: 2.0.0
+  state:
+    release: beta
+    api: alpha
+  date: 2012-08-29
+  license:
+    identifier: LGPL-2.1
+    uri: http://www.horde.org/licenses/lgpl21
+  notes: "[jan] Include time when parsing recurrence end date from vCalendar/iCalendar.\n"
+2.0.0beta1:
+  api: 2.0.0
+  state:
+    release: beta
+    api: alpha
+  date: 2012-07-19
+  license:
+    identifier: LGPL-2.1
+    uri: http://www.horde.org/licenses/lgpl21
+  notes: "First beta release for Horde 5.\n"
+2.0.0alpha1:
+  api: 2.0.0
+  state:
+    release: alpha
+    api: alpha
+  date: 2012-07-06
+  license:
+    identifier: LGPL-2.1
+    uri: http://www.horde.org/licenses/lgpl21
+  notes: "First alpha release for Horde 5.\n[jan] Rename fromHash()/toHash() to fromKolab()/toKolab().\n"
 1.0.12:
   api: 1.0.0
   state:
@@ -600,8 +468,7 @@
   license:
     identifier: LGPL-2.1
     uri: http://www.horde.org/licenses/lgpl21
-  notes: |
-    [jan] Include time when parsing recurrence end date from vCalendar/iCalendar.
+  notes: "[jan] Include time when parsing recurrence end date from vCalendar/iCalendar.\n"
 1.0.11:
   api: 1.0.0
   state:
@@ -611,9 +478,7 @@
   license:
     identifier: LGPL-2.1
     uri: http://www.horde.org/licenses/lgpl21
-  notes: |
-    [jan] Avoid infinite loop when requesting invalid date property.
-    [bak] Avoid printing empty BYDAY field on RRULE.
+  notes: "[jan] Avoid infinite loop when requesting invalid date property.\n[bak] Avoid printing empty BYDAY field on RRULE.\n"
 1.0.10:
   api: 1.0.0
   state:
@@ -623,8 +488,7 @@
   license:
     identifier: LGPL-2.1
     uri: http://www.horde.org/licenses/lgpl21
-  notes: |
-    [jan] Update Spanish translation.
+  notes: "[jan] Update Spanish translation.\n"
 1.0.9:
   api: 1.0.0
   state:
@@ -634,8 +498,7 @@
   license:
     identifier: LGPL-2.1
     uri: http://www.horde.org/licenses/lgpl21
-  notes: |
-    [mjr] Fix creating recurrence objects with a timezone other than the current default.
+  notes: "[mjr] Fix creating recurrence objects with a timezone other than the current default.\n"
 1.0.8:
   api: 1.0.0
   state:
@@ -645,8 +508,7 @@
   license:
     identifier: LGPL-2.1
     uri: http://www.horde.org/licenses/lgpl21
-  notes: |
-    [mjr] Fix issue with creating Horde_Date from DateTime object with explicit timezone set.
+  notes: "[mjr] Fix issue with creating Horde_Date from DateTime object with explicit timezone set.\n"
 1.0.7:
   api: 1.0.0
   state:
@@ -656,8 +518,7 @@
   license:
     identifier: LGPL-2.1
     uri: http://www.horde.org/licenses/lgpl21
-  notes: |
-    [gwr] Fix the parsing of recurrence hash data.
+  notes: "[gwr] Fix the parsing of recurrence hash data.\n"
 1.0.6:
   api: 1.0.0
   state:
@@ -667,12 +528,7 @@
   license:
     identifier: LGPL-2.1
     uri: http://www.horde.org/licenses/lgpl21
-  notes: |
-    [jan] Update Croatian translation.
-    [jan] Update Estonian translation.
-    [jan] Make unit tests Windows compatible.
-    [mjr] Fix timezone bug that could cause an incorrect timezone from being set when creating Horde_Date objects from other Horde_Date or DateTime objects.
-    [mjr] Fix timezone bug that caused some date strings to be parsed as an incorrect timezone.
+  notes: "[jan] Update Croatian translation.\n[jan] Update Estonian translation.\n[jan] Make unit tests Windows compatible.\n[mjr] Fix timezone bug that could cause an incorrect timezone from being set when creating Horde_Date objects from other Horde_Date or DateTime objects.\n[mjr] Fix timezone bug that caused some date strings to be parsed as an incorrect timezone.\n"
 1.0.5:
   api: 1.0.0
   state:
@@ -682,8 +538,7 @@
   license:
     identifier: LGPL-2.1
     uri: http://www.horde.org/licenses/lgpl21
-  notes: |
-    [jan] Fix exporting recurrence end date to iCalendar.
+  notes: "[jan] Fix exporting recurrence end date to iCalendar.\n"
 1.0.4:
   api: 1.0.0
   state:
@@ -693,8 +548,7 @@
   license:
     identifier: LGPL-2.1
     uri: http://www.horde.org/licenses/lgpl21
-  notes: |
-    [jan] Update Latvian translation.
+  notes: "[jan] Update Latvian translation.\n"
 1.0.3:
   api: 1.0.0
   state:
@@ -704,9 +558,7 @@
   license:
     identifier: LGPL-2.1
     uri: http://www.horde.org/licenses/lgpl21
-  notes: |
-    [jan] Update Lithuanian translation.
-    [jan] Update Brazilian Portuguese translation.
+  notes: "[jan] Update Lithuanian translation.\n[jan] Update Brazilian Portuguese translation.\n"
 1.0.2:
   api: 1.0.0
   state:
@@ -716,8 +568,7 @@
   license:
     identifier: LGPL-2.1
     uri: http://www.horde.org/licenses/lgpl21
-  notes: |
-    [jan] Updated Slovak translation.
+  notes: "[jan] Updated Slovak translation.\n"
 1.0.1:
   api: 1.0.0
   state:
@@ -727,55 +578,7 @@
   license:
     identifier: LGPL-2.1
     uri: http://www.horde.org/licenses/lgpl21
-  notes: |
-    [jan] Updated Spanish translation.
-1.0.0beta1:
-  api: 1.0.0
-  state:
-    release: beta
-    api: beta
-  date: 2011-03-16
-  license:
-    identifier: LGPL-2.1
-    uri: http://www.horde.org/licenses/lgpl21
-  notes: |
-    First beta release for Horde 4.
-1.0.0alpha1:
-  api: 1.0.0
-  state:
-    release: alpha
-    api: alpha
-  date: 2011-03-08
-  license:
-    identifier: LGPL-2.1
-    uri: http://www.horde.org/licenses/lgpl21
-  notes: |
-    First alpha release for Horde 4.
-    Add Horde_Date_Repeater.
-    Add Horde_Date_Span.
-1.0.0RC2:
-  api: 1.0.0
-  state:
-    release: beta
-    api: beta
-  date: 2011-03-29
-  license:
-    identifier: LGPL-2.1
-    uri: http://www.horde.org/licenses/lgpl21
-  notes: |
-    Second release candidate for Horde 4.
-    [jan] Fix correcting dates when substracting a day.
-1.0.0RC1:
-  api: 1.0.0
-  state:
-    release: beta
-    api: beta
-  date: 2011-03-22
-  license:
-    identifier: LGPL-2.1
-    uri: http://www.horde.org/licenses/lgpl21
-  notes: |
-    First release candidate for Horde 4.
+  notes: "[jan] Updated Spanish translation.\n"
 1.0.0:
   api: 1.0.0
   state:
@@ -785,5 +588,44 @@
   license:
     identifier: LGPL-2.1
     uri: http://www.horde.org/licenses/lgpl21
-  notes: |
-    First stable release for Horde 4.
+  notes: "First stable release for Horde 4.\n"
+1.0.0RC2:
+  api: 1.0.0
+  state:
+    release: beta
+    api: beta
+  date: 2011-03-29
+  license:
+    identifier: LGPL-2.1
+    uri: http://www.horde.org/licenses/lgpl21
+  notes: "Second release candidate for Horde 4.\n[jan] Fix correcting dates when substracting a day.\n"
+1.0.0RC1:
+  api: 1.0.0
+  state:
+    release: beta
+    api: beta
+  date: 2011-03-22
+  license:
+    identifier: LGPL-2.1
+    uri: http://www.horde.org/licenses/lgpl21
+  notes: "First release candidate for Horde 4.\n"
+1.0.0beta1:
+  api: 1.0.0
+  state:
+    release: beta
+    api: beta
+  date: 2011-03-16
+  license:
+    identifier: LGPL-2.1
+    uri: http://www.horde.org/licenses/lgpl21
+  notes: "First beta release for Horde 4.\n"
+1.0.0alpha1:
+  api: 1.0.0
+  state:
+    release: alpha
+    api: alpha
+  date: 2011-03-08
+  license:
+    identifier: LGPL-2.1
+    uri: http://www.horde.org/licenses/lgpl21
+  notes: "First alpha release for Horde 4.\nAdd Horde_Date_Repeater.\nAdd Horde_Date_Span.\n"
